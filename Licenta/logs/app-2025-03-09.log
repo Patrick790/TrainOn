@@ -1,0 +1,33 @@
+[INFO ] 2025-03-09 15:09:32.821 [main] LicenseApplication - Starting LicenseApplication using Java 17.0.9 with PID 46012 (C:\Users\ardel\IdeaProjects\Licenta\Licenta\build\classes\java\main started by ardel in C:\Users\ardel\IdeaProjects\Licenta\Licenta)
+[INFO ] 2025-03-09 15:09:32.841 [main] LicenseApplication - No active profile set, falling back to 1 default profile: "default"
+[INFO ] 2025-03-09 15:09:34.157 [main] RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[INFO ] 2025-03-09 15:09:34.269 [main] RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 99 ms. Found 5 JPA repository interfaces.
+[INFO ] 2025-03-09 15:09:35.563 [main] TomcatWebServer - Tomcat initialized with port 8080 (http)
+[INFO ] 2025-03-09 15:09:35.585 [main] Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+[INFO ] 2025-03-09 15:09:35.589 [main] StandardService - Starting service [Tomcat]
+[INFO ] 2025-03-09 15:09:35.590 [main] StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.31]
+[INFO ] 2025-03-09 15:09:35.729 [main] [/] - Initializing Spring embedded WebApplicationContext
+[INFO ] 2025-03-09 15:09:35.729 [main] ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2842 ms
+[INFO ] 2025-03-09 15:09:36.411 [main] LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+[INFO ] 2025-03-09 15:09:36.514 [main] Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+[INFO ] 2025-03-09 15:09:36.575 [main] RegionFactoryInitiator - HHH000026: Second-level cache disabled
+[INFO ] 2025-03-09 15:09:37.048 [main] SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+[INFO ] 2025-03-09 15:09:37.112 [main] HikariDataSource - HikariPool-1 - Starting...
+[INFO ] 2025-03-09 15:09:37.258 [main] HikariPool - HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@27bbe773
+[INFO ] 2025-03-09 15:09:37.260 [main] HikariDataSource - HikariPool-1 - Start completed.
+[INFO ] 2025-03-09 15:09:38.648 [main] JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+[INFO ] 2025-03-09 15:09:38.709 [main] LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+[INFO ] 2025-03-09 15:09:39.265 [main] InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+[WARN ] 2025-03-09 15:09:39.268 [main] InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+[WARN ] 2025-03-09 15:09:39.389 [main] JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[INFO ] 2025-03-09 15:09:40.210 [main] EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+[INFO ] 2025-03-09 15:09:41.070 [main] Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+[INFO ] 2025-03-09 15:09:41.103 [main] TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+[INFO ] 2025-03-09 15:09:41.122 [main] LicenseApplication - Started LicenseApplication in 8.777 seconds (process running for 10.27)
+[INFO ] 2025-03-09 15:09:41.357 [RMI TCP Connection(2)-192.168.0.150] [/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+[INFO ] 2025-03-09 15:09:41.357 [RMI TCP Connection(2)-192.168.0.150] DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+[INFO ] 2025-03-09 15:09:41.358 [RMI TCP Connection(2)-192.168.0.150] DispatcherServlet - Completed initialization in 1 ms
+[WARN ] 2025-03-09 20:48:21.030 [HikariPool-1 housekeeper] HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3h18m41s308ms614µs700ns).
+[INFO ] 2025-03-09 21:36:11.490 [SpringApplicationShutdownHook] LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+[INFO ] 2025-03-09 21:36:11.539 [SpringApplicationShutdownHook] HikariDataSource - HikariPool-1 - Shutdown initiated...
+[INFO ] 2025-03-09 21:36:11.552 [SpringApplicationShutdownHook] HikariDataSource - HikariPool-1 - Shutdown completed.
