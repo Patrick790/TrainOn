@@ -1,0 +1,459 @@
+.admin-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles - Reusing from MainPage */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 4rem;
+    background-color: white;
+    height: 90px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 10;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    text-decoration: none;
+}
+
+.logo {
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: #6d28d9;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+}
+
+.auth-button {
+    padding: 0.875rem 2rem;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.auth-button:first-child {
+    color: #6d28d9;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+}
+
+.auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.auth-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Admin Navigation with Button Cards */
+.admin-nav {
+    background-color: #f8f9fa;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.admin-buttons-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-button-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.05),
+            0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-button-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #6d28d9, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-button-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.admin-button-card:hover::before,
+.admin-button-card.active::before {
+    opacity: 1;
+}
+
+.admin-button-card.active {
+    box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background-color: #f9f7ff;
+}
+
+.admin-button-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+/* Icon placeholders - replace with actual icons or images */
+.my-halls-icon::after {
+    content: '🏢';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.add-icon::after {
+    content: '+';
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #6d28d9;
+}
+
+.schedule-icon::after {
+    content: '⏰';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.reservations-icon::after {
+    content: '📅';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.reviews-icon::after {
+    content: '★';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.admin-button-title {
+    color: #1a1a1a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.admin-button-description {
+    color: #6b7280;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Admin Content */
+.admin-content {
+    flex: 1;
+    padding: 2rem 4rem;
+    background-color: #f9fafb;
+    margin-bottom: 2rem;
+}
+
+/* Footer Styles - Updated to be thinner */
+.app-footer {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    padding: 1rem 2rem; /* Slightly increased padding */
+    font-size: 0.8rem; /* Smaller font size */
+    border-top: 1px solid #374151;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 1rem; /* Increased gap */
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Increased gap */
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Slightly increased gap */
+}
+
+.footer-logo-icon {
+    width: 2.25rem; /* Slightly larger icon */
+    height: 2.25rem;
+    background-color: #6d28d9;
+    border-radius: 8px;
+}
+
+.footer-logo-text {
+    font-size: 1.3rem; /* Slightly larger text */
+    font-weight: 700;
+    color: #f9fafb;
+    letter-spacing: -0.5px;
+}
+
+.footer-license {
+    color: #d1d5db;
+    font-size: 0.85rem; /* Slightly larger font */
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem; /* Maintained gap */
+    margin: 0.35rem 0; /* Slightly increased margin */
+}
+
+.footer-link {
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 0.85rem; /* Slightly larger font size */
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.footer-link:hover {
+    color: #f9fafb;
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #8b5cf6;
+    transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+.footer-copyright {
+    color: #9ca3af;
+    font-size: 0.75rem; /* Slightly larger font size */
+    text-align: right;
+    margin-top: 0.35rem; /* Slightly increased margin */
+}
+
+/* Admin Pages */
+.admin-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-page-title {
+    color: #1a1a1a;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.halls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hall-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hall-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.hall-location {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+.hall-status {
+    margin: 0 1rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.maintenance {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.hall-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.hall-action-button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.hall-action-button:hover {
+    background-color: #e5e7eb;
+}
+
+.hall-action-button.edit {
+    background-color: #6d28d9;
+    color: white;
+}
+
+.hall-action-button.edit:hover {
+    background-color: #5b21b6;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+    .admin-buttons-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem 2rem;
+    }
+
+    .admin-content {
+        padding: 1.5rem 2rem;
+    }
+
+    .app-footer {
+        padding: 0.75rem 2rem; /* Further reduced padding */
+    }
+
+    .admin-buttons-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hall-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hall-actions {
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem; /* Reduced gap */
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-buttons-container {
+        grid-template-columns: 1fr;
+    }
+}

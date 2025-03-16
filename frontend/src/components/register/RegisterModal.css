@@ -1,0 +1,235 @@
+.register-modal {
+    max-width: 450px;
+    padding: 2rem 1.75rem !important;
+    background: linear-gradient(to bottom, #ffffff, #f9fafb);
+    position: relative;
+}
+
+.register-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #6d28d9, #8b5cf6);
+}
+
+.modal-title {
+    color: #4c1d95;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.025em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.register-type-selector {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+    justify-content: center;
+    padding: 0.35rem 0;
+}
+
+.type-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.type-option:hover {
+    background-color: rgba(109, 40, 217, 0.05);
+}
+
+.type-option input[type="radio"] {
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid #6d28d9;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.type-option input[type="radio"]:checked {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+}
+
+.type-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.35rem;
+    height: 0.35rem;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.type-option span {
+    font-size: 0.95rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.register-form {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.input-container {
+    width: 100%;
+    position: relative;
+    margin-bottom: 0.25rem;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.input-container input:focus {
+    border-color: #6d28d9;
+    box-shadow:
+            0 0 0 3px rgba(109, 40, 217, 0.1),
+            0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Fixed floating label styles */
+.floating-label {
+    position: absolute;
+    left: 1rem;
+    top: 0.8rem;
+    font-size: 0.95rem;
+    color: #6b7280;
+    pointer-events: none;
+    transition: 0.2s ease all;
+    padding: 0 0.25rem;
+}
+
+input:focus ~ .floating-label,
+input:not(:placeholder-shown) ~ .floating-label {
+    top: -0.5rem;
+    left: 0.8rem;
+    font-size: 0.75rem;
+    color: #6d28d9;
+    font-weight: 500;
+    background-color: white;
+    z-index: 1;
+}
+
+.certificate-upload {
+    width: 100%;
+    padding: 1rem;
+    border: 1.5px dashed #6d28d9;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0.35rem 0;
+    background-color: rgba(109, 40, 217, 0.05);
+    transition: all 0.2s ease;
+}
+
+.certificate-upload:hover {
+    background-color: rgba(109, 40, 217, 0.1);
+    border-color: #5b21b6;
+}
+
+.certificate-upload span {
+    color: #6d28d9;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.certificate-upload input[type="file"] {
+    display: none;
+}
+
+.register-button {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow:
+            0 4px 6px -1px rgba(109, 40, 217, 0.2),
+            0 2px 4px -1px rgba(109, 40, 217, 0.1);
+    width: 100%;
+    margin-top: 0.75rem;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.register-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.register-button:hover {
+    background: linear-gradient(135deg, #5b21b6, #6d28d9);
+    box-shadow:
+            0 6px 8px -1px rgba(109, 40, 217, 0.3),
+            0 4px 6px -1px rgba(109, 40, 217, 0.2);
+    transform: translateY(-1px);
+}
+
+.register-button:hover::before {
+    opacity: 1;
+}
+
+input[type="date"] {
+    padding: 0.75rem 1rem;
+    color: #4a5568;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin: 0.35rem 0;
+    width: 100%;
+    text-align: left;
+}
