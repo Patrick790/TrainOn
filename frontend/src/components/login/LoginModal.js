@@ -2,26 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
 
-const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
+const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true');
-    const [userType, setUserType] = useState('');
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (isLoggedIn) {
-            const storedUserType = localStorage.getItem('userType');
-            setUserType(storedUserType);
-            if (storedUserType === 'hall_admin') {
-                navigate('/hall-admin-dashboard', { replace: true });
-            } else if (storedUserType === 'user') {
-                navigate('/user-home', { replace: true });
-            }
-        }
-    }, [isLoggedIn, navigate]);
 
     const handleInputChange = (setter, field) => (e) => {
         setter(e.target.value);
@@ -61,22 +47,34 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
 
             if (genToken.ok) {
                 const token = await genToken.text();
-                console.log(token)
                 localStorage.setItem('jwtToken', token);
+            } else {
+                console.error('Failed to generate token:', await genToken.text());
             }
 
             localStorage.setItem('userId', json.id);
             localStorage.setItem('userType', json.userType);
-
-            alert('Login successful!');
-            setIsLoggedIn(true);
-            setUserType(json.userType);
             localStorage.setItem('isLoggedIn', 'true');
 
+            // Close modal first
+            onClose();
+
+            // Trigger parent component update
+            if (onLoginSuccess) {
+                onLoginSuccess();
+            }
+
+            // Show success alert
+            alert('Login successful!');
+
+            // Navigate based on user type
             if (json.userType === "hall_admin") {
                 navigate('/hall-admin-dashboard', { replace: true });
-            } else {
+            } else if (json.userType === "user") {
                 navigate('/user-home', { replace: true });
+            } else {
+                // Force page refresh to update UI if not navigating away
+                window.location.reload();
             }
         } catch (err) {
             setErrorMessage('Email sau parola incorectă!');
@@ -86,7 +84,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        login().then(r => console.log(r));
+        login();
     };
 
     const handleRegisterClick = (e) => {

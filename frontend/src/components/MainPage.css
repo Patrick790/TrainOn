@@ -262,3 +262,26 @@
 .search-button:hover {
     background-color: rgba(91, 33, 182, 0.8);
 }
+
+.user-welcome {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6d28d9;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #ef4444 !important; /* Red color for logout */
+    border-color: #ef4444 !important;
+    color: white !important;
+}
+
+.logout-button:hover {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+}

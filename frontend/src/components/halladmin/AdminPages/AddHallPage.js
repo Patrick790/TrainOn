@@ -191,12 +191,33 @@ class AddHallPage extends Component {
         this.setState({ isSubmitting: true, submitError: null, submitSuccess: false });
 
         try {
-            const formData = this.prepareFormData();
+            const { hallData, images } = this.state;
 
-            // După autentificare, salvează token-ul
+            // Procesăm datele sălii pentru a ne asigura că valorile numerice sunt corecte
+            const processedHallData = {
+                ...hallData,
+                capacity: hallData.capacity ? parseInt(hallData.capacity, 10) : 0,
+                tariff: hallData.tariff ? parseFloat(hallData.tariff) : 0
+            };
+
+            // Creăm FormData pentru trimiterea datelor
+            const formData = new FormData();
+
+            // Adăugăm JSON-ul ca șir de caractere
+            formData.append('sportsHall', JSON.stringify(processedHallData));
+
+            // Adăugăm imaginile și tipurile lor
+            let imageIndex = 0;
+            Object.entries(images).forEach(([type, imagesList]) => {
+                imagesList.forEach(img => {
+                    formData.append(`images[${imageIndex}]`, img.file);
+                    formData.append(`imageTypes[${imageIndex}]`, type);
+                    imageIndex++;
+                });
+            });
+
+            // Obținem token-ul de autentificare
             const token = localStorage.getItem('jwtToken');
-
-            console.log('Token folosit:', token); // Pentru debugging
 
             if (!token) {
                 this.setState({
@@ -206,13 +227,19 @@ class AddHallPage extends Component {
                 return;
             }
 
+            // Pentru debugging - verifică ce conține FormData
+            console.log("FormData entries:");
+            for (let entry of formData.entries()) {
+                console.log(entry[0], entry[1]);
+            }
 
             const response = await fetch('http://localhost:8080/sportsHalls', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
+                    // Nu setăm 'Content-Type' - browserul o va face automat pentru FormData
+                },
             });
 
             if (response.ok) {
@@ -245,16 +272,18 @@ class AddHallPage extends Component {
                 // Gestionăm eroarea
                 const errorText = await response.text();
                 console.error('Error creating hall:', errorText);
+                console.error('Response status:', response.status);
+
                 this.setState({
                     isSubmitting: false,
-                    submitError: errorText || 'A apărut o eroare la salvarea sălii'
+                    submitError: `Eroare (${response.status}): ${errorText || 'A apărut o eroare la salvarea sălii'}`
                 });
             }
         } catch (error) {
             console.error('Error creating hall:', error);
             this.setState({
                 isSubmitting: false,
-                submitError: 'Eroare de conexiune la server'
+                submitError: 'Eroare de conexiune la server: ' + error.message
             });
         }
     }

@@ -4,70 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/arena.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/MainPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/MainPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageReviewsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ViewReservationsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/lps.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/logs/app.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/LicenseApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/config/WebConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/JwtService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoDetails.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/BruteEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Feedback.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Reservation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHallImage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Team.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/dtos/UserCredentials.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IFeedbackSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IReservationSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallImageSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/ITeamSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IUserSpringRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/FeedbackRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/LoginRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/RegisterRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/TeamRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/licenta.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="first commit">
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/config/MultipartConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/integration/LoginIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/integration/RegisterIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/jwtservice/JwtServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/LoginRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/RegisterRestControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-01.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-02.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-05.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-06.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-07.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-09.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app-2025-03-11.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Licenta/logs/app.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/MainPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/MainPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/MainPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/MainPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/app-2025-02-25.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/app.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +46,9 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand />
@@ -95,8 +62,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="CSS File" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -115,36 +82,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-17&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/halladmin/AdminPages&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "jdk.selected.JAVA_MODULE": "corretto-17",
+    "last_opened_file_path": "C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/halladmin/AdminPages",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "terminal",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin\AdminPages" />
@@ -158,7 +128,127 @@
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.StartApp">
+  <component name="RunManager" selected="Gradle.RegisterIntegrationTest">
+    <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.jwtservice.JwtServiceTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="LoginIntegrationTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.integration.LoginIntegrationTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="LoginRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.service.LoginRestControllerTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="RegisterIntegrationTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.integration.RegisterIntegrationTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="RegisterRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.service.RegisterRestControllerTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="Debug Application" type="JavascriptDebugType" uri="http://localhost:3000">
       <method v="2" />
     </configuration>
@@ -180,10 +270,24 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Gradle.JwtServiceTest" />
+      <item itemvalue="Gradle.LoginIntegrationTest" />
+      <item itemvalue="Gradle.LoginRestControllerTest" />
+      <item itemvalue="Gradle.RegisterIntegrationTest" />
+      <item itemvalue="Gradle.RegisterRestControllerTest" />
       <item itemvalue="JavaScript Debug.Debug Application" />
       <item itemvalue="npm.StartApp" />
       <item itemvalue="Spring Boot.LicenseApplication" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.RegisterIntegrationTest" />
+        <item itemvalue="Gradle.RegisterRestControllerTest" />
+        <item itemvalue="Gradle.LoginIntegrationTest" />
+        <item itemvalue="Gradle.JwtServiceTest" />
+        <item itemvalue="Gradle.LoginRestControllerTest" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -218,11 +322,49 @@
       <workItem from="1741768937501" duration="12357000" />
       <workItem from="1741797865581" duration="3013000" />
       <workItem from="1742046077310" duration="620000" />
-      <workItem from="1742143218935" duration="529000" />
+      <workItem from="1742143218935" duration="1058000" />
+      <workItem from="1742151541513" duration="591000" />
+      <workItem from="1742239516482" duration="26000" />
+      <workItem from="1742756049795" duration="4352000" />
+      <workItem from="1743005776410" duration="1466000" />
+      <workItem from="1743184413000" duration="9188000" />
+      <workItem from="1743518516714" duration="493000" />
     </task>
+    <task id="LOCAL-00001" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1742143859733</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1742143859733</updated>
+    </task>
+    <task id="LOCAL-00002" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1742143902890</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1742143902890</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="first commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="first commit" />
   </component>
 </project>

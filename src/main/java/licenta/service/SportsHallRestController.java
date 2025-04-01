@@ -5,6 +5,8 @@ import licenta.model.SportsHall;
 import licenta.model.SportsHallImage;
 import licenta.persistence.ISportsHallImageSpringRepository;
 import licenta.persistence.ISportsHallSpringRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +15,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sportsHalls")
+@CrossOrigin(origins = "http://localhost:3000")
 public class SportsHallRestController {
 
     private final ISportsHallSpringRepository sportsHallSpringRepository;
     private final ISportsHallImageSpringRepository sportsHallImageSpringRepository;
     private final ObjectMapper objectMapper;
+    private static final Logger logger = LoggerFactory.getLogger(SportsHallRestController.class);
 
     @Autowired
     public SportsHallRestController(ISportsHallSpringRepository sportsHallSpringRepository,
@@ -43,60 +48,116 @@ public class SportsHallRestController {
 
     @PostMapping
     public ResponseEntity<?> createSportsHall(
-            @RequestPart("sportsHall") String sportsHallJson,
-            @RequestPart("images") List<MultipartFile> imageFiles,
-            @RequestPart("imageTypes") List<String> imageTypes) {
+            @RequestParam("sportsHall") String sportsHallJson,
+            @RequestParam Map<String, MultipartFile> files,
+            @RequestParam Map<String, String> params) {
+
+        logger.info("Creating a new sports hall");
+        logger.info("Sports hall data: {}", sportsHallJson);
+        logger.info("Number of params: {}", params.size());
+        logger.info("Number of files: {}", files.size());
 
         try {
-            // Verificăm dacă numărul de fișiere corespunde cu numărul de tipuri
-            if (imageFiles.size() != imageTypes.size()) {
-                return ResponseEntity.badRequest().body("Numărul de imagini nu corespunde cu numărul de tipuri");
-            }
-
-            // Deserializăm manual JSON-ul
+            // Parsam JSON-ul pentru a obtine obiectul SportsHall
             SportsHall sportsHall = objectMapper.readValue(sportsHallJson, SportsHall.class);
+            logger.info("Deserialized sports hall: {}", sportsHall);
 
-            // Asigură-te că valorile numerice sunt procesate corect
+            // Asigura-te ca valorile numerice sunt procesate corect
             if (sportsHall.getCapacity() != null && sportsHall.getCapacity() <= 0) {
-                sportsHall.setCapacity(1); // Setăm o valoare minimă validă
+                sportsHall.setCapacity(1);
             }
 
             if (sportsHall.getTariff() != null && sportsHall.getTariff() < 0) {
                 sportsHall.setTariff(0.0f);
             }
 
-            // Salvăm sala fără imagini inițial
+            // Salvam sala fara imagini initial
             SportsHall savedSportsHall = sportsHallSpringRepository.save(sportsHall);
+            logger.info("Saved sports hall with ID: {}", savedSportsHall.getId());
 
-            // Procesăm și adăugăm fiecare imagine
-            for (int i = 0; i < imageFiles.size(); i++) {
-                MultipartFile imageFile = imageFiles.get(i);
-                String imageType = imageTypes.get(i);
+            // Procesam imaginile si tipurile lor
+            List<MultipartFile> imageFiles = new ArrayList<>();
+            List<String> imageTypes = new ArrayList<>();
 
-                // Creăm obiectul imagine
-                SportsHallImage image = new SportsHallImage();
-                image.setImagePath(imageFile.getBytes());
-                image.setDescription(imageType);
-                image.setSportsHall(savedSportsHall);
+            // Extragem imaginile din Map-ul de fisiere
+            for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
+                if (entry.getKey().startsWith("images[")) {
+                    String key = entry.getKey();
+                    int index = Integer.parseInt(key.substring(7, key.length() - 1));
 
-                // Salvăm imaginea folosind repository-ul specific
-                sportsHallImageSpringRepository.save(image);
+                    // Ne asiguram ca avem suficient spatiu in lista noastra
+                    while (imageFiles.size() <= index) {
+                        imageFiles.add(null);
+                        imageTypes.add(null);
+                    }
+
+                    imageFiles.set(index, entry.getValue());
+                }
             }
 
-            // Reîncărcăm sala pentru a obține imaginile proaspăt salvate
-            return ResponseEntity.ok(sportsHallSpringRepository.findById(savedSportsHall.getId()).orElse(null));
+            // Extragem tipurile din Map-ul de parametri
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                if (entry.getKey().startsWith("imageTypes[")) {
+                    String key = entry.getKey();
+                    int index = Integer.parseInt(key.substring(11, key.length() - 1));
+
+                    // Ne asiguram ca avem suficient spatiu în lista noastra
+                    while (imageTypes.size() <= index) {
+                        imageTypes.add(null);
+                    }
+
+                    imageTypes.set(index, entry.getValue());
+                }
+            }
+
+            // Validam ca avem toate imaginile si tipurile lor
+            for (int i = 0; i < imageFiles.size(); i++) {
+                if (imageFiles.get(i) == null || imageTypes.get(i) == null) {
+                    logger.error("Missing image or type at index {}", i);
+                    return ResponseEntity.badRequest().body("Date lipsa pentru imaginea " + i);
+                }
+            }
+
+            // Acum procesam fiecare imagine
+            for (int i = 0; i < imageFiles.size(); i++) {
+                MultipartFile file = imageFiles.get(i);
+                String type = imageTypes.get(i);
+
+                logger.info("Processing image {} of type {}, size: {}",
+                        i, type, file.getSize());
+
+                SportsHallImage image = new SportsHallImage();
+                image.setImagePath(file.getBytes());
+                image.setDescription(type);
+                image.setSportsHall(savedSportsHall);
+
+                sportsHallImageSpringRepository.save(image);
+                logger.info("Saved image of type: {}", type);
+            }
+
+            // Reincarcare sala pentru a obtine imaginile proaspat salvate
+            SportsHall result = sportsHallSpringRepository.findById(savedSportsHall.getId()).orElse(null);
+            logger.info("Sports hall created successfully with {} images",
+                    result != null ? result.getImages().size() : 0);
+            return ResponseEntity.ok(result);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error processing images", e);
             return ResponseEntity.internalServerError().body("Eroare la procesarea imaginilor: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error saving sports hall", e);
             return ResponseEntity.internalServerError().body("Eroare la salvarea sălii de sport: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSportsHall(@PathVariable Long id) {
-        sportsHallSpringRepository.deleteById(id);
+    public ResponseEntity<?> deleteSportsHall(@PathVariable Long id) {
+        try {
+            sportsHallSpringRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error deleting sports hall with ID: {}", id, e);
+            return ResponseEntity.internalServerError().body("Eroare la ștergerea sălii: " + e.getMessage());
+        }
     }
 }

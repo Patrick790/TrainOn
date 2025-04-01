@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ChevronDown } from 'lucide-react';
+import { MapPin, ChevronDown, LogOut } from 'lucide-react';
 import LoginModal from './login/LoginModal';
 import RegisterModal from './register/RegisterModal';
 import './MainPage.css';
@@ -15,8 +15,26 @@ class MainPage extends React.Component {
             isLocationDropdownOpen: false,
             isActivityDropdownOpen: false,
             isLoginModalOpen: false,
-            isRegisterModalOpen: false
+            isRegisterModalOpen: false,
+            isLoggedIn: localStorage.getItem('isLoggedIn') === 'true'
         };
+    }
+
+    componentDidMount() {
+        // Check login status when component mounts
+        this.checkLoginStatus();
+
+        // Add event listener for storage changes
+        window.addEventListener('storage', this.checkLoginStatus);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('storage', this.checkLoginStatus);
+    }
+
+    checkLoginStatus = () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        this.setState({ isLoggedIn });
     }
 
     handleLocationChange = (location) => {
@@ -69,9 +87,26 @@ class MainPage extends React.Component {
         }));
     }
 
+    handleLogout = () => {
+        // Clear local storage
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('jwtToken');
+
+        // Update state
+        this.setState({
+            isLoggedIn: false
+        });
+
+        // Redirect to main page if needed
+        window.location.href = '/';
+    }
+
     render() {
         const locations = ['Cluj-Napoca', 'Timisoara', 'Bucuresti', 'Iasi'];
         const activities = ['Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
+        const { isLoggedIn } = this.state;
 
         return (
             <div className="main-container">
@@ -81,12 +116,21 @@ class MainPage extends React.Component {
                         <span className="logo-text">Licenta</span>
                     </div>
                     <div className="auth-buttons">
-                        <button onClick={this.toggleLoginModal} className="auth-button">
-                            Intra in cont
-                        </button>
-                        <button onClick={this.toggleRegisterModal} className="auth-button">
-                            Inregistrare
-                        </button>
+                        {isLoggedIn ? (
+                            <button onClick={this.handleLogout} className="auth-button logout-button">
+                                <LogOut size={16} />
+                                Deconectare
+                            </button>
+                        ) : (
+                            <>
+                                <button onClick={this.toggleLoginModal} className="auth-button">
+                                    Intra in cont
+                                </button>
+                                <button onClick={this.toggleRegisterModal} className="auth-button">
+                                    Inregistrare
+                                </button>
+                            </>
+                        )}
                     </div>
                 </header>
 
@@ -159,15 +203,21 @@ class MainPage extends React.Component {
                     </div>
                 </main>
 
-                <LoginModal
-                    isOpen={this.state.isLoginModalOpen}
-                    onClose={this.toggleLoginModal}
-                    onRegisterClick={this.toggleRegisterModal}
-                />
-                <RegisterModal
-                    isOpen={this.state.isRegisterModalOpen}
-                    onClose={this.toggleRegisterModal}
-                />
+                {/* Only render modals when not logged in */}
+                {!isLoggedIn && (
+                    <>
+                        <LoginModal
+                            isOpen={this.state.isLoginModalOpen}
+                            onClose={this.toggleLoginModal}
+                            onRegisterClick={this.toggleRegisterModal}
+                            onLoginSuccess={this.checkLoginStatus}
+                        />
+                        <RegisterModal
+                            isOpen={this.state.isRegisterModalOpen}
+                            onClose={this.toggleRegisterModal}
+                        />
+                    </>
+                )}
             </div>
         );
     }

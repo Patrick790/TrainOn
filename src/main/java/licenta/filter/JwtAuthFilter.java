@@ -39,6 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Permitem cererile către endpoint-urile publice să treacă fără verificare JWT
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
+                "OPTIONS".equals(method) || // Add support for OPTIONS requests
                 (path.startsWith("/sportsHalls") && "GET".equals(method));
     }
 
@@ -63,6 +64,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.info("Successfully authenticated user: {}", username);
+                } else {
+                    logger.warn("Token validation failed for user: {}", username);
                 }
             }
         } catch (Exception e) {
