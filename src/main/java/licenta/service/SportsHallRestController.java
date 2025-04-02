@@ -3,12 +3,16 @@ package licenta.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import licenta.model.SportsHall;
 import licenta.model.SportsHallImage;
+import licenta.model.User;
 import licenta.persistence.ISportsHallImageSpringRepository;
 import licenta.persistence.ISportsHallSpringRepository;
+import licenta.persistence.IUserSpringRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sportsHalls")
@@ -24,15 +29,17 @@ public class SportsHallRestController {
 
     private final ISportsHallSpringRepository sportsHallSpringRepository;
     private final ISportsHallImageSpringRepository sportsHallImageSpringRepository;
+    private final IUserSpringRepository userSpringRepository;
     private final ObjectMapper objectMapper;
     private static final Logger logger = LoggerFactory.getLogger(SportsHallRestController.class);
 
     @Autowired
     public SportsHallRestController(ISportsHallSpringRepository sportsHallSpringRepository,
-                                    ISportsHallImageSpringRepository sportsHallImageSpringRepository,
+                                    ISportsHallImageSpringRepository sportsHallImageSpringRepository, IUserSpringRepository userSpringRepository,
                                     ObjectMapper objectMapper) {
         this.sportsHallSpringRepository = sportsHallSpringRepository;
         this.sportsHallImageSpringRepository = sportsHallImageSpringRepository;
+        this.userSpringRepository = userSpringRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -57,10 +64,28 @@ public class SportsHallRestController {
         logger.info("Number of params: {}", params.size());
         logger.info("Number of files: {}", files.size());
 
+
         try {
             // Parsam JSON-ul pentru a obtine obiectul SportsHall
             SportsHall sportsHall = objectMapper.readValue(sportsHallJson, SportsHall.class);
             logger.info("Deserialized sports hall: {}", sportsHall);
+
+            // Obținem utilizatorul curent autentificat
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                String email = authentication.getName();
+                Optional<User> userOpt = userSpringRepository.findByEmail(email);
+
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    sportsHall.setAdminId(user.getId());
+                    logger.info("Setting owner ID: {} for sports hall", user.getId());
+                } else {
+                    logger.warn("No user found with email: {}", email);
+                }
+            } else {
+                logger.warn("No authenticated user found when creating sports hall");
+            }
 
             // Asigura-te ca valorile numerice sunt procesate corect
             if (sportsHall.getCapacity() != null && sportsHall.getCapacity() <= 0) {
@@ -158,6 +183,19 @@ public class SportsHallRestController {
         } catch (Exception e) {
             logger.error("Error deleting sports hall with ID: {}", id, e);
             return ResponseEntity.internalServerError().body("Eroare la ștergerea sălii: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/{adminId}")
+    public ResponseEntity<?> getSportsHallsByAdminId(@PathVariable Long adminId) {
+        try {
+            List<SportsHall> halls = sportsHallSpringRepository.findByAdminId(adminId);
+            logger.info("Found {} sports halls for admin ID: {}", halls.size(), adminId);
+            return ResponseEntity.ok(halls);
+
+        } catch(Exception e) {
+            logger.error("Error fetching sports halls for admin ID: {}", adminId, e);
+            return ResponseEntity.internalServerError().body("Eroare la obtinerea salilor de sport: " + e.getMessage());
         }
     }
 }

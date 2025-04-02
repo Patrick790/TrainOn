@@ -1,5 +1,6 @@
 package licenta.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.awt.*;
@@ -16,6 +17,7 @@ public class SportsHallImage extends BruteEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sports_hall_id")
+    @JsonBackReference
     private SportsHall sportsHall;
 
     public SportsHallImage() {

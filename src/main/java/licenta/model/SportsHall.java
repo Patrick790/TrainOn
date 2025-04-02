@@ -1,5 +1,6 @@
 package licenta.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -37,7 +38,11 @@ public class SportsHall extends BruteEntity<Long> {
     private String description;
 
     @OneToMany(mappedBy = "sportsHall", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SportsHallImage> images = new ArrayList<>();
+
+    @Column(name = "admin_id")
+    private Long adminId;
 
     public SportsHall() {
     }
@@ -53,6 +58,13 @@ public class SportsHall extends BruteEntity<Long> {
         this.city = city;
         this.description = description;
         this.images = images;
+    }
+
+    public SportsHall(String name, String address, Integer capacity, String type, Float tariff,
+                      String facilities, String county, String city, String description,
+                      List<SportsHallImage> images, Long adminId) {
+        this(name, address, capacity, type, tariff, facilities, county, city, description, images);
+        this.adminId = adminId;
     }
 
     public void addImage(SportsHallImage image) {
@@ -143,6 +155,14 @@ public class SportsHall extends BruteEntity<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(Long adminId) {
+        this.adminId = adminId;
     }
 
     @Override

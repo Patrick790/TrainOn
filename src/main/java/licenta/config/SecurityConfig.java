@@ -53,7 +53,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/owner/**").authenticated() // Orice utilizator autentificat poate accesa
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
                         .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")
                         .requestMatchers("/users/**").hasAnyAuthority("user", "admin", "hall_admin")

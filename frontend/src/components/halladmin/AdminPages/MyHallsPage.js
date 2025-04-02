@@ -1,75 +1,72 @@
 import React, { Component } from 'react';
 import { Star } from 'lucide-react';
 import './MyHallsPage.css';
-// Importă imaginea direct în componentă
-import lpsImage from './lps.jpg'; // Asigură-te că numele fișierului este corect
 
 class MyHallsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            halls: [
-                {
-                    id: 1,
-                    name: 'Sala Liceul Cu Program Sportiv',
-                    location: 'Cluj-Napoca',
-                    status: 'active',
-                    hasImage: true,
-                    image: lpsImage,
-                    rating: 4.5,
-                    reviewCount: 32,
-                    description: 'Sală de sport modernă cu echipamente de ultimă generație.'
-                },
-                {
-                    id: 2,
-                    name: 'Bazin Olimpic',
-                    location: 'Cluj-Napoca',
-                    status: 'active',
-                    hasImage: false,
-                    rating: 4.2,
-                    reviewCount: 18,
-                    description: 'Bazin olimpic cu 8 culoare și facilități complete.'
-                },
-                {
-                    id: 3,
-                    name: 'Teren Tenis Central',
-                    location: 'Cluj-Napoca',
-                    status: 'maintenance',
-                    hasImage: false,
-                    rating: 4.7,
-                    reviewCount: 24,
-                    description: 'Teren de tenis cu suprafață hard, ideal pentru competiții.'
-                }
-            ],
-            apiBaseUrl: 'http://localhost:8080/api'
+            halls: [],
+            loading: true,
+            error: null
         };
+    }
+
+    async componentDidMount() {
+        await this.fetchHalls();
     }
 
     fetchHalls = async () => {
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${this.state.apiBaseUrl}/halls/my-halls`, {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('jwtToken');
+
+            if (!userId || !token) {
+                this.setState({
+                    error: 'Nu sunteți autentificat corect',
+                    loading: false,
+                    halls: []
+                });
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8080/sportsHalls/admin/${userId}`, {
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                this.setState({ halls: data });
+            if (!response.ok) {
+                throw new Error(`Eroare la încărcarea sălilor: ${response.status}`);
             }
+
+            const halls = await response.json();
+            console.log('Halls loaded:', halls);
+            this.setState({ halls, loading: false });
         } catch (error) {
             console.error('Error fetching halls:', error);
+            this.setState({
+                error: error.message,
+                loading: false,
+                halls: []
+            });
         }
     }
 
-    componentDidMount() {
-        // Uncomment when backend is ready
-        // this.fetchHalls();
+    getCoverImage = (hall) => {
+        if (hall.images && hall.images.length > 0) {
+            // Find the image with description = 'cover'
+            const coverImage = hall.images.find(img => img.description === 'cover');
+            if (coverImage) {
+                return `http://localhost:8080/images/${coverImage.id}`;
+            }
+        }
+        return null;
     }
 
     renderRatingStars = (rating) => {
-        // Numărul total de stele este 5
+        // Codul existent pentru rating
         const totalStars = 5;
         const fullStars = Math.floor(rating);
         const hasHalfStar = rating % 1 >= 0.3 && rating % 1 <= 0.7;
@@ -139,7 +136,15 @@ class MyHallsPage extends Component {
     }
 
     render() {
-        const { halls } = this.state;
+        const { halls, loading, error } = this.state;
+
+        if (loading) {
+            return <div className="loading-container">Se încarcă sălile...</div>;
+        }
+
+        if (error) {
+            return <div className="error-container">Eroare: {error}</div>;
+        }
 
         return (
             <div className="admin-page">
@@ -147,47 +152,51 @@ class MyHallsPage extends Component {
 
                 <div className="halls-grid">
                     {halls.length > 0 ? (
-                        halls.map(hall => (
-                            <div key={hall.id} className="hall-card">
-                                <div className="hall-image-container">
-                                    <div className={`hall-status-indicator ${hall.status}`}>
-                                        {hall.status === 'active' ? 'Activ' : 'Mentenanță'}
-                                    </div>
+                        halls.map(hall => {
+                            const coverImageUrl = this.getCoverImage(hall);
 
-                                    {hall.hasImage && hall.image ? (
-                                        <img
-                                            src={hall.image}
-                                            alt={hall.name}
-                                            className="hall-image"
-                                        />
-                                    ) : (
-                                        <div className="hall-placeholder">
-                                            <div className="hall-initial">{hall.name.charAt(0)}</div>
+                            return (
+                                <div key={hall.id} className="hall-card">
+                                    <div className="hall-image-container">
+                                        <div className="hall-status-indicator active">
+                                            Activ
                                         </div>
-                                    )}
-                                </div>
 
-                                <div className="hall-content">
-                                    <h3 className="hall-name">{hall.name}</h3>
-                                    <p className="hall-location">{hall.location}</p>
-
-                                    <p className="hall-description">{hall.description}</p>
-
-                                    <div className="hall-rating">
-                                        {this.renderRatingStars(hall.rating)}
-                                        <span className="rating-text">
-                                            {hall.rating.toFixed(1)} ({hall.reviewCount} recenzii)
-                                        </span>
+                                        {coverImageUrl ? (
+                                            <img
+                                                src={coverImageUrl}
+                                                alt={hall.name}
+                                                className="hall-image"
+                                            />
+                                        ) : (
+                                            <div className="hall-placeholder">
+                                                <div className="hall-initial">{hall.name.charAt(0)}</div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="hall-actions">
-                                        <button className="hall-action-button">Programare</button>
-                                        <button className="hall-action-button">Rezervări</button>
-                                        <button className="hall-action-button edit">Editare</button>
+                                    <div className="hall-content">
+                                        <h3 className="hall-name">{hall.name}</h3>
+                                        <p className="hall-location">{hall.city}, {hall.county}</p>
+                                        <p className="hall-description">{hall.description || 'Fără descriere'}</p>
+
+                                        {/* Temporar, până când avem ratings reale */}
+                                        <div className="hall-rating">
+                                            {this.renderRatingStars(4.5)}
+                                            <span className="rating-text">
+                                                4.5 (10 recenzii)
+                                            </span>
+                                        </div>
+
+                                        <div className="hall-actions">
+                                            <button className="hall-action-button">Programare</button>
+                                            <button className="hall-action-button">Rezervări</button>
+                                            <button className="hall-action-button edit">Editare</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
                         <div className="empty-state">
                             <p>Nu aveți săli de sport adăugate. Adăugați prima sală folosind butonul "Adăugare".</p>
