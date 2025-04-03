@@ -175,6 +175,166 @@ public class SportsHallRestController {
         }
     }
 
+    // Modificări pentru metoda updateSportsHall în SportsHallRestController.java
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateSportsHall(
+            @PathVariable Long id,
+            @RequestParam("sportsHall") String sportsHallJson,
+            @RequestParam(value = "deleteImageIds", required = false) String deleteImageIdsJson,
+            @RequestParam Map<String, MultipartFile> files,
+            @RequestParam Map<String, String> params) {
+
+        logger.info("Updating sports hall with ID: {}", id);
+        logger.info("Sports hall data: {}", sportsHallJson);
+        logger.info("Number of params: {}", params.size());
+        logger.info("Number of files: {}", files.size());
+        logger.info("Images to delete: {}", deleteImageIdsJson);
+
+        try {
+            // Verificăm dacă sala există
+            Optional<SportsHall> existingHallOpt = sportsHallSpringRepository.findById(id);
+            if (existingHallOpt.isEmpty()) {
+                logger.error("Sports hall with ID {} not found", id);
+                return ResponseEntity.notFound().build();
+            }
+
+            SportsHall existingHall = existingHallOpt.get();
+
+            // Obține utilizatorul autentificat (pentru a verifica permisiunile sau pentru logging)
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = authentication.getName();
+            logger.info("Current authenticated user email: {}", currentUserEmail);
+
+            // Parsăm JSON-ul pentru a obține datele actualizate ale sălii
+            SportsHall updatedHall = objectMapper.readValue(sportsHallJson, SportsHall.class);
+            updatedHall.setId(id); // Ne asigurăm că ID-ul rămâne același
+            updatedHall.setAdminId(existingHall.getAdminId()); // Păstrăm admin-ul original
+
+            // Asigurăm că valorile numerice sunt valide
+            if (updatedHall.getCapacity() != null && updatedHall.getCapacity() <= 0) {
+                updatedHall.setCapacity(1);
+            }
+
+            if (updatedHall.getTariff() != null && updatedHall.getTariff() < 0) {
+                updatedHall.setTariff(0.0f);
+            }
+
+            // Ștergem imaginile marcate pentru ștergere doar dacă parametrul există
+            if (deleteImageIdsJson != null && !deleteImageIdsJson.isEmpty()) {
+                List<Long> deleteImageIds = objectMapper.readValue(deleteImageIdsJson,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, Long.class));
+
+                if (!deleteImageIds.isEmpty()) {
+                    for (Long imageId : deleteImageIds) {
+                        Optional<SportsHallImage> imageOpt = sportsHallImageSpringRepository.findById(imageId);
+                        if (imageOpt.isPresent() && imageOpt.get().getSportsHall().getId().equals(id)) {
+                            sportsHallImageSpringRepository.deleteById(imageId);
+                            logger.info("Deleted image with ID: {}", imageId);
+                        } else {
+                            logger.warn("Image with ID {} not found or not associated with hall {}", imageId, id);
+                        }
+                    }
+                }
+            }
+
+            // Adăugăm imaginile existente la sala de sport actualizată
+            updatedHall.setImages(existingHall.getImages());
+
+            // Verificăm dacă există imagini noi pentru a le procesa
+            boolean hasNewImages = false;
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                if (entry.getKey().startsWith("newImageTypes[")) {
+                    hasNewImages = true;
+                    break;
+                }
+            }
+
+            if (hasNewImages) {
+                // Procesăm imaginile noi
+                List<MultipartFile> newImageFiles = new ArrayList<>();
+                List<String> newImageTypes = new ArrayList<>();
+
+                // Extragem imaginile din Map-ul de fișiere
+                for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
+                    if (entry.getKey().startsWith("newImages[")) {
+                        String key = entry.getKey();
+                        int index = Integer.parseInt(key.substring(10, key.length() - 1));
+
+                        // Ne asigurăm că avem suficient spațiu în lista noastră
+                        while (newImageFiles.size() <= index) {
+                            newImageFiles.add(null);
+                            newImageTypes.add(null);
+                        }
+
+                        newImageFiles.set(index, entry.getValue());
+                    }
+                }
+
+                // Extragem tipurile din Map-ul de parametri
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    if (entry.getKey().startsWith("newImageTypes[")) {
+                        String key = entry.getKey();
+                        int index = Integer.parseInt(key.substring(14, key.length() - 1));
+
+                        // Ne asigurăm că avem suficient spațiu în lista noastră
+                        while (newImageTypes.size() <= index) {
+                            newImageTypes.add(null);
+                        }
+
+                        newImageTypes.set(index, entry.getValue());
+                    }
+                }
+
+                // Validăm că avem toate imaginile noi și tipurile lor
+                for (int i = 0; i < newImageFiles.size(); i++) {
+                    if (newImageFiles.get(i) == null || newImageTypes.get(i) == null) {
+                        logger.error("Missing new image or type at index {}", i);
+                        return ResponseEntity.badRequest().body("Date lipsă pentru imaginea nouă " + i);
+                    }
+                }
+
+                // Salvăm sala actualizată
+                SportsHall savedHall = sportsHallSpringRepository.save(updatedHall);
+                logger.info("Updated sports hall with ID: {}", savedHall.getId());
+
+                // Procesăm fiecare imagine nouă
+                for (int i = 0; i < newImageFiles.size(); i++) {
+                    MultipartFile file = newImageFiles.get(i);
+                    String type = newImageTypes.get(i);
+
+                    logger.info("Processing new image {} of type {}, size: {}",
+                            i, type, file.getSize());
+
+                    SportsHallImage image = new SportsHallImage();
+                    image.setImagePath(file.getBytes());
+                    image.setDescription(type);
+                    image.setSportsHall(savedHall);
+
+                    sportsHallImageSpringRepository.save(image);
+                    logger.info("Saved new image of type: {}", type);
+                }
+            } else {
+                // Salvăm sala actualizată fără a procesa imagini noi
+                SportsHall savedHall = sportsHallSpringRepository.save(updatedHall);
+                logger.info("Updated sports hall with ID: {} (no new images)", savedHall.getId());
+            }
+
+            // Reîncărcăm sala pentru a obține configurația actualizată cu toate imaginile
+            SportsHall result = sportsHallSpringRepository.findById(id).orElse(null);
+            logger.info("Sports hall updated successfully with {} images",
+                    result != null && result.getImages() != null ? result.getImages().size() : 0);
+            return ResponseEntity.ok(result);
+
+        } catch (IOException e) {
+            logger.error("Error processing images", e);
+            return ResponseEntity.internalServerError().body("Eroare la procesarea imaginilor: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating sports hall", e);
+            return ResponseEntity.internalServerError().body("Eroare la actualizarea sălii de sport: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSportsHall(@PathVariable Long id) {
         try {

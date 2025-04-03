@@ -42,4 +42,28 @@ public class SportsHallImageRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping("/{imageId}")
+    public ResponseEntity<?> deleteImageById(@PathVariable Long imageId) {
+        try {
+            Optional<SportsHallImage> imageOpt = sportsHallImageSpringRepository.findById(imageId);
+
+            if (imageOpt.isEmpty()) {
+                logger.warn("Image with ID {} not found for deletion", imageId);
+                return ResponseEntity.notFound().build();
+            }
+
+            SportsHallImage image = imageOpt.get();
+            Long hallId = image.getSportsHall().getId();
+
+            sportsHallImageSpringRepository.deleteById(imageId);
+            logger.info("Successfully deleted image with ID: {}", imageId);
+
+            return ResponseEntity.ok("Image deleted successfully");
+
+        } catch (Exception e) {
+            logger.error("Error deleting image with ID: {}", imageId, e);
+            return ResponseEntity.internalServerError().body("Error deleting image: " + e.getMessage());
+        }
+    }
 }

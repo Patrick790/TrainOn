@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Star } from 'lucide-react';
+import { Link, Navigate } from 'react-router-dom';
 import './MyHallsPage.css';
 
 class MyHallsPage extends Component {
@@ -8,7 +9,8 @@ class MyHallsPage extends Component {
         this.state = {
             halls: [],
             loading: true,
-            error: null
+            error: null,
+            redirectToEdit: null
         };
     }
 
@@ -56,13 +58,16 @@ class MyHallsPage extends Component {
 
     getCoverImage = (hall) => {
         if (hall.images && hall.images.length > 0) {
-            // Find the image with description = 'cover'
             const coverImage = hall.images.find(img => img.description === 'cover');
             if (coverImage) {
                 return `http://localhost:8080/images/${coverImage.id}`;
             }
         }
         return null;
+    }
+
+    handleEditClick = (hallId) => {
+        this.setState({ redirectToEdit: hallId });
     }
 
     renderRatingStars = (rating) => {
@@ -106,7 +111,7 @@ class MyHallsPage extends Component {
                             </div>
                         );
                     }
-                    // Pentru aproape o stea completă (peste 0.7)
+                    // Pentru aproape o stea completa (peste 0.7)
                     else if (index === fullStars && hasAlmostFullStar) {
                         return (
                             <Star
@@ -136,7 +141,11 @@ class MyHallsPage extends Component {
     }
 
     render() {
-        const { halls, loading, error } = this.state;
+        const { halls, loading, error, redirectToEdit } = this.state;
+
+        if (redirectToEdit) {
+            return <Navigate to={`/edit-hall/${redirectToEdit}`} />;
+        }
 
         if (loading) {
             return <div className="loading-container">Se încarcă sălile...</div>;
@@ -182,16 +191,21 @@ class MyHallsPage extends Component {
 
                                         {/* Temporar, până când avem ratings reale */}
                                         <div className="hall-rating">
-                                            {this.renderRatingStars(4.5)}
+                                            {this.renderRatingStars(0)}
                                             <span className="rating-text">
-                                                4.5 (10 recenzii)
+                                                0 (0 recenzii)
                                             </span>
                                         </div>
 
                                         <div className="hall-actions">
-                                            <button className="hall-action-button">Programare</button>
+                                            <button className="hall-action-button">Program</button>
                                             <button className="hall-action-button">Rezervări</button>
-                                            <button className="hall-action-button edit">Editare</button>
+                                            <button
+                                                className="hall-action-button edit"
+                                                onClick={() => this.handleEditClick(hall.id)}
+                                            >
+                                                Editare
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

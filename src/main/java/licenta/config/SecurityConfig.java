@@ -54,10 +54,12 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/owner/**").authenticated() // Orice utilizator autentificat poate accesa
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET pentru săli sunt publice
                         .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
-                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza săli
+                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
+                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli
+                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge imagini
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")
                         .requestMatchers("/users/**").hasAnyAuthority("user", "admin", "hall_admin")
                         .anyRequest().authenticated()

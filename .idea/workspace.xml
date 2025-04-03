@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="Adding a hall works + login token fix + tests">
-      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallImageRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="SportsHalls from the database">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/EditHallPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/EditHallPage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHallImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHallImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallSpringRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallSpringRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallImageRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallImageRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,6 +45,7 @@
         <option value="CSS File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -111,7 +110,7 @@
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.StartApp">
+  <component name="RunManager" selected="Spring Boot.LicenseApplication">
     <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -312,7 +311,8 @@
       <workItem from="1743005776410" duration="1466000" />
       <workItem from="1743184413000" duration="9188000" />
       <workItem from="1743518516714" duration="6052000" />
-      <workItem from="1743606693340" duration="891000" />
+      <workItem from="1743606693340" duration="4288000" />
+      <workItem from="1743694105449" duration="4615000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -338,7 +338,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743519174475</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="SportsHalls from the database">
+      <option name="closed" value="true" />
+      <created>1743607730761</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743607730761</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -371,6 +379,7 @@
     <MESSAGE value="first commit" />
     <MESSAGE value="Adding a hall works + login token fix" />
     <MESSAGE value="Adding a hall works + login token fix + tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding a hall works + login token fix + tests" />
+    <MESSAGE value="SportsHalls from the database" />
+    <option name="LAST_COMMIT_MESSAGE" value="SportsHalls from the database" />
   </component>
 </project>

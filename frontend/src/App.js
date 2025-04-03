@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainPage from './components/MainPage';
 import HallAdmin from './components/halladmin/HallAdmin';
+import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                     <Route path="/hall-admin-dashboard/schedule" element={<HallAdmin />} />
                     <Route path="/hall-admin-dashboard/reservations" element={<HallAdmin />} />
                     <Route path="/hall-admin-dashboard/reviews" element={<HallAdmin />} />
+                    <Route path="/edit-hall/:id" element={<EditHallPage />} />
                 </Routes>
             </div>
         </Router>
