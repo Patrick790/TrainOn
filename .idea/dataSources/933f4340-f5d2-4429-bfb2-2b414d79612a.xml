@@ -499,8 +499,8 @@
     <routine id="190" parent="1" name="fts5"/>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <IntrospectionTimestamp>2025-04-01.18:23:31.137</IntrospectionTimestamp>
-      <LocalIntrospectionTimestamp>2025-04-01.15:23:31</LocalIntrospectionTimestamp>
+      <IntrospectionTimestamp>2025-04-06.19:35:43.354</IntrospectionTimestamp>
+      <LocalIntrospectionTimestamp>2025-04-06.16:35:43</LocalIntrospectionTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1651,7 +1651,7 @@
       <DasType>integer|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="573" parent="556" name="team_id">
+    <column id="573" parent="556" name="user_id">
       <DasType>integer|0s</DasType>
       <Position>3</Position>
     </column>
@@ -1663,213 +1663,221 @@
       <DasType>REAL|0s</DasType>
       <Position>5</Position>
     </column>
-    <foreign-key id="576" parent="556" name="reservations_sports_holls_id_fk">
+    <column id="576" parent="556" name="time_slot">
+      <DasType>TEXT|0s</DasType>
+      <Position>6</Position>
+    </column>
+    <column id="577" parent="556" name="type">
+      <DasType>TEXT|0s</DasType>
+      <Position>7</Position>
+    </column>
+    <foreign-key id="578" parent="556" name="reservations_sports_holls_id_fk">
       <ColNames>hall_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <OnUpdate>cascade</OnUpdate>
       <RefColNames>id</RefColNames>
       <RefTableName>sports_halls</RefTableName>
     </foreign-key>
-    <foreign-key id="577" parent="556" name="reservations_teams_id_fk">
-      <ColNames>team_id</ColNames>
+    <foreign-key id="579" parent="556" name="reservations_user__fk">
+      <ColNames>user_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <OnUpdate>cascade</OnUpdate>
       <RefColNames>id</RefColNames>
-      <RefTableName>teams</RefTableName>
+      <RefTableName>users</RefTableName>
     </foreign-key>
-    <key id="578" parent="556" name="reservations_pk">
+    <key id="580" parent="556" name="reservations_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="579" parent="557" name="id">
+    <column id="581" parent="557" name="id">
       <AutoIncrement>1</AutoIncrement>
       <DasType>INTEGER|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="580" parent="557" name="image">
+    <column id="582" parent="557" name="image">
       <DasType>BLOB|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="581" parent="557" name="description">
+    <column id="583" parent="557" name="description">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="582" parent="557" name="sports_hall_id">
+    <column id="584" parent="557" name="sports_hall_id">
       <DasType>INTEGER|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <foreign-key id="583" parent="557">
+    <foreign-key id="585" parent="557">
       <ColNames>sports_hall_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <RefColNames>id</RefColNames>
       <RefTableName>sports_halls</RefTableName>
     </foreign-key>
-    <key id="584" parent="557">
+    <key id="586" parent="557">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="585" parent="558" name="id">
+    <column id="587" parent="558" name="id">
       <AutoIncrement>1</AutoIncrement>
       <DasType>integer|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="586" parent="558" name="name">
+    <column id="588" parent="558" name="name">
       <DasType>TEXT|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="587" parent="558" name="address">
+    <column id="589" parent="558" name="address">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="588" parent="558" name="capacity">
+    <column id="590" parent="558" name="capacity">
       <DasType>TEXT|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="589" parent="558" name="type">
+    <column id="591" parent="558" name="type">
       <DasType>TEXT|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="590" parent="558" name="tariff">
+    <column id="592" parent="558" name="tariff">
       <DasType>REAL|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="591" parent="558" name="facilities">
+    <column id="593" parent="558" name="facilities">
       <DasType>TEXT|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="592" parent="558" name="county">
+    <column id="594" parent="558" name="county">
       <DasType>TEXT|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="593" parent="558" name="city">
+    <column id="595" parent="558" name="city">
       <DasType>TEXT|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="594" parent="558" name="description">
+    <column id="596" parent="558" name="description">
       <DasType>TEXT|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="595" parent="558" name="admin_id">
+    <column id="597" parent="558" name="admin_id">
       <DasType>INTEGER|0s</DasType>
       <Position>11</Position>
     </column>
-    <foreign-key id="596" parent="558" name="admin_id___fk">
+    <foreign-key id="598" parent="558" name="admin_id___fk">
       <ColNames>admin_id</ColNames>
       <OnDelete>cascade</OnDelete>
       <OnUpdate>cascade</OnUpdate>
       <RefColNames>id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <key id="597" parent="558" name="sports_holls_pk">
+    <key id="599" parent="558" name="sports_holls_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="598" parent="559" name="type">
+    <column id="600" parent="559" name="type">
       <DasType>TEXT|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="599" parent="559" name="name">
+    <column id="601" parent="559" name="name">
       <DasType>TEXT|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="600" parent="559" name="tbl_name">
+    <column id="602" parent="559" name="tbl_name">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="601" parent="559" name="rootpage">
+    <column id="603" parent="559" name="rootpage">
       <DasType>INT|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="602" parent="559" name="sql">
+    <column id="604" parent="559" name="sql">
       <DasType>TEXT|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="603" parent="560" name="name">
+    <column id="605" parent="560" name="name">
       <Position>1</Position>
     </column>
-    <column id="604" parent="560" name="seq">
+    <column id="606" parent="560" name="seq">
       <Position>2</Position>
     </column>
-    <column id="605" parent="561" name="id">
+    <column id="607" parent="561" name="id">
       <AutoIncrement>1</AutoIncrement>
       <DasType>integer|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="606" parent="561" name="name">
+    <column id="608" parent="561" name="name">
       <DasType>TEXT|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="607" parent="561" name="sport">
+    <column id="609" parent="561" name="sport">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="608" parent="561" name="type">
+    <column id="610" parent="561" name="type">
       <DasType>TEXT|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="609" parent="561" name="coach">
+    <column id="611" parent="561" name="coach">
       <DasType>TEXT|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="610" parent="561" name="email">
+    <column id="612" parent="561" name="email">
       <DasType>TEXT|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="611" parent="561" name="address">
+    <column id="613" parent="561" name="address">
       <DasType>TEXT|0s</DasType>
       <Position>7</Position>
     </column>
-    <key id="612" parent="561" name="teams_pk">
+    <key id="614" parent="561" name="teams_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="613" parent="562" name="id">
+    <column id="615" parent="562" name="id">
       <AutoIncrement>1</AutoIncrement>
       <DasType>integer|0s</DasType>
       <Position>1</Position>
     </column>
-    <column id="614" parent="562" name="name">
+    <column id="616" parent="562" name="name">
       <DasType>TEXT|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="615" parent="562" name="email">
+    <column id="617" parent="562" name="email">
       <DasType>TEXT|0s</DasType>
       <Position>3</Position>
     </column>
-    <column id="616" parent="562" name="password">
+    <column id="618" parent="562" name="password">
       <DasType>TEXT|0s</DasType>
       <Position>4</Position>
     </column>
-    <column id="617" parent="562" name="user_type">
+    <column id="619" parent="562" name="user_type">
       <DasType>TEXT|0s</DasType>
       <Position>5</Position>
     </column>
-    <column id="618" parent="562" name="address">
+    <column id="620" parent="562" name="address">
       <DasType>TEXT|0s</DasType>
       <Position>6</Position>
     </column>
-    <column id="619" parent="562" name="county">
+    <column id="621" parent="562" name="county">
       <DasType>TEXT|0s</DasType>
       <Position>7</Position>
     </column>
-    <column id="620" parent="562" name="city">
+    <column id="622" parent="562" name="city">
       <DasType>TEXT|0s</DasType>
       <Position>8</Position>
     </column>
-    <column id="621" parent="562" name="team_type">
+    <column id="623" parent="562" name="team_type">
       <DasType>TEXT|0s</DasType>
       <Position>9</Position>
     </column>
-    <column id="622" parent="562" name="certificate">
+    <column id="624" parent="562" name="certificate">
       <DasType>BLOB|0s</DasType>
       <Position>10</Position>
     </column>
-    <column id="623" parent="562" name="birth_date">
+    <column id="625" parent="562" name="birth_date">
       <DasType>TIMESTAMP|0s</DasType>
       <Position>11</Position>
     </column>
-    <key id="624" parent="562" name="users_pk">
+    <key id="626" parent="562" name="users_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>

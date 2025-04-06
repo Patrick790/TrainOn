@@ -13,23 +13,48 @@ public class Reservation extends BruteEntity<Long> {
     private SportsHall hall;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = true)
     private Float price;
+
+    @Column(name = "time_slot", nullable = false)
+    private String timeSlot;
+
+    @Column(name = "type", nullable = false)
+    private String type;
+
 
     public Reservation() {
     }
 
-    public Reservation(SportsHall hall, Team team, Date date, Float price) {
+    public Reservation(SportsHall hall, User user, Date date, String timeSlot, Float price, String type) {
         this.hall = hall;
-        this.team = team;
+        this.user = user;
         this.date = date;
+        this.timeSlot = timeSlot;
         this.price = price;
+        this.type = type;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public SportsHall getHall() {
@@ -40,12 +65,12 @@ public class Reservation extends BruteEntity<Long> {
         this.hall = hall;
     }
 
-    public Team getTeam() {
-        return team;
+    public User getUser() {
+        return user;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Date getDate() {
@@ -62,6 +87,14 @@ public class Reservation extends BruteEntity<Long> {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public boolean isMaintenance() {
+        return "maintenance".equals(this.type);
+    }
+
+    public boolean isReservation() {
+        return "reservation".equals(this.type);
     }
 
 
