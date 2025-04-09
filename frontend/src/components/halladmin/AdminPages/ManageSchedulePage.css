@@ -1,4 +1,4 @@
-.manage-schedule-page {
+.msp-manage-schedule-page {
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 1.75rem;
@@ -6,7 +6,7 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.page-title {
+.msp-page-title {
     color: #111827;
     font-size: 2rem;
     font-weight: 700;
@@ -17,7 +17,7 @@
     padding-bottom: 0.75rem;
 }
 
-.page-title::after {
+.msp-page-title::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -28,35 +28,35 @@
     border-radius: 2px;
 }
 
-.notification-message {
+.msp-notification-message {
     padding: 0.75rem 1.25rem;
     margin-bottom: 1.5rem;
     border-radius: 8px;
     display: flex;
     align-items: center;
-    animation: fadeInOut 3s ease;
+    animation: msp-fadeInOut 3s ease;
 }
 
-.notification-message.success {
+.msp-notification-message.msp-success {
     background-color: #d1fae5;
     color: #065f46;
     border-left: 4px solid #10b981;
 }
 
-.notification-message.error {
+.msp-notification-message.msp-error {
     background-color: #fee2e2;
     color: #b91c1c;
     border-left: 4px solid #ef4444;
 }
 
-@keyframes fadeInOut {
+@keyframes msp-fadeInOut {
     0% { opacity: 0; transform: translateY(-10px); }
     10% { opacity: 1; transform: translateY(0); }
     90% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-10px); }
 }
 
-.schedule-controls {
+.msp-schedule-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -68,18 +68,18 @@
     border: 1px solid #f3f4f6;
 }
 
-.hall-selector {
+.msp-hall-selector {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.hall-selector label {
+.msp-hall-selector label {
     font-weight: 600;
     color: #374151;
 }
 
-.hall-select-input {
+.msp-hall-select-input {
     padding: 0.65rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -91,30 +91,30 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hall-select-input:focus {
+.msp-hall-select-input:focus {
     outline: none;
     border-color: #7c3aed;
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-.selected-hall-info {
+.msp-selected-hall-info {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.selected-hall-name {
+.msp-selected-hall-name {
     font-weight: 600;
     font-size: 1.1rem;
     color: #111827;
 }
 
-.selected-hall-location {
+.msp-selected-hall-location {
     font-size: 0.9rem;
     color: #6b7280;
 }
 
-.week-navigation {
+.msp-week-navigation {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -125,7 +125,7 @@
     border: 1px solid #eee;
 }
 
-.week-nav-button {
+.msp-week-nav-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -140,17 +140,17 @@
     transition: all 0.2s ease;
 }
 
-.week-nav-button:hover:not(.disabled) {
+.msp-week-nav-button:hover:not(.msp-disabled) {
     border-color: #d1d5db;
     background-color: #f9fafb;
 }
 
-.week-nav-button.disabled {
+.msp-week-nav-button.msp-disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.current-week {
+.msp-current-week {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -163,7 +163,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.schedule-legend {
+.msp-schedule-legend {
     display: flex;
     align-items: center;
     gap: 1.25rem;
@@ -175,7 +175,7 @@
     border: 1px solid #f3f4f6;
 }
 
-.legend-item {
+.msp-legend-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -183,32 +183,32 @@
     color: #4b5563;
 }
 
-.legend-color {
+.msp-legend-color {
     width: 16px;
     height: 16px;
     border-radius: 4px;
 }
 
-.legend-color.available {
+.msp-legend-color.msp-available {
     background-color: #f3f4f6;
     border: 1px solid #e5e7eb;
 }
 
-.legend-color.booked {
+.msp-legend-color.msp-booked {
     background-color: #dbeafe;
     border: 1px solid #bfdbfe;
 }
 
-.legend-color.maintenance {
+.msp-legend-color.msp-maintenance {
     background-color: #fee2e2;
     border: 1px solid #fecaca;
 }
 
-.maintenance-count {
+.msp-maintenance-count {
     font-weight: 600;
 }
 
-.legend-info {
+.msp-legend-info {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -219,7 +219,7 @@
     border-left: 1px solid #e5e7eb;
 }
 
-.schedule-table-container {
+.msp-schedule-table-container {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
@@ -230,28 +230,28 @@
     overflow-x: auto; /* Permite scrollarea pe dispozitive mici */
 }
 
-.schedule-table {
+.msp-schedule-table {
     width: 100%;
     table-layout: fixed; /* Forțează coloanele să aibă aceeași lățime */
     border-collapse: collapse;
     font-size: 0.95rem;
 }
 
-.schedule-table th,
-.schedule-table td {
+.msp-schedule-table th,
+.msp-schedule-table td {
     padding: 0.75rem;
     text-align: center;
     border: 1px solid #e5e7eb;
 }
 
-.time-header,
-.time-slot-cell {
+.msp-time-header,
+.msp-time-slot-cell {
     width: 160px;
     min-width: 160px;
     max-width: 160px;
 }
 
-.schedule-day-header {
+.msp-schedule-day-header {
     background-color: #f9fafb;
     font-weight: 500;
     color: #111827;
@@ -260,28 +260,28 @@
 }
 
 /* Asigură-te că coloana pentru fiecare zi are exact aceeași lățime */
-.schedule-table th:not(.time-header),
-.schedule-table td:not(.time-slot-cell) {
+.msp-schedule-table th:not(.msp-time-header),
+.msp-schedule-table td:not(.msp-time-slot-cell) {
     width: 14.28%; /* Exact 1/7 din lățime */
 }
 
-.schedule-day-header.today {
+.msp-schedule-day-header.msp-today {
     background-color: #f0f9ff;
 }
 
-.day-name {
+.msp-day-name {
     font-weight: 600;
     margin-bottom: 0.25rem;
     font-size: 0.95rem;
     text-transform: capitalize;
 }
 
-.day-date {
+.msp-day-date {
     font-size: 0.8rem;
     color: #6b7280;
 }
 
-.time-slot-cell {
+.msp-time-slot-cell {
     font-weight: 500;
     color: #4b5563;
     background-color: #f9fafb;
@@ -289,39 +289,39 @@
     font-size: 0.9rem;
 }
 
-.schedule-slot {
+.msp-schedule-slot {
     position: relative;
     height: 60px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-.schedule-slot.available {
+.msp-schedule-slot.msp-available {
     background-color: #f3f4f6;
 }
 
-.schedule-slot.available:hover {
+.msp-schedule-slot.msp-available:hover {
     background-color: #e5e7eb;
 }
 
-.schedule-slot.booked {
+.msp-schedule-slot.msp-booked {
     background-color: #dbeafe;
     cursor: not-allowed;
 }
 
-.schedule-slot.maintenance {
+.msp-schedule-slot.msp-maintenance {
     background-color: #fee2e2;
 }
 
-.schedule-slot.maintenance:hover {
+.msp-schedule-slot.msp-maintenance:hover {
     background-color: #fecaca;
 }
 
-.schedule-slot.today {
+.msp-schedule-slot.msp-today {
     position: relative;
 }
 
-.schedule-slot.today::after {
+.msp-schedule-slot.msp-today::after {
     content: "";
     position: absolute;
     top: 0;
@@ -332,7 +332,7 @@
     pointer-events: none;
 }
 
-.slot-status {
+.msp-slot-status {
     display: inline-block;
     font-size: 0.8rem;
     font-weight: 500;
@@ -340,17 +340,17 @@
     border-radius: 4px;
 }
 
-.slot-status.booked {
+.msp-slot-status.msp-booked {
     background-color: #bfdbfe;
     color: #1e40af;
 }
 
-.slot-status.maintenance {
+.msp-slot-status.msp-maintenance {
     background-color: #fecaca;
     color: #b91c1c;
 }
 
-.loading-overlay {
+.msp-loading-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -364,41 +364,41 @@
     z-index: 10;
 }
 
-.loading-spinner,
-.button-spinner {
+.msp-loading-spinner,
+.msp-button-spinner {
     width: 40px;
     height: 40px;
     border: 3px solid #f3f4f6;
     border-top: 3px solid #7c3aed;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: msp-spin 1s linear infinite;
     margin-bottom: 1rem;
 }
 
-.button-spinner {
+.msp-button-spinner {
     width: 16px;
     height: 16px;
     margin: 0 8px 0 0;
     border-width: 2px;
 }
 
-@keyframes spin {
+@keyframes msp-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-.schedule-actions {
+.msp-schedule-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2.5rem;
 }
 
-.maintenance-info {
+.msp-maintenance-info {
     flex: 1;
 }
 
-.maintenance-limit-warning {
+.msp-maintenance-limit-warning {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -411,7 +411,7 @@
     border: 1px solid #fecaca;
 }
 
-.maintenance-changes-pending {
+.msp-maintenance-changes-pending {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -425,12 +425,12 @@
     margin-top: 0.5rem;
 }
 
-.action-buttons {
+.msp-action-buttons {
     display: flex;
     gap: 1rem;
 }
 
-.save-button {
+.msp-save-button {
     background-color: #7c3aed;
     color: white;
     padding: 0.75rem 1.5rem;
@@ -443,13 +443,13 @@
     box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
 }
 
-.save-button:hover {
+.msp-save-button:hover {
     background-color: #6d28d9;
     box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
     transform: translateY(-1px);
 }
 
-.maintenance-button {
+.msp-maintenance-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -465,20 +465,20 @@
     box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
 }
 
-.maintenance-button:hover:not(:disabled) {
+.msp-maintenance-button:hover:not(:disabled) {
     background-color: #ea580c;
     box-shadow: 0 4px 8px rgba(249, 115, 22, 0.4);
     transform: translateY(-1px);
 }
 
-.maintenance-button:disabled {
+.msp-maintenance-button:disabled {
     background-color: #fdba74;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
-.empty-state {
+.msp-empty-state {
     background-color: white;
     border-radius: 12px;
     padding: 3.5rem 2rem;
@@ -488,7 +488,7 @@
     position: relative;
 }
 
-.empty-state::before {
+.msp-empty-state::before {
     content: '';
     position: absolute;
     top: 0;
@@ -498,7 +498,7 @@
     background: #7c3aed;
 }
 
-.empty-state p {
+.msp-empty-state p {
     color: #6B7280;
     font-size: 1rem;
     max-width: 400px;
@@ -506,24 +506,59 @@
     line-height: 1.5;
 }
 
+.msp-loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.1rem;
+    color: #4b5563;
+}
+
+.msp-error-container {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 4px solid #ef4444;
+}
+
+/* Clasa pentru sloturile din trecut */
+.msp-schedule-slot.msp-past-date {
+    background-color: #f3f4f6;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.msp-schedule-slot.msp-past-date:hover {
+    background-color: #f3f4f6;
+}
+
+/* Asigurăm compatibilitatea stilului cu sloturile de mentenanță și rezervate din trecut */
+.msp-schedule-slot.msp-past-date.msp-maintenance,
+.msp-schedule-slot.msp-past-date.msp-booked {
+    opacity: 0.7;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
-    .schedule-controls {
+    .msp-schedule-controls {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
 
-    .selected-hall-info {
+    .msp-selected-hall-info {
         align-items: flex-start;
     }
 
-    .schedule-legend {
+    .msp-schedule-legend {
         flex-wrap: wrap;
         justify-content: center;
     }
 
-    .legend-info {
+    .msp-legend-info {
         width: 100%;
         justify-content: center;
         margin-top: 0.5rem;
@@ -534,61 +569,61 @@
         border-top: 1px solid #e5e7eb;
     }
 
-    .schedule-actions {
+    .msp-schedule-actions {
         flex-direction: column;
         gap: 1rem;
         align-items: stretch;
     }
 
-    .action-buttons {
+    .msp-action-buttons {
         flex-direction: column;
         gap: 0.75rem;
     }
 }
 
 @media (max-width: 768px) {
-    .week-navigation {
+    .msp-week-navigation {
         flex-direction: column;
         gap: 1rem;
         padding: 1rem;
     }
 
-    .week-nav-button {
+    .msp-week-nav-button {
         width: 100%;
         justify-content: center;
     }
 
-    .current-week {
+    .msp-current-week {
         width: 100%;
         justify-content: center;
     }
 
-    .schedule-table-container {
+    .msp-schedule-table-container {
         overflow-x: auto;
     }
 
-    .schedule-table {
+    .msp-schedule-table {
         min-width: 900px; /* Asigură afișarea completă pe dispozitive mici */
     }
 }
 
 @media (max-width: 480px) {
-    .page-title {
+    .msp-page-title {
         font-size: 1.75rem;
     }
 
-    .hall-selector {
+    .msp-hall-selector {
         flex-direction: column;
         align-items: flex-start;
         width: 100%;
     }
 
-    .hall-select-input {
+    .msp-hall-select-input {
         width: 100%;
     }
 
-    .maintenance-button,
-    .save-button {
+    .msp-maintenance-button,
+    .msp-save-button {
         width: 100%;
     }
 }

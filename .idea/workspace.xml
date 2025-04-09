@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="sports halls editing done">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="managing the schedule + maintenance reservations">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Reservation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationRestController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -314,7 +310,10 @@
       <workItem from="1743694105449" duration="5872000" />
       <workItem from="1743792667769" duration="1294000" />
       <workItem from="1743854470999" duration="4962000" />
-      <workItem from="1743956359681" duration="4484000" />
+      <workItem from="1743956359681" duration="5718000" />
+      <workItem from="1744036376166" duration="18000" />
+      <workItem from="1744128389564" duration="4604000" />
+      <workItem from="1744187440573" duration="341000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -356,7 +355,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743702414130</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="managing the schedule + maintenance reservations">
+      <option name="closed" value="true" />
+      <created>1743961452961</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743961452961</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -391,6 +398,7 @@
     <MESSAGE value="Adding a hall works + login token fix + tests" />
     <MESSAGE value="SportsHalls from the database" />
     <MESSAGE value="sports halls editing done" />
-    <option name="LAST_COMMIT_MESSAGE" value="sports halls editing done" />
+    <MESSAGE value="managing the schedule + maintenance reservations" />
+    <option name="LAST_COMMIT_MESSAGE" value="managing the schedule + maintenance reservations" />
   </component>
 </project>
