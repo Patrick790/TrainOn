@@ -1,0 +1,570 @@
+.global-admin-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles - Cu clase unice pentru Admin */
+.global-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 4rem;
+    background-color: white;
+    height: 90px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 10;
+}
+
+.global-admin-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.global-admin-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    text-decoration: none;
+}
+
+/* Logo container styling */
+.global-admin-logo {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow:
+            0 0 15px rgba(124, 58, 237, 0.4),
+            0 0 30px rgba(124, 58, 237, 0.2);
+    overflow: hidden;
+}
+
+.global-admin-logo::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: lightningFlash 3s infinite;
+}
+
+.global-admin-logo::after {
+    content: "⚡";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: white;
+}
+
+.global-admin-logo:hover {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow:
+            0 0 20px rgba(124, 58, 237, 0.6),
+            0 0 40px rgba(124, 58, 237, 0.3);
+}
+
+/* Logo text styling - îmbunătățit */
+.global-admin-logo-text {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+            0 2px 5px rgba(124, 58, 237, 0.3);
+    position: relative;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+    display: inline-block;
+    animation: shineText 3s linear infinite;
+}
+
+.global-admin-logo-text::before,
+.global-admin-logo-text::after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 2px;
+    background-color: #7c3aed;
+    box-shadow: 0 0 10px 2px rgba(124, 58, 237, 0.7);
+    animation: lightningMove 2s infinite;
+}
+
+.global-admin-logo-text::before {
+    top: 25%;
+    left: -20px;
+    transform: rotate(45deg);
+}
+
+.global-admin-logo-text::after {
+    bottom: 25%;
+    right: -20px;
+    transform: rotate(-45deg);
+}
+
+.global-admin-auth-buttons {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+}
+
+.global-admin-auth-button {
+    padding: 0.875rem 2rem;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.global-admin-auth-button:first-child {
+    color: #6d28d9;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+}
+
+.global-admin-auth-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.global-admin-auth-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Admin Navigation cu clase unice */
+.global-admin-nav {
+    background-color: #f8f9fa;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.global-admin-buttons-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.global-admin-button-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.05),
+            0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.global-admin-button-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #6d28d9, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.global-admin-button-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.global-admin-button-card:hover::before,
+.global-admin-button-card.active::before {
+    opacity: 1;
+}
+
+.global-admin-button-card.active {
+    box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background-color: #f9f7ff;
+}
+
+.global-admin-button-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+/* Icoane unice pentru Admin */
+.view-halls-icon::after {
+    content: '🏢';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.approve-reg-icon::after {
+    content: '✓';
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #6d28d9;
+}
+
+.schedule-view-icon::after {
+    content: '📆';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.users-icon::after {
+    content: '👥';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.emails-icon::after {
+    content: '✉️';
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.global-admin-button-title {
+    color: #1a1a1a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.global-admin-button-description {
+    color: #6b7280;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Admin Content */
+.global-admin-content {
+    flex: 1;
+    padding: 2rem 4rem;
+    background-color: #f9fafb;
+    margin-bottom: 2rem;
+}
+
+/* Footer Styles cu clase unice */
+.global-admin-footer {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    padding: 1rem 2rem;
+    font-size: 0.8rem;
+    border-top: 1px solid #374151;
+}
+
+.global-admin-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 1rem;
+}
+
+.global-admin-footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Footer logo styling */
+.global-admin-footer-logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+}
+
+.global-admin-footer-logo-icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: lightningFlash 3s infinite;
+}
+
+.global-admin-footer-logo-icon::after {
+    content: "⚡";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    color: white;
+}
+
+.global-admin-footer-logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Montserrat', sans-serif;
+    animation: shineText 3s linear infinite;
+}
+
+.global-admin-footer-links {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0.35rem 0;
+}
+
+.global-admin-footer-link {
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.global-admin-footer-link:hover {
+    color: #f9fafb;
+}
+
+.global-admin-footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #8b5cf6;
+    transition: width 0.3s ease;
+}
+
+.global-admin-footer-link:hover::after {
+    width: 100%;
+}
+
+.global-admin-footer-copyright {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    text-align: right;
+    margin-top: 0.35rem;
+}
+
+/* Animații pentru logo */
+@keyframes shineText {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes lightningFlash {
+    0%, 20%, 100% { left: -100%; }
+    25%, 45% { left: 100%; }
+}
+
+@keyframes lightningMove {
+    0%, 100% {
+        width: 15px;
+        opacity: 0.7;
+    }
+    50% {
+        width: 25px;
+        opacity: 1;
+        box-shadow: 0 0 15px 5px rgba(124, 58, 237, 0.9);
+    }
+}
+
+/* Pagini Admin */
+.global-admin-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.global-admin-page-title {
+    color: #1a1a1a;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+/* Lista de săli */
+.global-admin-halls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.global-admin-hall-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.global-admin-hall-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.global-admin-hall-location {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+.global-admin-status {
+    margin: 0 1rem;
+}
+
+.global-admin-status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.global-admin-status-badge.active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.global-admin-status-badge.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.global-admin-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.global-admin-action-button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.global-admin-action-button:hover {
+    background-color: #e5e7eb;
+}
+
+.global-admin-action-button.primary {
+    background-color: #6d28d9;
+    color: white;
+}
+
+.global-admin-action-button.primary:hover {
+    background-color: #5b21b6;
+}
+
+.global-admin-empty-state {
+    text-align: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+    .global-admin-buttons-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .global-admin-header {
+        padding: 1rem 2rem;
+    }
+
+    .global-admin-content {
+        padding: 1.5rem 2rem;
+    }
+
+    .global-admin-footer {
+        padding: 0.75rem 2rem;
+    }
+
+    .global-admin-buttons-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .global-admin-hall-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .global-admin-actions {
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .global-admin-footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .global-admin-buttons-container {
+        grid-template-columns: 1fr;
+    }
+}

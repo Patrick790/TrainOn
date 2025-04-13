@@ -4,10 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="managing the schedule + maintenance reservations">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="all schedule fixes">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SendEmailsPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewHallsSchedulePage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,9 +49,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="CSS File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="CSS File" />
         <option value="JavaScript File" />
       </list>
     </option>
@@ -313,7 +325,9 @@
       <workItem from="1743956359681" duration="5718000" />
       <workItem from="1744036376166" duration="18000" />
       <workItem from="1744128389564" duration="4604000" />
-      <workItem from="1744187440573" duration="341000" />
+      <workItem from="1744187440573" duration="4484000" />
+      <workItem from="1744396210385" duration="3201000" />
+      <workItem from="1744474437480" duration="4112000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -363,7 +377,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743961452961</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="all schedule fixes">
+      <option name="closed" value="true" />
+      <created>1744187878670</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1744187878671</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -399,6 +421,7 @@
     <MESSAGE value="SportsHalls from the database" />
     <MESSAGE value="sports halls editing done" />
     <MESSAGE value="managing the schedule + maintenance reservations" />
-    <option name="LAST_COMMIT_MESSAGE" value="managing the schedule + maintenance reservations" />
+    <MESSAGE value="all schedule fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="all schedule fixes" />
   </component>
 </project>

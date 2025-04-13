@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
 
@@ -64,11 +64,12 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                 onLoginSuccess();
             }
 
-            // Show success alert
             alert('Login successful!');
 
             // Navigate based on user type
-            if (json.userType === "hall_admin") {
+            if (json.userType === "admin") {
+                navigate('/admin-dashboard', { replace: true });
+            } else if (json.userType === "hall_admin") {
                 navigate('/hall-admin-dashboard', { replace: true });
             } else if (json.userType === "user") {
                 navigate('/user-home', { replace: true });
