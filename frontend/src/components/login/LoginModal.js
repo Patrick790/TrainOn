@@ -97,50 +97,56 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <h1 className="modal-title">LOGIN</h1>
+        <div className="login-modal-overlay" onClick={onClose}>
+            <div className="login-modal-content" onClick={e => e.stopPropagation()}>
+                <h1 className="login-modal-title">LOGIN</h1>
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className={`input-container ${errors.email ? 'error' : ''}`}>
+                <form onSubmit={handleSubmit} className="login-modal-form">
+                    <div className={`login-input-container ${errors.email ? 'login-input-error' : ''}`}>
                         <input
                             type="email"
                             value={email}
                             onChange={handleInputChange(setEmail, 'email')}
-                            className="login-input"
+                            className="login-modal-input"
                             placeholder=" "
                             required
                         />
-                        <label className="floating-label">E-mail</label>
+                        <label className="login-floating-label">E-mail</label>
                     </div>
 
-                    <div className={`input-container ${errors.password ? 'error' : ''}`}>
+                    <div className={`login-input-container ${errors.password ? 'login-input-error' : ''}`}>
                         <input
                             type="password"
                             value={password}
                             onChange={handleInputChange(setPassword, 'password')}
-                            className="login-input"
+                            className="login-modal-input"
                             placeholder=" "
                             required
                         />
-                        <label className="floating-label">Parola</label>
+                        <label className="login-floating-label">Parola</label>
                     </div>
 
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p className="login-error-message">{errorMessage}</p>}
 
-                    <a href="#" className="forgot-password">Ti-ai uitat parola?</a>
+                    <button
+                        type="button"
+                        className="login-forgot-password-btn"
+                        onClick={() => alert('Funcționalitate recuperare parolă')}
+                    >
+                        Ti-ai uitat parola?
+                    </button>
 
-                    <button type="submit" className="login-button">
+                    <button type="submit" className="login-submit-button">
                         Conectare
                     </button>
 
-                    <a
-                        href="#"
-                        className="create-account"
+                    <button
+                        type="button"
+                        className="login-create-account-btn"
                         onClick={handleRegisterClick}
                     >
                         Nu ai cont? Creeaza-ti un cont nou
-                    </a>
+                    </button>
                 </form>
             </div>
         </div>

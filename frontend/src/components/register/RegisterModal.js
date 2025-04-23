@@ -16,6 +16,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
         teamType: '',
         certificate: null
     });
+    const [fileName, setFileName] = useState('');
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -39,6 +40,9 @@ const RegisterModal = ({ isOpen, onClose }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Salvează numele fișierului pentru afișare
+            setFileName(file.name);
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 // Convertește fișierul într-un array de bytes pentru a-l trimite la server
@@ -66,6 +70,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
         if (!formData.password) newErrors.password = true;
         if (!formData.confirmPassword) newErrors.confirmPassword = true;
         if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = true;
+
+        // Verificăm dacă certificatul este furnizat pentru asociații
+        if (isAssociation && !formData.certificate) {
+            newErrors.certificate = true;
+        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -125,12 +134,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content register-modal" onClick={e => e.stopPropagation()}>
-                <h1 className="modal-title">INREGISTRARE</h1>
+        <div className="register-modal-overlay" onClick={onClose}>
+            <div className="register-modal-content" onClick={e => e.stopPropagation()}>
+                <h1 className="register-modal-title">INREGISTRARE</h1>
 
                 <div className="register-type-selector">
-                    <label className="type-option">
+                    <label className="register-type-option">
                         <input
                             type="radio"
                             checked={isAssociation}
@@ -138,7 +147,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                         />
                         <span>Asociatie sportiva</span>
                     </label>
-                    <label className="type-option">
+                    <label className="register-type-option">
                         <input
                             type="radio"
                             checked={!isAssociation}
@@ -151,7 +160,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                 <form onSubmit={handleSubmit} className="register-form">
                     {isAssociation ? (
                         <>
-                            <div className={`input-container ${errors.associationName ? 'error' : ''}`}>
+                            <div className={`register-input-container ${errors.associationName ? 'register-input-error' : ''}`}>
                                 <input
                                     type="text"
                                     name="associationName"
@@ -159,10 +168,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
+                                    className="register-input"
                                 />
-                                <label className="floating-label">Numele asociatiei</label>
+                                <label className="register-floating-label">Numele asociatiei</label>
                             </div>
-                            <div className={`input-container ${errors.teamType ? 'error' : ''}`}>
+                            <div className={`register-input-container ${errors.teamType ? 'register-input-error' : ''}`}>
                                 <input
                                     type="text"
                                     name="teamType"
@@ -170,21 +180,31 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
+                                    className="register-input"
                                 />
-                                <label className="floating-label">Tip echipa</label>
+                                <label className="register-floating-label">Tip echipa</label>
                             </div>
-                            <div className="certificate-upload">
-                                <label>
-                                    <span>Insereaza certificatul de inregistrare la Ministerul Sportului</span>
+                            <div className={`register-certificate-upload ${errors.certificate ? 'register-certificate-error' : ''}`}>
+                                <label className="register-file-label">
+                                    <div className="register-upload-content">
+                                        <span className="register-upload-icon">📎</span>
+                                        <span className="register-upload-text">
+                                            {fileName
+                                                ? `Fișier selectat: ${fileName}`
+                                                : 'Inserează certificatul de înregistrare la Ministerul Sportului'}
+                                        </span>
+                                    </div>
                                     <input
                                         type="file"
                                         onChange={handleFileChange}
+                                        className="register-file-input"
+                                        accept=".pdf,.jpg,.jpeg,.png"
                                     />
                                 </label>
                             </div>
                         </>
                     ) : (
-                        <div className={`input-container ${errors.name ? 'error' : ''}`}>
+                        <div className={`register-input-container ${errors.name ? 'register-input-error' : ''}`}>
                             <input
                                 type="text"
                                 name="name"
@@ -192,12 +212,13 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                 onChange={handleInputChange}
                                 placeholder=" "
                                 required
+                                className="register-input"
                             />
-                            <label className="floating-label">Nume</label>
+                            <label className="register-floating-label">Nume</label>
                         </div>
                     )}
 
-                    <div className={`input-container ${errors.email ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.email ? 'register-input-error' : ''}`}>
                         <input
                             type="email"
                             name="email"
@@ -205,12 +226,13 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Email</label>
+                        <label className="register-floating-label">Email</label>
                     </div>
 
                     {!isAssociation && (
-                        <div className={`input-container ${errors.birthDate ? 'error' : ''}`}>
+                        <div className={`register-input-container ${errors.birthDate ? 'register-input-error' : ''}`}>
                             <input
                                 type="date"
                                 name="birthDate"
@@ -218,12 +240,13 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                 onChange={handleInputChange}
                                 placeholder=" "
                                 required
+                                className="register-input register-date-input"
                             />
-                            <label className="floating-label">Data nasterii</label>
+                            <label className="register-floating-label">Data nasterii</label>
                         </div>
                     )}
 
-                    <div className={`input-container ${errors.address ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.address ? 'register-input-error' : ''}`}>
                         <input
                             type="text"
                             name="address"
@@ -231,11 +254,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Adresa</label>
+                        <label className="register-floating-label">Adresa</label>
                     </div>
 
-                    <div className={`input-container ${errors.county ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.county ? 'register-input-error' : ''}`}>
                         <input
                             type="text"
                             name="county"
@@ -243,11 +267,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Judet</label>
+                        <label className="register-floating-label">Judet</label>
                     </div>
 
-                    <div className={`input-container ${errors.city ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.city ? 'register-input-error' : ''}`}>
                         <input
                             type="text"
                             name="city"
@@ -255,11 +280,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Localitate</label>
+                        <label className="register-floating-label">Localitate</label>
                     </div>
 
-                    <div className={`input-container ${errors.password ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.password ? 'register-input-error' : ''}`}>
                         <input
                             type="password"
                             name="password"
@@ -267,11 +293,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Parola</label>
+                        <label className="register-floating-label">Parola</label>
                     </div>
 
-                    <div className={`input-container ${errors.confirmPassword ? 'error' : ''}`}>
+                    <div className={`register-input-container ${errors.confirmPassword ? 'register-input-error' : ''}`}>
                         <input
                             type="password"
                             name="confirmPassword"
@@ -279,14 +306,15 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             onChange={handleInputChange}
                             placeholder=" "
                             required
+                            className="register-input"
                         />
-                        <label className="floating-label">Confirmare parola</label>
+                        <label className="register-floating-label">Confirmare parola</label>
                     </div>
 
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {errorMessage && <p className="register-error-message">{errorMessage}</p>}
 
-                    <button type="submit" className="register-button">
-                        Creeaza cont
+                    <button type="submit" className="register-submit-button">
+                        Creează cont
                     </button>
                 </form>
             </div>

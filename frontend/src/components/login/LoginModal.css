@@ -1,4 +1,4 @@
-.modal-overlay {
+.login-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     z-index: 1000;
 }
 
-.modal-content {
+.login-modal-content {
     background: linear-gradient(to bottom, #ffffff, #f9fafb);
     padding: 2rem 1.75rem;
     border-radius: 12px;
@@ -28,7 +28,7 @@
     overflow: hidden;
 }
 
-.modal-content::before {
+.login-modal-content::before {
     content: '';
     position: absolute;
     top: 0;
@@ -38,7 +38,7 @@
     background: linear-gradient(to right, #6d28d9, #8b5cf6);
 }
 
-.modal-title {
+.login-modal-title {
     color: #4c1d95;
     font-size: 1.8rem;
     font-weight: 800;
@@ -47,7 +47,7 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.login-form {
+.login-modal-form {
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
@@ -57,13 +57,13 @@
     align-items: center;
 }
 
-.input-container {
+.login-input-container {
     width: 100%;
     position: relative;
     margin-bottom: 0.75rem;
 }
 
-.login-input {
+.login-modal-input {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1.5px solid #e5e7eb;
@@ -76,7 +76,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.login-input:focus {
+.login-modal-input:focus {
     border-color: #6d28d9;
     box-shadow:
             0 0 0 3px rgba(109, 40, 217, 0.1),
@@ -84,7 +84,7 @@
 }
 
 /* Fixed floating label styles */
-.floating-label {
+.login-floating-label {
     position: absolute;
     left: 1rem;
     top: 0.8rem;
@@ -95,8 +95,8 @@
     padding: 0 0.25rem;
 }
 
-.login-input:focus ~ .floating-label,
-.login-input:not(:placeholder-shown) ~ .floating-label {
+.login-modal-input:focus ~ .login-floating-label,
+.login-modal-input:not(:placeholder-shown) ~ .login-floating-label {
     top: -0.5rem;
     left: 0.8rem;
     font-size: 0.75rem;
@@ -106,7 +106,7 @@
     z-index: 1;
 }
 
-.error-message {
+.login-error-message {
     color: #ef4444;
     font-size: 0.85rem;
     margin: 0.35rem 0;
@@ -114,16 +114,18 @@
     text-align: left;
 }
 
-.input-container.error .login-input {
+.login-input-container.login-input-error .login-modal-input {
     border-color: #ef4444;
 }
 
-.input-container.error .floating-label {
+.login-input-container.login-input-error .login-floating-label {
     color: #ef4444;
 }
 
-.forgot-password {
+.login-forgot-password-btn {
     color: #6d28d9;
+    background: none;
+    border: none;
     text-decoration: none;
     text-align: right;
     display: block;
@@ -131,14 +133,16 @@
     width: 100%;
     font-weight: 500;
     transition: color 0.2s ease;
+    cursor: pointer;
+    padding: 0;
 }
 
-.forgot-password:hover {
+.login-forgot-password-btn:hover {
     color: #5b21b6;
     text-decoration: underline;
 }
 
-.login-button {
+.login-submit-button {
     background: linear-gradient(135deg, #6d28d9, #7c3aed);
     color: white;
     padding: 0.75rem 1.5rem;
@@ -158,7 +162,7 @@
     overflow: hidden;
 }
 
-.login-button::before {
+.login-submit-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -170,7 +174,7 @@
     transition: opacity 0.3s ease;
 }
 
-.login-button:hover {
+.login-submit-button:hover {
     background: linear-gradient(135deg, #5b21b6, #6d28d9);
     box-shadow:
             0 6px 8px -1px rgba(109, 40, 217, 0.3),
@@ -178,12 +182,14 @@
     transform: translateY(-1px);
 }
 
-.login-button:hover::before {
+.login-submit-button:hover::before {
     opacity: 1;
 }
 
-.create-account {
+.login-create-account-btn {
     color: #6b7280;
+    background: none;
+    border: none;
     text-decoration: none;
     text-align: center;
     display: block;
@@ -191,8 +197,10 @@
     margin-top: 1.25rem;
     width: 100%;
     transition: color 0.2s ease;
+    cursor: pointer;
+    padding: 0;
 }
 
-.create-account:hover {
+.login-create-account-btn:hover {
     color: #6d28d9;
 }

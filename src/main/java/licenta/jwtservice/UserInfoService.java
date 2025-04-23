@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -34,7 +35,27 @@ public class UserInfoService implements UserDetailsService {
     public String addUser(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setUserType("user");
+
+        // Asigurăm că data creării este setată
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(new Date());
+        }
+
+        // Set account status based on whether it's a team registration
+        if (user.getTeamType() != null && !user.getTeamType().isEmpty()) {
+            // If it's a team registration, set status to "pending"
+            user.setAccountStatus("pending");
+        } else {
+            // For regular users, set status to "verified"
+            user.setAccountStatus("verified");
+        }
+
         repository.save(user);
-        return "User added successfully";
+
+        if ("pending".equals(user.getAccountStatus())) {
+            return "Team registration submitted successfully. Your account is pending approval.";
+        } else {
+            return "User added successfully";
+        }
     }
 }

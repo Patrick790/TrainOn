@@ -1,11 +1,35 @@
-.register-modal {
-    max-width: 450px;
-    padding: 2rem 1.75rem !important;
-    background: linear-gradient(to bottom, #ffffff, #f9fafb);
-    position: relative;
+.register-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.register-modal::before {
+.register-modal-content {
+    max-width: 450px;
+    padding: 2rem 1.75rem;
+    background: linear-gradient(to bottom, #ffffff, #f9fafb);
+    position: relative;
+    border-radius: 12px;
+    box-shadow:
+            0 10px 25px -5px rgba(0, 0, 0, 0.1),
+            0 5px 10px -5px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.register-modal-content::before {
     content: '';
     position: absolute;
     top: 0;
@@ -15,7 +39,7 @@
     background: linear-gradient(to right, #6d28d9, #8b5cf6);
 }
 
-.modal-title {
+.register-modal-title {
     color: #4c1d95;
     font-size: 1.8rem;
     font-weight: 800;
@@ -33,7 +57,7 @@
     padding: 0.35rem 0;
 }
 
-.type-option {
+.register-type-option {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -43,11 +67,11 @@
     transition: all 0.2s ease;
 }
 
-.type-option:hover {
+.register-type-option:hover {
     background-color: rgba(109, 40, 217, 0.05);
 }
 
-.type-option input[type="radio"] {
+.register-type-option input[type="radio"] {
     width: 1rem;
     height: 1rem;
     border: 1.5px solid #6d28d9;
@@ -59,12 +83,12 @@
     transition: all 0.2s ease;
 }
 
-.type-option input[type="radio"]:checked {
+.register-type-option input[type="radio"]:checked {
     background-color: #6d28d9;
     border-color: #6d28d9;
 }
 
-.type-option input[type="radio"]:checked::after {
+.register-type-option input[type="radio"]:checked::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -76,7 +100,7 @@
     border-radius: 50%;
 }
 
-.type-option span {
+.register-type-option span {
     font-size: 0.95rem;
     color: #4a5568;
     font-weight: 500;
@@ -91,13 +115,13 @@
     gap: 0.75rem;
 }
 
-.input-container {
+.register-input-container {
     width: 100%;
     position: relative;
     margin-bottom: 0.25rem;
 }
 
-.input-container input {
+.register-input {
     width: 100%;
     padding: 0.75rem 1rem;
     border: 1.5px solid #e5e7eb;
@@ -110,7 +134,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.input-container input:focus {
+.register-input:focus {
     border-color: #6d28d9;
     box-shadow:
             0 0 0 3px rgba(109, 40, 217, 0.1),
@@ -118,7 +142,7 @@
 }
 
 /* Fixed floating label styles */
-.floating-label {
+.register-floating-label {
     position: absolute;
     left: 1rem;
     top: 0.8rem;
@@ -129,8 +153,8 @@
     padding: 0 0.25rem;
 }
 
-input:focus ~ .floating-label,
-input:not(:placeholder-shown) ~ .floating-label {
+.register-input:focus ~ .register-floating-label,
+.register-input:not(:placeholder-shown) ~ .register-floating-label {
     top: -0.5rem;
     left: 0.8rem;
     font-size: 0.75rem;
@@ -140,34 +164,71 @@ input:not(:placeholder-shown) ~ .floating-label {
     z-index: 1;
 }
 
-.certificate-upload {
+/* Îmbunătățire pentru încărcarea certificatului */
+.register-certificate-upload {
     width: 100%;
-    padding: 1rem;
     border: 1.5px dashed #6d28d9;
     border-radius: 6px;
-    text-align: center;
-    cursor: pointer;
-    margin: 0.35rem 0;
+    margin: 0.75rem 0;
     background-color: rgba(109, 40, 217, 0.05);
     transition: all 0.2s ease;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.certificate-upload:hover {
+.register-certificate-upload:hover {
     background-color: rgba(109, 40, 217, 0.1);
     border-color: #5b21b6;
 }
 
-.certificate-upload span {
+.register-file-label {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: pointer;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.register-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.register-upload-icon {
+    font-size: 1.5rem;
+    color: #6d28d9;
+}
+
+.register-upload-text {
     color: #6d28d9;
     font-size: 0.9rem;
     font-weight: 500;
+    max-width: 100%;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
-.certificate-upload input[type="file"] {
+.register-file-input {
     display: none;
 }
 
-.register-button {
+.register-certificate-error {
+    border-color: #ef4444 !important;
+}
+
+.register-certificate-error .register-upload-text,
+.register-certificate-error .register-upload-icon {
+    color: #ef4444;
+}
+
+.register-submit-button {
     background: linear-gradient(135deg, #6d28d9, #7c3aed);
     color: white;
     padding: 0.75rem 1.5rem;
@@ -187,7 +248,7 @@ input:not(:placeholder-shown) ~ .floating-label {
     overflow: hidden;
 }
 
-.register-button::before {
+.register-submit-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -199,7 +260,7 @@ input:not(:placeholder-shown) ~ .floating-label {
     transition: opacity 0.3s ease;
 }
 
-.register-button:hover {
+.register-submit-button:hover {
     background: linear-gradient(135deg, #5b21b6, #6d28d9);
     box-shadow:
             0 6px 8px -1px rgba(109, 40, 217, 0.3),
@@ -207,29 +268,37 @@ input:not(:placeholder-shown) ~ .floating-label {
     transform: translateY(-1px);
 }
 
-.register-button:hover::before {
+.register-submit-button:hover::before {
     opacity: 1;
 }
 
-input[type="date"] {
+.register-date-input {
     padding: 0.75rem 1rem;
     color: #4a5568;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
+.register-date-input::-webkit-calendar-picker-indicator {
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.2s ease;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+.register-date-input::-webkit-calendar-picker-indicator:hover {
     opacity: 1;
 }
 
-.error-message {
+.register-error-message {
     color: #ef4444;
     font-size: 0.85rem;
     margin: 0.35rem 0;
     width: 100%;
     text-align: left;
+}
+
+.register-input-container.register-input-error .register-input {
+    border-color: #ef4444;
+}
+
+.register-input-container.register-input-error .register-floating-label {
+    color: #ef4444;
 }

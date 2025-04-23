@@ -1,0 +1,543 @@
+/* ApproveRegistrationsPage.css */
+
+/* Tabs pentru filtrare */
+.registration-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1px;
+}
+
+.registration-tab {
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.registration-tab:hover {
+    color: #4b5563;
+}
+
+.registration-tab.active {
+    color: #7c3aed;
+    border-bottom-color: #7c3aed;
+}
+
+/* Tabel pentru lista de cereri */
+.registration-table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.registration-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Prevent resizing */
+}
+
+.registration-table thead {
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.registration-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 0.9rem;
+    overflow: hidden; /* Prevent overflow */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.registration-table th:last-child {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.team-actions-cell {
+    text-align: center;
+    width: 100px;
+}
+
+.registration-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+.registration-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.registration-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.registration-table td {
+    padding: 14px 16px;
+    color: #1f2937;
+    font-size: 0.95rem;
+    overflow: hidden; /* Prevent overflow */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.team-name-cell {
+    font-weight: 500;
+}
+
+.team-date-cell {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.team-status-cell {
+    width: 120px;
+}
+
+.table-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.table-status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.table-status-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.team-actions-cell {
+    text-align: right;
+    width: 100px;
+}
+
+.view-details-btn {
+    background: none;
+    border: none;
+    color: #7c3aed;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.view-details-btn:hover {
+    background-color: #f3f0ff;
+}
+
+.registration-empty-row {
+    text-align: center;
+    padding: 30px 0;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Modal pentru detalii */
+.registration-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.registration-modal {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 1100px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.registration-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.registration-modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.registration-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.registration-modal-close:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.registration-modal-body {
+    padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.registration-modal-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.registration-certificate-container {
+    background-color: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.registration-certificate-container h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #1f2937;
+}
+
+.registration-certificate {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 10px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.registration-certificate img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Stiluri pentru vizualizarea imaginii la dimensiune completă */
+.certificate-image {
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.certificate-image:hover {
+    transform: scale(1.03);
+}
+
+/* Overlay pentru afișarea imaginii la dimensiune completă */
+.fullscreen-image-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* Mai mare decât z-index-ul modalului */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.fullscreen-image-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    animation: zoomIn 0.3s ease-out;
+}
+
+.fullscreen-image {
+    max-width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.4);
+    cursor: zoom-out;
+    object-fit: contain;
+}
+
+.fullscreen-close-btn {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.fullscreen-close-btn:hover {
+    opacity: 1;
+}
+
+/* Animații pentru afișarea și închiderea imaginii la dimensiune completă */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.registration-detail-section {
+    background-color: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.registration-detail-section h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #1f2937;
+}
+
+.registration-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.registration-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.registration-description {
+    margin: 0;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.status-pending {
+    color: #92400e;
+    font-weight: 600;
+}
+
+.status-rejected {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.rejection-reason {
+    background-color: #fee2e2;
+    border-color: #fecaca;
+}
+
+.rejection-reason h4 {
+    color: #b91c1c;
+}
+
+.registration-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.registration-action-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+}
+
+.registration-action-btn.reject {
+    background-color: white;
+    color: #b91c1c;
+    border: 1px solid #ef4444;
+}
+
+.registration-action-btn.reject:hover {
+    background-color: #fee2e2;
+}
+
+.registration-action-btn.approve {
+    background-color: #7c3aed;
+    color: white;
+    border: 1px solid #7c3aed;
+}
+
+.registration-action-btn.approve:hover {
+    background-color: #6d28d9;
+}
+
+/* Layout general pentru pagina */
+.global-admin-page {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.global-admin-page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .registration-modal-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .fullscreen-close-btn {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .registration-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .registration-table th:nth-child(2) {
+        display: none;
+    }
+
+    .registration-table td:nth-child(2) {
+        display: none;
+    }
+
+    .global-admin-page {
+        padding: 20px 15px;
+    }
+
+    .registration-tab {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .registration-modal {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .registration-modal-overlay {
+        padding: 0;
+    }
+
+    .registration-action-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .registration-modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .registration-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

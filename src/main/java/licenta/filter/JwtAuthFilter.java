@@ -46,7 +46,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        // Log pentru debugging
+        logger.info("Processing request: {} {}", request.getMethod(), request.getRequestURI());
+
         String authHeader = request.getHeader("Authorization");
+        logger.info("Authorization header: {}", authHeader != null ? "present" : "missing");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -56,9 +60,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String token = authHeader.substring(7);
             String username = jwtService.extractUsername(token);
+            logger.info("Extracted username: {}", username);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                // Log pentru debugging
+                logger.info("User authorities: {}", userDetails.getAuthorities());
+
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -70,7 +79,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error processing JWT token: " + e.getMessage());
+            logger.error("Error processing JWT token: " + e.getMessage(), e);
             // Nu blocăm cererea în caz de eroare, dar nu setăm autentificarea
         }
 

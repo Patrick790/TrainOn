@@ -41,6 +41,15 @@ public class User extends BruteEntity<Long> {
     @Column(name = "birth_date")
     private Date birthDate;
 
+    @Column(name = "account_status")
+    private String accountStatus;
+
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
+
+    @Column(name = "created_at")
+    private Date createdAt;
+
 
     public User() {
     }
@@ -54,6 +63,7 @@ public class User extends BruteEntity<Long> {
         this.county = county;
         this.city = city;
         this.birthDate = birthDate;
+        this.createdAt = new Date();
     }
 
     public User(String name, String email, String password, String userType, String address, String county, String city, String teamType, byte[] certificate) {
@@ -66,6 +76,7 @@ public class User extends BruteEntity<Long> {
         this.city = city;
         this.teamType = teamType;
         this.certificate = certificate;
+        this.createdAt = new Date();
     }
 
     public String getName() {
@@ -148,6 +159,30 @@ public class User extends BruteEntity<Long> {
         this.birthDate = birthDate;
     }
 
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -156,6 +191,7 @@ public class User extends BruteEntity<Long> {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", userType='" + userType + '\'' +
+                ", accountStatus='" + accountStatus + '\'' +
                 '}';
     }
 }

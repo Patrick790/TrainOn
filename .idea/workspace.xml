@@ -4,22 +4,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="all schedule fixes">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SendEmailsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewHallsSchedulePage.js" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="view all halls + details + logo">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SendEmailsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/club.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/config/MailConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Email.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/EmailRecipient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IEmailRecipientRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IEmailRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/AdminRestController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/EmailRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SendEmailsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SendEmailsPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/login/LoginModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/register/RegisterModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/jwtservice/UserInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/persistence/IUserSpringRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IUserSpringRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/licenta/service/RegisterRestControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/licenta/service/RegisterRestControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,10 +65,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
-        <option value="Class" />
         <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -84,7 +100,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-17&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/halladmin/AdminPages&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/admin/AdminPages&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -106,6 +122,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin\AdminPages" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\src\main\resources" />
@@ -117,7 +134,7 @@
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.StartApp">
+  <component name="RunManager" selected="Spring Boot.LicenseApplication">
     <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -156,30 +173,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;licenta.integration.LoginIntegrationTest&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="LoginRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;licenta.service.LoginRestControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -238,6 +231,30 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;licenta.service.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="Debug Application" type="JavascriptDebugType" uri="http://localhost:3000">
       <method v="2" />
     </configuration>
@@ -259,9 +276,9 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Gradle.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" />
       <item itemvalue="Gradle.JwtServiceTest" />
       <item itemvalue="Gradle.LoginIntegrationTest" />
-      <item itemvalue="Gradle.LoginRestControllerTest" />
       <item itemvalue="Gradle.RegisterIntegrationTest" />
       <item itemvalue="Gradle.RegisterRestControllerTest" />
       <item itemvalue="JavaScript Debug.Debug Application" />
@@ -270,11 +287,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" />
         <item itemvalue="Gradle.RegisterIntegrationTest" />
         <item itemvalue="Gradle.RegisterRestControllerTest" />
         <item itemvalue="Gradle.LoginIntegrationTest" />
         <item itemvalue="Gradle.JwtServiceTest" />
-        <item itemvalue="Gradle.LoginRestControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -328,6 +345,11 @@
       <workItem from="1744187440573" duration="4484000" />
       <workItem from="1744396210385" duration="3201000" />
       <workItem from="1744474437480" duration="4112000" />
+      <workItem from="1744540748397" duration="6262000" />
+      <workItem from="1744632943948" duration="13508000" />
+      <workItem from="1744786660304" duration="3620000" />
+      <workItem from="1744874392485" duration="563000" />
+      <workItem from="1745410004171" duration="8090000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -385,7 +407,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744187878671</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="view all halls + details + logo">
+      <option name="closed" value="true" />
+      <created>1744540804816</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1744540804817</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -422,6 +452,7 @@
     <MESSAGE value="sports halls editing done" />
     <MESSAGE value="managing the schedule + maintenance reservations" />
     <MESSAGE value="all schedule fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="all schedule fixes" />
+    <MESSAGE value="view all halls + details + logo" />
+    <option name="LAST_COMMIT_MESSAGE" value="view all halls + details + logo" />
   </component>
 </project>

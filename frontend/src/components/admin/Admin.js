@@ -57,16 +57,52 @@ class Admin extends Component {
         return (
             <div className="global-admin-container">
                 <header className="global-admin-header">
+                    {/* Linii de lumină animate pentru fundal */}
+                    <div className="light-line"></div>
+                    <div className="light-line"></div>
+                    <div className="light-line"></div>
+                    <div className="light-line"></div>
+
                     <div className="global-admin-logo-container">
                         <Link to="/admin-dashboard" className="global-admin-logo-link">
-                            <div className="global-admin-logo"></div>
-                            <span className="global-admin-logo-text">TrainOn</span>
+                            <div className="global-admin-logo">
+                                <div className="global-admin-logo-inner">
+                                    <div className="global-admin-logo-face front"></div>
+                                    <div className="global-admin-logo-face back"></div>
+                                    <div className="global-admin-logo-face right"></div>
+                                    <div className="global-admin-logo-face left"></div>
+                                    <div className="global-admin-logo-face top"></div>
+                                    <div className="global-admin-logo-face bottom"></div>
+                                </div>
+                            </div>
+                            <div className="global-admin-logo-text">
+                                TrainOn
+                                <div className="global-admin-logo-flash"></div>
+                                <div className="global-admin-logo-flash"></div>
+                                <div className="global-admin-logo-flash"></div>
+                                <div className="global-admin-logo-flash"></div>
+                                <div className="global-admin-logo-flash"></div>
+                                <div className="global-admin-logo-flash"></div>
+                            </div>
                         </Link>
                     </div>
-                    <div className="global-admin-auth-buttons">
-                        <button onClick={this.handleLogout} className="global-admin-auth-button">
-                            Ieșire
-                        </button>
+
+                    <div className="global-admin-header-right">
+                        <div className="global-admin-header-user">
+                            <div className="global-admin-user-avatar">
+                                <div className="global-admin-user-initial">A</div>
+                            </div>
+                            <div className="global-admin-user-info">
+                                <span className="global-admin-user-name">Administrator</span>
+                            </div>
+                        </div>
+
+                        <div className="global-admin-auth-buttons">
+                            <button onClick={this.handleLogout} className="global-admin-auth-button">
+                                <span className="button-text">Ieșire</span>
+                                <span className="button-icon">→</span>
+                            </button>
+                        </div>
                     </div>
                 </header>
 

@@ -1,0 +1,443 @@
+/* SendEmailsPage.css */
+
+.global-admin-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fb;
+    padding: 30px 0;
+    min-height: 100vh;
+}
+
+.global-admin-page-title {
+    text-align: center;
+    color: #1e293b;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: fit-content;
+}
+
+.global-admin-page-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background-color: #6d28d9;
+    border-radius: 2px;
+}
+
+.email-form-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 35px;
+    max-width: 800px;
+    margin: 30px auto;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.email-form-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.email-form-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 20px;
+}
+
+.email-form-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.email-form-description {
+    color: #64748b;
+    margin: 0;
+    font-size: 14px;
+}
+
+.email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.email-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.email-form-label {
+    font-weight: 600;
+    color: #334155;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.email-form-label::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 14px;
+    background-color: #6d28d9;
+    border-radius: 2px;
+}
+
+.email-form-input,
+.email-form-select,
+.email-user-search-input {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    width: 100%;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+    color: #334155;
+}
+
+.email-form-input:focus,
+.email-form-select:focus,
+.email-user-search-input:focus,
+.email-form-textarea:focus {
+    border-color: #a78bfa;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+    background-color: #ffffff;
+}
+
+.email-textarea-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.email-form-textarea {
+    min-height: 220px;
+    padding: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    resize: vertical;
+    width: 100%;
+    line-height: 1.6;
+    font-family: inherit;
+    background-color: #f8fafc;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.email-textarea-tools {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 2px;
+}
+
+.email-textarea-info {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.email-selection-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.email-recipient-count {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.email-recipient-count span {
+    background-color: #ede9fe;
+    color: #6d28d9;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.email-form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236d28d9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.email-user-search-container {
+    margin-top: 15px;
+    position: relative;
+}
+
+.email-user-search-input {
+    padding-left: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236d28d9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+}
+
+.email-user-dropdown {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.email-dropdown-item {
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.email-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.email-dropdown-item:hover {
+    background-color: #f1f5f9;
+}
+
+.email-dropdown-item:hover .email-dropdown-user-name {
+    color: #6d28d9;
+}
+
+.email-dropdown-item:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #6d28d9;
+    border-radius: 0 2px 2px 0;
+}
+
+.email-dropdown-user-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 15px;
+    transition: color 0.2s ease;
+}
+
+.email-dropdown-user-email {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.email-dropdown-item-loading,
+.email-dropdown-item-empty {
+    padding: 16px;
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+}
+
+.email-message {
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.email-message::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.email-message.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.email-message.error::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b91c1c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='8' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'%3E%3C/line%3E%3C/svg%3E");
+}
+
+.email-message.success {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.email-message.success::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2315803d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.email-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.email-send-button {
+    background-color: #6d28d9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.email-send-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.email-send-button:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(91, 33, 182, 0.3);
+}
+
+.email-send-button:hover::before {
+    transform: translateX(0);
+}
+
+.email-send-button:active {
+    transform: translateY(1px);
+}
+
+.email-send-button::after {
+    content: '';
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='22' y1='2' x2='11' y2='13'%3E%3C/line%3E%3Cpolygon points='22 2 15 22 11 13 2 9 22 2'%3E%3C/polygon%3E%3C/svg%3E");
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-repeat: no-repeat;
+}
+
+.email-send-button:disabled {
+    background-color: #a78bfa;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.email-send-button:disabled::before {
+    display: none;
+}
+
+.email-error-message {
+    background-color: #fee2e2;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    margin: 30px auto;
+    max-width: 600px;
+    border: 1px solid #fecaca;
+    box-shadow: 0 8px 30px rgba(185, 28, 28, 0.1);
+}
+
+.email-error-message h2 {
+    color: #b91c1c;
+    margin-bottom: 15px;
+    font-size: 24px;
+    position: relative;
+    display: inline-block;
+}
+
+.email-error-message h2::before,
+.email-error-message h2::after {
+    content: '';
+    position: absolute;
+    height: 3px;
+    background-color: #b91c1c;
+    top: 50%;
+    width: 30px;
+}
+
+.email-error-message h2::before {
+    right: 100%;
+    margin-right: 15px;
+}
+
+.email-error-message h2::after {
+    left: 100%;
+    margin-left: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .global-admin-page {
+        padding: 20px 0;
+    }
+
+    .email-form-container {
+        padding: 25px;
+        margin: 20px 15px;
+    }
+
+    .email-form-actions {
+        justify-content: center;
+    }
+
+    .email-send-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .global-admin-page-title {
+        font-size: 24px;
+    }
+}

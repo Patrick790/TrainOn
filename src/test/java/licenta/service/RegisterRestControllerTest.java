@@ -52,7 +52,7 @@ public class RegisterRestControllerTest {
         when(userInfoService.addUser(testUser)).thenReturn(expectedResponse);
 
         // Act
-        String response = registerRestController.addNewUser(testUser);
+        String response = String.valueOf(registerRestController.addNewUser(testUser));
 
         // Assert
         assertEquals(expectedResponse, response);
