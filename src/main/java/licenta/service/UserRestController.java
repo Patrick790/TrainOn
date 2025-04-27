@@ -3,10 +3,12 @@ package licenta.service;
 import licenta.model.User;
 import licenta.persistence.IUserSpringRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -77,5 +79,24 @@ public class UserRestController {
             return userSpringRepository.save(existingUser);
         }
         return null;
+    }
+
+    /**
+     * Suspendă un utilizator, schimbându-i accountStatus în "suspended"
+     */
+    @PostMapping("/{id}/suspend")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<?> suspendUser(@PathVariable Long id) {
+        User existingUser = userSpringRepository.findById(id).orElse(null);
+
+        if (existingUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Setează statusul contului ca "suspended"
+        existingUser.setAccountStatus("suspended");
+        userSpringRepository.save(existingUser);
+
+        return ResponseEntity.ok(Map.of("message", "Utilizatorul a fost suspendat cu succes"));
     }
 }

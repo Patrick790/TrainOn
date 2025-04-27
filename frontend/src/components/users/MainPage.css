@@ -134,7 +134,7 @@
 /* Rest of your existing styles remain the same */
 .main-content {
     height: 600px;
-    background-image: url('../../public/arena.jpg');
+    background-image: url('../../../public/arena.jpg');
     background-size: cover;
     background-position: center;
     position: relative;

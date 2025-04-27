@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import MainPage from './components/MainPage';
+import MainPage from './components/users/MainPage';
 import HallAdmin from './components/halladmin/HallAdmin';
 import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 import Admin from "./components/admin/Admin";

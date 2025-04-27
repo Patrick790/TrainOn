@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, ChevronDown, LogOut } from 'lucide-react';
-import LoginModal from './login/LoginModal';
-import RegisterModal from './register/RegisterModal';
+import LoginModal from '../login/LoginModal';
+import RegisterModal from '../register/RegisterModal';
 import './MainPage.css';
 
 class MainPage extends React.Component {

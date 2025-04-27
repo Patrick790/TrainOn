@@ -1,0 +1,684 @@
+/* ManageUsersPage.css */
+
+/* Filtre pentru utilizatori */
+.user-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.city-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.city-filter label {
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.city-select {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: white;
+    color: #1f2937;
+    font-size: 0.95rem;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.city-select:hover {
+    border-color: #d1d5db;
+}
+
+.city-select:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.filter-stats {
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Tabel pentru lista de utilizatori */
+.users-table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.users-table thead {
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.users-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Distribuție coloane */
+.users-table th:nth-child(1) { /* Nume */
+    width: 18%;
+}
+
+.users-table th:nth-child(2) { /* Email */
+    width: 25%; /* Mai mult spațiu pentru email */
+}
+
+.users-table th:nth-child(3) { /* Rol */
+    width: 12%;
+}
+
+.users-table th:nth-child(4) { /* Oraș */
+    width: 15%;
+}
+
+.users-table th:nth-child(5) { /* Data */
+    width: 20%;
+}
+
+.users-table th:nth-child(6) { /* Acțiuni */
+    width: 10%;
+    text-align: right; /* Aliniere la dreapta pentru antet */
+}
+
+.users-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.users-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.users-table td {
+    padding: 14px 16px;
+    color: #1f2937;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-name-cell {
+    font-weight: 500;
+}
+
+.user-email-cell {
+    color: #4b5563;
+}
+
+.user-type-cell {
+    width: 120px;
+}
+
+.user-type-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Stiluri pentru badge-uri în funcție de rol */
+.user-type-admin {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.user-type-hall_admin {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.user-type-user {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.user-city-cell, .user-date-cell {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.user-actions-cell {
+    text-align: right; /* Aliniere la dreapta pentru celulă */
+}
+
+.view-details-btn {
+    background: none;
+    border: none;
+    color: #7c3aed;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.view-details-btn:hover {
+    background-color: #f3f0ff;
+}
+
+.users-empty-row {
+    text-align: center;
+    padding: 30px 0;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Modal pentru detalii utilizator */
+.user-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.user-modal {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.user-modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.user-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.user-modal-close:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.user-modal-body {
+    padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Detalii utilizator */
+.user-detail-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-detail-section {
+    background-color: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.user-detail-section h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #1f2937;
+}
+
+.user-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.user-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-detail-item.full-width {
+    grid-column: span 2;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+/* Stiluri pentru textul rolurilor în detalii */
+.user-type-text-admin {
+    color: #0369a1;
+    font-weight: 600;
+}
+
+.user-type-text-hall_admin {
+    color: #92400e;
+    font-weight: 600;
+}
+
+.user-type-text-user {
+    color: #475569;
+    font-weight: 600;
+}
+
+/* Formular de editare */
+.user-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #1f2937;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* Footer modal */
+.user-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 1;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.user-action-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+}
+
+.user-action-btn.suspend {
+    background-color: white;
+    color: #b91c1c;
+    border: 1px solid #ef4444;
+}
+
+.user-action-btn.suspend:hover {
+    background-color: #fee2e2;
+}
+
+.user-action-btn.edit {
+    background-color: #7c3aed;
+    color: white;
+    border: 1px solid #7c3aed;
+}
+
+.user-action-btn.edit:hover {
+    background-color: #6d28d9;
+}
+
+.user-action-btn.cancel {
+    background-color: white;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+.user-action-btn.cancel:hover {
+    background-color: #f3f4f6;
+}
+
+.user-action-btn.save {
+    background-color: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+}
+
+.user-action-btn.save:hover {
+    background-color: #059669;
+}
+
+/* Loading and error messages */
+.loading-message,
+.error-message {
+    padding: 30px;
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.loading-message {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.error-message {
+    color: #b91c1c;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .user-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-filters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .filter-stats {
+        align-self: flex-end;
+    }
+
+    .users-table th:nth-child(4),
+    .users-table td:nth-child(4) {
+        display: none;
+    }
+
+    .users-table th:nth-child(5),
+    .users-table td:nth-child(5) {
+        display: none;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-modal {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .user-modal-overlay {
+        padding: 0;
+    }
+
+    .user-modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .user-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Adaugă aceste stiluri la ManageUsersPage.css */
+
+/* Layout filtre actualizat */
+.user-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filters-left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.status-filter,
+.city-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-filter label,
+.city-filter label {
+    font-weight: 500;
+    color: #4b5563;
+    white-space: nowrap;
+}
+
+.status-select,
+.city-select {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background-color: white;
+    color: #1f2937;
+    font-size: 0.95rem;
+    min-width: 180px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.status-select:hover,
+.city-select:hover {
+    border-color: #d1d5db;
+}
+
+.status-select:focus,
+.city-select:focus {
+    border-color: #7c3aed;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+/* Stiluri pentru badge-uri de status */
+.user-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.user-status-active,
+.user-status-verified {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.user-status-suspended {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.user-status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.user-status-rejected {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+/* Stiluri pentru textul de status în detalii */
+.user-status-text-active,
+.user-status-text-verified {
+    color: #166534;
+    font-weight: 600;
+}
+
+.user-status-text-suspended {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.user-status-text-pending {
+    color: #92400e;
+    font-weight: 600;
+}
+
+.user-status-text-rejected {
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Buton de reactivare */
+.user-action-btn.activate {
+    background-color: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+}
+
+.user-action-btn.activate:hover {
+    background-color: #059669;
+}
+
+/* Ajustări responsive pentru filtre */
+@media (max-width: 768px) {
+    .user-filters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .filters-left {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .status-filter,
+    .city-filter {
+        width: 100%;
+    }
+
+    .status-select,
+    .city-select {
+        flex: 1;
+    }
+
+    .filter-stats {
+        align-self: flex-end;
+    }
+}
