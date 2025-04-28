@@ -1,0 +1,300 @@
+.sports-halls-container {
+    padding: 3rem 4rem;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.sports-halls-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.sports-halls-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 3px;
+    background-color: #6d28d9;
+    border-radius: 2px;
+}
+
+.sports-halls-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sports-hall-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.sports-hall-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: rgba(124, 58, 237, 0.2);
+}
+
+.sports-hall-image-wrapper {
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+}
+
+.sports-hall-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.sports-hall-card:hover .sports-hall-image {
+    transform: scale(1.05);
+}
+
+/* Overlay pentru un efect gradient delicat peste imagine */
+.sports-hall-image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+}
+
+/* Badge pentru tipul sălii */
+.sports-hall-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(124, 58, 237, 0.9);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.sports-hall-info {
+    padding: 1.25rem;
+    position: relative;
+}
+
+.sports-hall-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+.sports-hall-address {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sports-hall-address::before {
+    content: '📍';
+    font-size: 1rem;
+}
+
+.sports-hall-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.sports-hall-price {
+    font-size: 0.9rem;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.sports-hall-price::before {
+    content: '💰';
+    font-size: 1rem;
+}
+
+/* Stiluri pentru rating */
+.sports-hall-rating {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.sports-hall-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.sports-hall-star-full,
+.sports-hall-star-half,
+.sports-hall-star-empty {
+    color: #f59e0b; /* Galben pentru stele */
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.sports-hall-star-empty {
+    opacity: 0.5;
+}
+
+.sports-hall-rating-value {
+    margin-left: 4px;
+    font-weight: 600;
+    color: #f59e0b;
+}
+
+.sports-hall-link {
+    display: block;
+    text-align: center;
+    background-color: #6d28d9;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(109, 40, 217, 0.2);
+}
+
+.sports-hall-link:hover {
+    background-color: #5b21b6;
+    box-shadow: 0 6px 8px rgba(91, 33, 182, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Stiluri pentru stări de încărcare și eroare */
+.sports-halls-loading,
+.sports-halls-error,
+.sports-halls-empty {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.sports-halls-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sports-halls-loading::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e5e7eb;
+    border-radius: 50%;
+    border-top-color: #6d28d9;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .sports-halls-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sports-halls-container {
+        padding: 2rem;
+    }
+
+    .sports-halls-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sports-halls-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fade-transition {
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sports-halls-grid {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+/* Stiluri pentru carduri cu animație */
+.sports-hall-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animație pentru carduri la schimbarea orașului */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sports-hall-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Delay pentru fiecare card pentru efect în cascadă */
+.sports-hall-card:nth-child(1) { animation-delay: 0.05s; }
+.sports-hall-card:nth-child(2) { animation-delay: 0.1s; }
+.sports-hall-card:nth-child(3) { animation-delay: 0.15s; }
+.sports-hall-card:nth-child(4) { animation-delay: 0.2s; }
+.sports-hall-card:nth-child(5) { animation-delay: 0.25s; }
+.sports-hall-card:nth-child(6) { animation-delay: 0.3s; }

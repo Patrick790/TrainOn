@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { MapPin, ChevronDown, LogOut } from 'lucide-react';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
+import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
 import './MainPage.css';
 
 class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            location: 'Cluj-Napoca',
+            location: 'Cluj-Napoca', // Presetat pentru Cluj-Napoca
             activity: 'Sport',
             searchQuery: '',
             isLocationDropdownOpen: false,
@@ -202,6 +203,9 @@ class MainPage extends React.Component {
                         </form>
                     </div>
                 </main>
+
+                {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls */}
+                <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
 
                 {/* Only render modals when not logged in */}
                 {!isLoggedIn && (

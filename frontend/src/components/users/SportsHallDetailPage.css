@@ -1,0 +1,520 @@
+/* SportsHallDetailPage.css */
+/* Având grijă să nu afecteze elementele din MainPage */
+
+/* Wrapper pentru a încapsula tot conținutul paginii de detalii */
+.detail-page-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.detail-page-container {
+    padding: 20px 0;
+}
+
+/* Stiluri pentru butonul înapoi */
+.detail-back-link {
+    margin-bottom: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    color: #6d28d9;
+    text-decoration: none;
+    font-weight: 500;
+    gap: 8px;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
+
+/* Header și meta informații */
+.detail-page-header {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.detail-page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #1a1a1a;
+}
+
+.detail-page-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.detail-page-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    font-size: 1.1rem;
+}
+
+.detail-page-badge {
+    display: inline-block;
+    background-color: #6d28d9;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: absolute;
+    top: 5px;
+    right: 0;
+}
+
+/* Galerie de imagini */
+.detail-image-gallery {
+    margin-bottom: 30px;
+}
+
+.detail-main-image-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.detail-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-image-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    z-index: 5;
+}
+
+.detail-image-nav:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.detail-prev {
+    left: 15px;
+}
+
+.detail-next {
+    right: 15px;
+}
+
+.detail-thumbnail-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.detail-thumbnail {
+    width: 100px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-thumbnail:hover {
+    opacity: 0.9;
+}
+
+.detail-thumbnail.active {
+    opacity: 1;
+    box-shadow: 0 0 0 2px #6d28d9;
+}
+
+/* Layout coloane */
+.detail-page-columns {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 30px;
+}
+
+.detail-page-left-column,
+.detail-page-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Secțiuni pentru conținut */
+.detail-page-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.detail-section-title {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f1f1;
+    font-weight: 600;
+}
+
+/* Informații generale */
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.detail-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-info-item svg {
+    color: #6d28d9;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.detail-info-text h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.detail-info-text p {
+    margin: 5px 0 0 0;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 1.1rem;
+}
+
+/* Descriere */
+.detail-description {
+    line-height: 1.7;
+    color: #1f2937;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+/* Facilități */
+.detail-facilities-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.detail-facility-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+}
+
+.detail-facility-icon {
+    color: #10b981;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.detail-no-facilities {
+    color: #6b7280;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Secțiune rezervare */
+.detail-contact-section {
+    background-color: #f8f9fa;
+    border: 1px solid #e5e7eb;
+}
+
+.detail-contact-info {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.detail-contact-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.detail-book-button,
+.detail-login-button,
+.detail-register-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.detail-book-button {
+    background-color: #10b981;
+    color: white;
+    flex: 1;
+}
+
+.detail-book-button:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.detail-login-button {
+    background-color: #6d28d9;
+    color: white;
+    flex: 1;
+}
+
+.detail-login-button:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.detail-register-button {
+    background-color: white;
+    border: 1px solid #6d28d9;
+    color: #6d28d9;
+    flex: 1;
+}
+
+.detail-register-button:hover {
+    background-color: #f5f3ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Rating stars */
+.detail-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.star-full, .star-half, .star-empty {
+    display: inline-block;
+}
+
+.rating-value {
+    margin-left: 5px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Loading și error states */
+.detail-page-loading,
+.detail-page-error {
+    padding: 80px 0;
+    text-align: center;
+    font-size: 1.3rem;
+    color: #4b5563;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    margin: 40px auto;
+    max-width: 800px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Footer Styles - ACTUALIZAT */
+.app-footer {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    padding: 2rem 0 0 0; /* Redus padding-ul de sus */
+    margin-top: 2.5rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0; /* Eliminăm marginea pentru a reduce spațiul */
+    flex: 1; /* Flexibil pentru layout-ul responsive */
+    min-width: 220px; /* Asigură suficient spațiu pentru logo pe dispozitive mici */
+}
+
+.footer-logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    background-color: #6d28d9;
+    border-radius: 6px;
+}
+
+.footer-logo-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f9fafb;
+    letter-spacing: -0.5px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-link {
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+    position: relative;
+    white-space: nowrap;
+}
+
+.footer-link:hover {
+    color: #f9fafb;
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #6d28d9;
+    transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+.footer-copyright {
+    color: #9ca3af;
+    font-size: 0.85rem;
+    text-align: right;
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Media queries generale */
+@media (max-width: 992px) {
+    .detail-page-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.25rem;
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-copyright {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-facilities-list {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-contact-buttons {
+        flex-direction: column;
+    }
+
+    .detail-page-title {
+        font-size: 2rem;
+    }
+
+    .detail-main-image-container {
+        height: 350px;
+    }
+}
+
+@media (max-width: 576px) {
+    .detail-page-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .detail-page-badge {
+        position: static;
+        margin-bottom: 12px;
+    }
+
+    .detail-thumbnail {
+        width: 80px;
+        height: 60px;
+    }
+
+    .app-footer {
+        padding-top: 1.5rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .footer-content {
+        padding: 0 1.5rem 1.25rem;
+    }
+}

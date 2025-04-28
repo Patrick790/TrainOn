@@ -1,0 +1,96 @@
+/* SportsHallMap.css */
+
+.detail-map-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 24px;
+}
+
+.detail-map-wrapper {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.detail-map-iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.detail-map-loading {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+.detail-map-error {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fee2e2;
+    color: #ef4444;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    text-align: center;
+    padding: 20px;
+}
+
+.detail-map-address {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.detail-map-address-text {
+    font-size: 1.05rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+.detail-map-directions {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #6d28d9;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.detail-map-directions:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 576px) {
+    .detail-map-address {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .detail-map-wrapper {
+        height: 250px;
+    }
+}

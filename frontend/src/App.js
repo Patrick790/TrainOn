@@ -4,6 +4,7 @@ import MainPage from './components/users/MainPage';
 import HallAdmin from './components/halladmin/HallAdmin';
 import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 import Admin from "./components/admin/Admin";
+import SportsHallDetailPage from './components/users/SportsHallDetailPage';
 
 function App() {
     return (
@@ -12,6 +13,9 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navigate to="/user-home" />} />
                     <Route path="/user-home" element={<MainPage />} />
+
+                    {/* Ruta pentru pagina de detalii a sălii de sport */}
+                    <Route path="/sportsHalls/:id" element={<SportsHallDetailPage />} />
 
                     {/* Hall Admin Routes */}
                     <Route path="/hall-admin-dashboard" element={<HallAdmin />} />
