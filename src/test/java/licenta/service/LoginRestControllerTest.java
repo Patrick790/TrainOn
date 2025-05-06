@@ -136,7 +136,7 @@ public class LoginRestControllerTest {
         when(jwtService.generateToken(validCredentials.getEmail())).thenReturn(expectedToken);
 
         // Act
-        String token = loginRestController.authenticateAndGenerateToken(validCredentials);
+        String token = String.valueOf(loginRestController.authenticateAndGenerateToken(validCredentials));
 
         // Assert
         assertEquals(expectedToken, token);

@@ -4,16 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="users management">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallMap.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallMap.js" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="single hall + halls list">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/ReservationOptionsModal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/ReservationOptionsModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/ReservationSection.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/ReservationProfile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IReservationProfileRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationProfileRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/MainPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/MainPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/MainPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/MainPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/licenta/service/LoginRestControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/licenta/service/LoginRestControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +128,7 @@
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.StartApp">
+  <component name="RunManager" selected="Spring Boot.LicenseApplication">
     <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -332,7 +347,13 @@
       <workItem from="1745591252470" duration="6847000" />
       <workItem from="1745682668828" duration="2016000" />
       <workItem from="1745749221176" duration="6041000" />
-      <workItem from="1745843236654" duration="3938000" />
+      <workItem from="1745843236654" duration="3987000" />
+      <workItem from="1745942174394" duration="6354000" />
+      <workItem from="1746200362246" duration="2862000" />
+      <workItem from="1746263021431" duration="3888000" />
+      <workItem from="1746271257734" duration="4133000" />
+      <workItem from="1746348318695" duration="597000" />
+      <workItem from="1746450017872" duration="8079000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -414,7 +435,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745750500847</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="single hall + halls list">
+      <option name="closed" value="true" />
+      <created>1745849416583</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1745849416583</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -454,6 +483,7 @@
     <MESSAGE value="view all halls + details + logo" />
     <MESSAGE value="emails working" />
     <MESSAGE value="users management" />
-    <option name="LAST_COMMIT_MESSAGE" value="users management" />
+    <MESSAGE value="single hall + halls list" />
+    <option name="LAST_COMMIT_MESSAGE" value="single hall + halls list" />
   </component>
 </project>

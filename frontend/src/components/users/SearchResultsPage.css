@@ -1,0 +1,637 @@
+/* SearchResultsPage.css - Versiunea completă modificată */
+
+/* Search Bar - o versiune modificată a celei din MainPage fără background image */
+.srp-search-container {
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.srp-search-bar {
+    display: flex;
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: visible;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 60px;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.srp-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    min-width: 180px;
+}
+
+.srp-custom-select {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+}
+
+.srp-selected-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    font-size: 1.1rem;
+    background: transparent;
+    color: #000;
+    border-right: 1px solid #e5e7eb;
+}
+
+.srp-options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 100;
+}
+
+.srp-option {
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+}
+
+.srp-option:hover {
+    background-color: #f8f9fa;
+}
+
+.srp-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #4a4a4a;
+    opacity: 0.9;
+}
+
+.srp-icon-small {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #4a4a4a;
+    opacity: 0.9;
+}
+
+.srp-search-input {
+    padding: 0.75rem 0.5rem;
+    border: none;
+    outline: none;
+    font-size: 1.1rem;
+    width: 100%;
+    background: transparent;
+}
+
+.srp-search-button {
+    padding: 0 2rem;
+    background-color: #6d28d9;
+    color: white;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.srp-search-button:hover {
+    background-color: #5b21b6;
+}
+
+/* Stiluri pentru conținutul rezultatelor căutării */
+.srp-results-content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    width: 100%;
+}
+
+.srp-results-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+}
+
+.srp-results-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* Lista de rezultate */
+.srp-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.srp-result-card {
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    height: 180px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    /* Adăugăm o tranziție subtilă doar pentru box-shadow */
+    transition: box-shadow 0.2s ease;
+    /* Asigurăm că poziția rămâne fixă */
+    position: relative;
+}
+
+.srp-result-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.srp-result-highlighted {
+    border: 2px solid #6d28d9;
+    box-shadow: 0 6px 12px rgba(109, 40, 217, 0.2);
+}
+
+.srp-result-image-container {
+    width: 35%;
+    position: relative;
+    overflow: hidden;
+}
+
+.srp-result-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.srp-result-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #6d28d9;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.srp-result-details {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.srp-result-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.srp-result-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.srp-result-rating {
+    margin-bottom: 0.5rem;
+}
+
+.srp-result-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.srp-rating-value {
+    margin-left: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.srp-result-price {
+    font-weight: 600;
+    color: #10b981;
+    margin-bottom: 0.5rem;
+}
+
+.srp-result-facilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 0.75rem;
+}
+
+.srp-facility-badge {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.srp-facility-more {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+.srp-result-link {
+    margin-top: auto;
+    display: inline-block;
+    background-color: #6d28d9;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: center;
+    align-self: flex-start;
+}
+
+.srp-result-link:hover {
+    background-color: #5b21b6;
+}
+
+/* Harta - Stiluri îmbunătățite */
+.srp-results-map {
+    position: sticky;
+    top: 20px;
+    height: calc(100vh - 180px);
+    min-height: 400px; /* Asigurăm o înălțime minimă */
+    z-index: 1; /* Asigurăm un stacking context corect */
+}
+
+.srp-map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    position: relative; /* Important pentru poziționarea corectă a elementelor Leaflet */
+    z-index: 1;
+}
+
+/* Asigurăm că harta Leaflet ocupă tot spațiul disponibil */
+.leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Fix pentru markere */
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+    display: block !important; /* Previne ca markerele să fie ascunse */
+}
+
+/* Prevenim problemele de afișare în Container */
+.leaflet-control-container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Controlăm mai bine animațiile pentru a evita erorile */
+.leaflet-fade-anim .leaflet-tile,
+.leaflet-fade-anim .leaflet-popup {
+    opacity: 1 !important; /* Dezactivează animațiile de fade */
+    transition: none !important;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+    transition: none !important; /* Dezactivează animațiile de zoom */
+}
+
+/* Asigurăm că pane-urile sunt afișate corect */
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+    position: absolute;
+}
+
+/* Stiluri defensive pentru a evita conflicte cu alte reguli CSS */
+.leaflet-container {
+    overflow: hidden !important;
+    -ms-touch-action: none;
+    touch-action: none;
+}
+
+/* Stiluri pentru tooltips Leaflet */
+.leaflet-tooltip {
+    background-color: #6d28d9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.leaflet-tooltip-top:before {
+    border-top-color: #6d28d9;
+}
+
+.leaflet-marker-icon:hover {
+    filter: drop-shadow(0 0 5px #6d28d9);
+}
+
+/* Stări loading și eroare */
+.srp-loading,
+.srp-error,
+.srp-no-results {
+    padding: 2rem;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.srp-loading {
+    color: #6b7280;
+}
+
+.srp-error {
+    color: #ef4444;
+}
+
+.srp-no-results {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Stiluri pentru footer compatibile cu cele din MainPage */
+.app-footer {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-logo-icon {
+    width: 2rem;
+    height: 2rem;
+    background-color: #6d28d9;
+    border-radius: 50%;
+}
+
+.footer-logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-link {
+    color: #e5e7eb;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-copyright {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Compatibilitate cu HeaderComponent */
+.header {
+    background-color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 0.5rem;
+}
+
+.logo {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #6d28d9;
+    border-radius: 50%;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.auth-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.auth-button:not(.logout-button) {
+    background-color: white;
+    color: #1a1a1a;
+    border: 1px solid #e5e7eb;
+}
+
+.auth-button:not(.logout-button):hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.logout-button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logout-button:hover {
+    background-color: #dc2626;
+}
+
+/* Stiluri modale */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* Theme Switcher (simplificat) */
+.theme-switch {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #6d28d9;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+}
+
+.theme-switch:hover {
+    background-color: #5b21b6;
+}
+
+/* Media queries pentru responsiveness */
+@media (max-width: 992px) {
+    .srp-results-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .srp-results-map {
+        height: 400px;
+        position: relative;
+        top: 0;
+        order: -1;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .srp-search-bar {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .srp-input-group {
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+
+    .srp-selected-option {
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .srp-search-button {
+        width: 100%;
+        padding: 0.75rem;
+        justify-content: center;
+    }
+
+    .srp-result-card {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .srp-result-image-container {
+        width: 100%;
+        height: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    .srp-results-title {
+        font-size: 1.5rem;
+    }
+
+    .srp-results-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .srp-result-name {
+        font-size: 1.1rem;
+    }
+
+    .srp-result-badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+
+    .srp-facility-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+}

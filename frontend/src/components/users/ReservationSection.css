@@ -1,0 +1,193 @@
+/* Stiluri pentru secțiunea de rezervare */
+.reservation-section {
+    text-align: center;
+    margin: 3rem auto 4rem;
+    max-width: 800px;
+    padding: 0 2rem;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+}
+
+.reservation-description {
+    font-size: 1.2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.reservation-button {
+    background-color: #6d28d9;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 1rem 3rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(109, 40, 217, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.reservation-button:hover {
+    background-color: #5b21b6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(109, 40, 217, 0.3);
+}
+
+.reservation-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(109, 40, 217, 0.2);
+}
+
+/* Stiluri pentru modal */
+.reservation-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.reservation-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.reservation-modal-title {
+    font-size: 1.75rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.reservation-modal-description {
+    font-size: 1.1rem;
+    color: #4b5563;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.reservation-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.reservation-option {
+    flex: 1;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.reservation-option:hover {
+    background-color: #f3f4f6;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #6d28d9;
+}
+
+.reservation-option-icon {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(109, 40, 217, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: #6d28d9;
+}
+
+.reservation-option h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+.reservation-option p {
+    font-size: 0.95rem;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.reservation-modal-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.reservation-modal-close-button {
+    padding: 0.75rem 2rem;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reservation-modal-close-button:hover {
+    background-color: #e5e7eb;
+}
+
+/* Responsive pentru modal pe dispozitive mobile */
+@media (max-width: 640px) {
+    .reservation-options {
+        flex-direction: column;
+    }
+
+    .reservation-option {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .reservation-section {
+        margin: 2rem auto 3rem;
+        padding: 1.5rem;
+    }
+
+    .reservation-description {
+        font-size: 1.1rem;
+    }
+
+    .reservation-button {
+        font-size: 1.1rem;
+        padding: 0.875rem 2.5rem;
+    }
+}

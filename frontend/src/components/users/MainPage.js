@@ -1,10 +1,67 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ChevronDown, LogOut } from 'lucide-react';
+import { MapPin, ChevronDown, LogOut, Calendar } from 'lucide-react';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
 import './MainPage.css';
+
+// Adăugăm doar această componentă în fișierul MainPage.js
+class ReservationOptionsModal extends React.Component {
+    render() {
+        const { isOpen, onClose } = this.props;
+        if (!isOpen) return null;
+
+        return (
+            <div className="reservation-modal-backdrop">
+                <div className="reservation-modal-content">
+                    <h2 className="reservation-modal-title">Opțiuni de rezervare</h2>
+                    <p className="reservation-modal-description">
+                        Alege modul în care dorești să faci rezervare
+                    </p>
+
+                    <div className="reservation-options">
+                        <div
+                            className="reservation-option"
+                            onClick={() => { window.location.href = '/profile-creation'; onClose(); }}
+                        >
+                            <div className="reservation-option-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <h3>Creează profil rezervări</h3>
+                            <p>Personalizează opțiunile pentru algoritm de prioritizare</p>
+                        </div>
+
+                        <div
+                            className="reservation-option"
+                            onClick={() => { window.location.href = '/reserve-remaining'; onClose(); }}
+                        >
+                            <div className="reservation-option-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <h3>Rezervă locurile rămase</h3>
+                            <p>Rezervare rapidă pentru locurile disponibile în acest moment</p>
+                        </div>
+                    </div>
+
+                    <div className="reservation-modal-footer">
+                        <button className="reservation-modal-close-button" onClick={onClose}>
+                            Anulează
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
 
 class MainPage extends React.Component {
     constructor(props) {
@@ -17,15 +74,14 @@ class MainPage extends React.Component {
             isActivityDropdownOpen: false,
             isLoginModalOpen: false,
             isRegisterModalOpen: false,
+            isReservationModalOpen: false,  // Adăugăm această stare pentru modalul de rezervare
             isLoggedIn: localStorage.getItem('isLoggedIn') === 'true'
         };
     }
 
+    // Toate metodele existente rămân neschimbate
     componentDidMount() {
-        // Check login status when component mounts
         this.checkLoginStatus();
-
-        // Add event listener for storage changes
         window.addEventListener('storage', this.checkLoginStatus);
     }
 
@@ -72,6 +128,13 @@ class MainPage extends React.Component {
 
     handleSearch = (e) => {
         e.preventDefault();
+        const searchParams = new URLSearchParams();
+        searchParams.append('city', this.state.location);
+        searchParams.append('activity', this.state.activity);
+        if (this.state.searchQuery) {
+            searchParams.append('query', this.state.searchQuery);
+        }
+        window.location.href = `/search?${searchParams.toString()}`;
     }
 
     toggleLoginModal = () => {
@@ -89,32 +152,46 @@ class MainPage extends React.Component {
     }
 
     handleLogout = () => {
-        // Clear local storage
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userType');
         localStorage.removeItem('userId');
         localStorage.removeItem('jwtToken');
-
-        // Update state
         this.setState({
             isLoggedIn: false
         });
-
-        // Redirect to main page if needed
         window.location.href = '/';
+    }
+
+    // Adăugăm doar aceste două metode
+    toggleReservationModal = () => {
+        // Deschide modalul doar dacă utilizatorul este autentificat
+        if (this.state.isLoggedIn) {
+            this.setState(prevState => ({
+                isReservationModalOpen: !prevState.isReservationModalOpen
+            }));
+        } else {
+            // Dacă nu este autentificat, deschide modalul de login
+            this.toggleLoginModal();
+        }
+    }
+
+    closeReservationModal = () => {
+        this.setState({ isReservationModalOpen: false });
     }
 
     render() {
         const locations = ['Cluj-Napoca', 'Timisoara', 'Bucuresti', 'Iasi'];
-        const activities = ['Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
+        const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
         const { isLoggedIn } = this.state;
 
         return (
             <div className="main-container">
                 <header className="header">
                     <div className="logo-container">
-                        <div className="logo"></div>
-                        <span className="logo-text">Licenta</span>
+                        <Link to="/" className="logo-link">
+                            <div className="logo"></div>
+                            <span className="logo-text">Licenta</span>
+                        </Link>
                     </div>
                     <div className="auth-buttons">
                         {isLoggedIn ? (
@@ -206,6 +283,24 @@ class MainPage extends React.Component {
 
                 {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls */}
                 <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
+
+                {/* Adăugăm doar acest div pentru butonul de rezervare */}
+                <div className="reservation-cta">
+                    <p className="reservation-text">
+                        Dorești să efectuezi o rezervare rapidă? Folosește sistemul nostru inteligent
+                        pentru a găsi cea mai bună opțiune pentru tine și echipa ta.
+                    </p>
+                    <button onClick={this.toggleReservationModal} className="reservation-button">
+                        <Calendar size={18} />
+                        Rezervă acum
+                    </button>
+                </div>
+
+                {/* Adăugăm modalul */}
+                <ReservationOptionsModal
+                    isOpen={this.state.isReservationModalOpen}
+                    onClose={this.closeReservationModal}
+                />
 
                 {/* Only render modals when not logged in */}
                 {!isLoggedIn && (

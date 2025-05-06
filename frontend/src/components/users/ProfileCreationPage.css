@@ -1,0 +1,875 @@
+/* ProfileCreationPage.css - Versiune îmbunătățită cu nume de clase unice */
+
+:root {
+    --reserv-primary-color: #6d28d9;
+    --reserv-primary-light: #8b5cf6;
+    --reserv-primary-dark: #5b21b6;
+    --reserv-secondary-color: #10b981;
+    --reserv-secondary-light: #a7f3d0;
+    --reserv-secondary-dark: #059669;
+    --reserv-accent-color: #f59e0b;
+    --reserv-text-dark: #1a1a1a;
+    --reserv-text-medium: #4b5563;
+    --reserv-text-light: #6b7280;
+    --reserv-border-color: #e5e7eb;
+    --reserv-background-light: #f9fafb;
+    --reserv-background-medium: #f3f4f6;
+    --reserv-error-color: #ef4444;
+    --reserv-success-color: #10b981;
+    --reserv-white: #ffffff;
+    --reserv-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --reserv-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --reserv-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --reserv-radius-sm: 0.25rem;
+    --reserv-radius-md: 0.5rem;
+    --reserv-radius-lg: 0.75rem;
+    --reserv-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Container principal */
+.reserv-profile-page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--reserv-background-light);
+    color: var(--reserv-text-dark);
+    font-family: var(--reserv-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header modernizat */
+.reserv-profile-page-header {
+    background: linear-gradient(135deg, var(--reserv-primary-color), var(--reserv-primary-dark));
+    box-shadow: var(--reserv-shadow-md);
+    padding: 1.25rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.reserv-profile-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.reserv-profile-back-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--reserv-white);
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 2rem;
+    transition: all 0.2s ease;
+    padding: 0.5rem;
+    border-radius: var(--reserv-radius-md);
+}
+
+.reserv-profile-back-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(-3px);
+}
+
+.reserv-profile-page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--reserv-white);
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Conținut îmbunătățit */
+.reserv-profile-page-content {
+    display: flex;
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 0 2rem;
+    flex: 1;
+}
+
+/* Sidebar cu design modern */
+.reserv-profile-page-sidebar {
+    width: 340px;
+    background-color: var(--reserv-white);
+    border-radius: var(--reserv-radius-lg);
+    box-shadow: var(--reserv-shadow-md);
+    overflow: hidden;
+    height: fit-content;
+    transition: transform 0.3s ease;
+}
+
+.reserv-profile-page-sidebar:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--reserv-shadow-lg);
+}
+
+.reserv-profile-sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--reserv-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--reserv-background-light);
+}
+
+.reserv-profile-sidebar-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--reserv-text-dark);
+    font-weight: 700;
+}
+
+.reserv-add-profile-button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--reserv-secondary-color);
+    color: white;
+    border: none;
+    border-radius: var(--reserv-radius-md);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-add-profile-button:hover {
+    background-color: var(--reserv-secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--reserv-shadow-md);
+}
+
+.reserv-add-profile-button:active {
+    transform: translateY(0);
+}
+
+.reserv-profile-list {
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.reserv-profile-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.reserv-profile-list::-webkit-scrollbar-track {
+    background: var(--reserv-background-light);
+    border-radius: 10px;
+}
+
+.reserv-profile-list::-webkit-scrollbar-thumb {
+    background: var(--reserv-primary-light);
+    border-radius: 10px;
+}
+
+.reserv-no-profiles {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    color: var(--reserv-text-light);
+    background-color: var(--reserv-background-light);
+    border-radius: var(--reserv-radius-md);
+    margin: 1rem;
+}
+
+.reserv-no-profiles p {
+    margin: 0.5rem 0;
+}
+
+.reserv-profile-list-item {
+    padding: 1.2rem;
+    border-radius: var(--reserv-radius-md);
+    margin: 0.75rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: all 0.2s ease;
+    background-color: var(--reserv-white);
+    box-shadow: var(--reserv-shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.reserv-profile-list-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.reserv-profile-list-item:hover {
+    box-shadow: var(--reserv-shadow-md);
+    transform: translateY(-2px);
+}
+
+.reserv-profile-list-item:hover::before {
+    background-color: var(--reserv-primary-light);
+}
+
+.reserv-profile-list-item.active {
+    background-color: #f5f3ff;
+    box-shadow: var(--reserv-shadow-md);
+}
+
+.reserv-profile-list-item.active::before {
+    background-color: var(--reserv-primary-color);
+}
+
+.reserv-profile-list-info {
+    cursor: pointer;
+    flex: 1;
+    padding-right: 1rem;
+}
+
+.reserv-profile-list-info h3 {
+    margin: 0 0 0.7rem 0;
+    font-size: 1.15rem;
+    color: var(--reserv-text-dark);
+    font-weight: 600;
+}
+
+.reserv-profile-list-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reserv-profile-list-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--reserv-text-medium);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.reserv-profile-list-details span svg {
+    color: var(--reserv-primary-color);
+    flex-shrink: 0;
+}
+
+.reserv-profile-list-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.reserv-profile-edit-button,
+.reserv-profile-delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--reserv-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.reserv-profile-edit-button {
+    color: var(--reserv-primary-color);
+}
+
+.reserv-profile-edit-button:hover {
+    background-color: #eef2ff;
+    transform: scale(1.1);
+}
+
+.reserv-profile-delete-button {
+    color: var(--reserv-error-color);
+}
+
+.reserv-profile-delete-button:hover {
+    background-color: #fee2e2;
+    transform: scale(1.1);
+}
+
+/* Formular cu design modern */
+.reserv-profile-form-container {
+    flex: 1;
+    background-color: var(--reserv-white);
+    border-radius: var(--reserv-radius-lg);
+    box-shadow: var(--reserv-shadow-md);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.reserv-profile-form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--reserv-primary-color), var(--reserv-secondary-color));
+    z-index: 1;
+}
+
+.reserv-profile-form-title {
+    margin: 0 0 2rem 0;
+    font-size: 1.6rem;
+    color: var(--reserv-text-dark);
+    font-weight: 700;
+    position: relative;
+}
+
+.reserv-profile-form-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--reserv-primary-color);
+    border-radius: 3px;
+}
+
+/* Steps Indicator îmbunătățit */
+.reserv-profile-steps-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    background-color: var(--reserv-background-light);
+    padding: 0.75rem;
+    border-radius: var(--reserv-radius-lg);
+}
+
+.reserv-step {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+.reserv-step-number {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--reserv-background-medium);
+    color: var(--reserv-text-medium);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-step.active .reserv-step-number {
+    background-color: var(--reserv-primary-color);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px rgba(109, 40, 217, 0.2);
+}
+
+.reserv-step-label {
+    font-size: 1rem;
+    color: var(--reserv-text-medium);
+    font-weight: 500;
+}
+
+.reserv-step.active .reserv-step-label {
+    color: var(--reserv-text-dark);
+    font-weight: 600;
+}
+
+.reserv-step-connector {
+    flex: 1;
+    height: 3px;
+    background-color: var(--reserv-background-medium);
+    margin: 0 1rem;
+    position: relative;
+    border-radius: 3px;
+}
+
+.reserv-step-connector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background-color: var(--reserv-primary-light);
+    transition: width 0.3s ease-in-out;
+    border-radius: 3px;
+}
+
+.reserv-step:first-child.active ~ .reserv-step-connector::before {
+    width: 0%;
+}
+
+.reserv-step:nth-child(3).active ~ .reserv-step-connector::before,
+.reserv-step:nth-child(3).active .reserv-step-connector::before {
+    width: 100%;
+}
+
+/* Formular pentru date de profil */
+.reserv-profile-form {
+    max-width: 600px;
+}
+
+.reserv-form-step {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: reservFadeIn 0.5s ease-in-out;
+}
+
+@keyframes reservFadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.reserv-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.reserv-form-group label {
+    font-weight: 600;
+    color: var(--reserv-text-dark);
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.reserv-form-group input,
+.reserv-form-group select {
+    padding: 0.9rem 1rem;
+    border: 2px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-md);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: var(--reserv-white);
+    color: var(--reserv-text-dark);
+    width: 100%;
+}
+
+.reserv-form-group input:focus,
+.reserv-form-group select:focus {
+    outline: none;
+    border-color: var(--reserv-primary-light);
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
+}
+
+.reserv-form-group input::placeholder {
+    color: var(--reserv-text-light);
+}
+
+.reserv-form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+/* Selector pentru săli */
+.reserv-halls-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 0.75rem;
+    border: 2px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-md);
+    background-color: var(--reserv-background-light);
+}
+
+.reserv-halls-selector::-webkit-scrollbar {
+    width: 6px;
+}
+
+.reserv-halls-selector::-webkit-scrollbar-track {
+    background: var(--reserv-background-light);
+    border-radius: 10px;
+}
+
+.reserv-halls-selector::-webkit-scrollbar-thumb {
+    background: var(--reserv-primary-light);
+    border-radius: 10px;
+}
+
+.reserv-no-halls-message {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--reserv-text-light);
+    font-style: italic;
+    background-color: var(--reserv-white);
+    border-radius: var(--reserv-radius-md);
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-hall-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border: 2px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--reserv-white);
+    position: relative;
+    overflow: hidden;
+}
+
+.reserv-hall-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.reserv-hall-option:hover {
+    box-shadow: var(--reserv-shadow-sm);
+    transform: translateY(-2px);
+    border-color: var(--reserv-border-color);
+}
+
+.reserv-hall-option:hover::before {
+    background-color: var(--reserv-secondary-light);
+}
+
+.reserv-hall-option.selected {
+    background-color: #f0fdf9;
+    border-color: var(--reserv-secondary-color);
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-hall-option.selected::before {
+    background-color: var(--reserv-secondary-color);
+}
+
+.reserv-hall-checkbox {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 2px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--reserv-white);
+    transition: all 0.2s ease;
+}
+
+.reserv-hall-option:hover .reserv-hall-checkbox {
+    border-color: var(--reserv-secondary-light);
+}
+
+.reserv-hall-option.selected .reserv-hall-checkbox {
+    border-color: var(--reserv-secondary-color);
+    background-color: var(--reserv-secondary-color);
+    color: white;
+}
+
+.reserv-hall-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.reserv-hall-name {
+    font-weight: 600;
+    color: var(--reserv-text-dark);
+    transition: color 0.2s ease;
+}
+
+.reserv-hall-option:hover .reserv-hall-name {
+    color: var(--reserv-primary-dark);
+}
+
+.reserv-hall-price {
+    color: var(--reserv-secondary-color);
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.reserv-hall-price::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: var(--reserv-secondary-color);
+    border-radius: 50%;
+}
+
+.reserv-loading-message {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--reserv-text-medium);
+    background-color: var(--reserv-background-light);
+    border-radius: var(--reserv-radius-md);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.reserv-loading-message::before {
+    content: '';
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 3px solid var(--reserv-primary-light);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: reservSpin 1s linear infinite;
+}
+
+@keyframes reservSpin {
+    to { transform: rotate(360deg); }
+}
+
+.reserv-error-message {
+    padding: 1.25rem;
+    text-align: center;
+    color: var(--reserv-error-color);
+    background-color: #fee2e2;
+    border-radius: var(--reserv-radius-md);
+    font-style: italic;
+    border-left: 4px solid var(--reserv-error-color);
+}
+
+/* Butoane formular */
+.reserv-form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.reserv-form-button-next,
+.reserv-form-button-prev,
+.reserv-form-button-save,
+.reserv-form-button-cancel {
+    padding: 0.9rem 1.75rem;
+    border-radius: var(--reserv-radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.reserv-form-button-next {
+    background-color: var(--reserv-primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-form-button-next:hover:not(:disabled) {
+    background-color: var(--reserv-primary-dark);
+    transform: translateY(-3px);
+    box-shadow: var(--reserv-shadow-md);
+}
+
+.reserv-form-button-next:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.reserv-form-button-prev {
+    background-color: var(--reserv-background-medium);
+    color: var(--reserv-text-medium);
+    border: none;
+}
+
+.reserv-form-button-prev:hover {
+    background-color: var(--reserv-border-color);
+    transform: translateY(-2px);
+}
+
+.reserv-form-button-save {
+    background-color: var(--reserv-secondary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-form-button-save:hover:not(:disabled) {
+    background-color: var(--reserv-secondary-dark);
+    transform: translateY(-3px);
+    box-shadow: var(--reserv-shadow-md);
+}
+
+.reserv-form-button-save:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.reserv-form-button-cancel {
+    background-color: var(--reserv-white);
+    color: var(--reserv-text-medium);
+    border: 2px solid var(--reserv-border-color);
+}
+
+.reserv-form-button-cancel:hover {
+    background-color: var(--reserv-background-light);
+    color: var(--reserv-text-dark);
+    border-color: var(--reserv-text-light);
+}
+
+.reserv-form-button-next:disabled,
+.reserv-form-button-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Footer de acțiuni */
+.reserv-profile-page-actions {
+    background-color: var(--reserv-white);
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+}
+
+.reserv-profile-page-button-cancel,
+.reserv-profile-page-button-finish {
+    padding: 0.9rem 2rem;
+    border-radius: var(--reserv-radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 160px;
+    text-align: center;
+}
+
+.reserv-profile-page-button-cancel {
+    background-color: var(--reserv-white);
+    color: var(--reserv-text-medium);
+    border: 2px solid var(--reserv-border-color);
+}
+
+.reserv-profile-page-button-cancel:hover {
+    background-color: var(--reserv-background-light);
+    color: var(--reserv-text-dark);
+    border-color: var(--reserv-text-light);
+}
+
+.reserv-profile-page-button-finish {
+    background-color: var(--reserv-primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+.reserv-profile-page-button-finish:hover:not(:disabled) {
+    background-color: var(--reserv-primary-dark);
+    transform: translateY(-3px);
+    box-shadow: var(--reserv-shadow-md);
+}
+
+.reserv-profile-page-button-finish:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.reserv-profile-page-button-finish:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .reserv-profile-page-content {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .reserv-profile-page-sidebar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .reserv-profile-page-header {
+        padding: 1rem;
+    }
+
+    .reserv-profile-page-title {
+        font-size: 1.5rem;
+    }
+
+    .reserv-profile-page-content {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .reserv-profile-form-container {
+        padding: 1.5rem;
+    }
+
+    .reserv-profile-form-title {
+        font-size: 1.4rem;
+    }
+
+    .reserv-profile-steps-indicator {
+        padding: 0.5rem;
+    }
+
+    .reserv-step-number {
+        width: 30px;
+        height: 30px;
+    }
+
+    .reserv-step-label {
+        font-size: 0.9rem;
+    }
+
+    .reserv-profile-page-actions {
+        padding: 1rem;
+    }
+
+    .reserv-form-buttons,
+    .reserv-profile-page-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .reserv-profile-page-button-cancel,
+    .reserv-profile-page-button-finish,
+    .reserv-form-button-prev,
+    .reserv-form-button-next,
+    .reserv-form-button-save,
+    .reserv-form-button-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+}

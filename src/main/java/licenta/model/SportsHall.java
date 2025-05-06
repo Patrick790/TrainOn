@@ -1,5 +1,7 @@
 package licenta.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -44,6 +46,11 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "admin_id")
     private Long adminId;
 
+    // Adăugare relație Many-to-Many către ReservationProfile
+    @ManyToMany(mappedBy = "selectedHalls")
+    @JsonIgnoreProperties("selectedHalls")
+    private List<ReservationProfile> reservationProfiles = new ArrayList<>();
+
     public SportsHall() {
     }
 
@@ -75,6 +82,15 @@ public class SportsHall extends BruteEntity<Long> {
     public void removeImage(SportsHallImage image) {
         images.remove(image);
         image.setSportsHall(null);
+    }
+
+    // Getter și setter pentru reservationProfiles
+    public List<ReservationProfile> getReservationProfiles() {
+        return reservationProfiles;
+    }
+
+    public void setReservationProfiles(List<ReservationProfile> reservationProfiles) {
+        this.reservationProfiles = reservationProfiles;
     }
 
     public String getName() {

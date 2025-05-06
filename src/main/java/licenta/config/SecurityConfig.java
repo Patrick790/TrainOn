@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
                         .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli
                         .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge imagini
+                        // Adaugare pentru profilurile de rezervare - doar utilizatorii autentificați pot accesa
+                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin") // Toți utilizatorii autentificați pot accesa profilurile
                         // Adaugare pentru gestionarea înregistrărilor de echipe
                         .requestMatchers("/admin/team-registrations/**").hasAuthority("admin") // Doar adminii pot accesa acest endpoint
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")

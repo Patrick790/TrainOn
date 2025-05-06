@@ -41,6 +41,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 path.startsWith("/register") ||
                 "OPTIONS".equals(method) || // Add support for OPTIONS requests
                 (path.startsWith("/sportsHalls") && "GET".equals(method));
+
+        // Nu am adăugat excepții pentru /reservationProfiles deoarece
+        // toate operațiile pe profiluri de rezervare necesită autentificare
     }
 
     @Override

@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, ChevronDown, LogOut, Star, ArrowLeft, Users, DollarSign, Compass, Info } from 'lucide-react';
 import axios from 'axios';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SportsHallMap from './SportsHallMap';
+import ReservationOptionsModal from './ReservationOptionsModal';
 import './SportsHallDetailPage.css';
 
 const SportsHallDetailPage = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [sportsHall, setSportsHall] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    // State pentru modalul de opțiuni de rezervare
+    const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
     // State pentru header și search bar - similar cu MainPage
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
@@ -92,6 +97,26 @@ const SportsHallDetailPage = () => {
     const handleSearch = (e) => {
         e.preventDefault();
         // Implementare căutare
+    };
+
+    // Funcții pentru gestionarea modalului de rezervare
+    const openReservationModal = () => {
+        if (isLoggedIn) {
+            setIsReservationModalOpen(true);
+        } else {
+            toggleLoginModal();
+        }
+    };
+
+    const closeReservationModal = () => {
+        setIsReservationModalOpen(false);
+    };
+
+    const handleReserveRemaining = () => {
+        // Aici vom implementa logica pentru rezervarea locurilor rămase
+        // De exemplu, deschideți un alt modal pentru selectarea datei și orei
+        closeReservationModal();
+        alert('Funcționalitatea de rezervare a locurilor rămase va fi implementată în curând.');
     };
 
     // Funcții pentru imagini
@@ -426,7 +451,7 @@ const SportsHallDetailPage = () => {
                                     </p>
                                     <div className="detail-contact-buttons">
                                         {isLoggedIn ? (
-                                            <button className="detail-book-button">Rezervă</button>
+                                            <button className="detail-book-button" onClick={openReservationModal}>Rezervă</button>
                                         ) : (
                                             <>
                                                 <button onClick={toggleLoginModal} className="detail-login-button">
@@ -478,6 +503,13 @@ const SportsHallDetailPage = () => {
                     />
                 </>
             )}
+
+            {/* Modal pentru opțiuni de rezervare */}
+            <ReservationOptionsModal
+                isOpen={isReservationModalOpen}
+                onClose={closeReservationModal}
+                onReserveRemaining={handleReserveRemaining}
+            />
         </div>
     );
 };

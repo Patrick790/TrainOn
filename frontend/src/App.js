@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainPage from './components/users/MainPage';
+import SportsHallDetailPage from './components/users/SportsHallDetailPage';
+import SearchResultsPage from './components/users/SearchResultsPage';
+import ProfileCreationPage from './components/users/ProfileCreationPage';
 import HallAdmin from './components/halladmin/HallAdmin';
 import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 import Admin from "./components/admin/Admin";
-import SportsHallDetailPage from './components/users/SportsHallDetailPage';
 
 function App() {
     return (
@@ -13,9 +15,9 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navigate to="/user-home" />} />
                     <Route path="/user-home" element={<MainPage />} />
-
-                    {/* Ruta pentru pagina de detalii a sălii de sport */}
                     <Route path="/sportsHalls/:id" element={<SportsHallDetailPage />} />
+                    <Route path="/search" element={<SearchResultsPage />} />
+                    <Route path="/profile-creation" element={<ProfileCreationPage />} />
 
                     {/* Hall Admin Routes */}
                     <Route path="/hall-admin-dashboard" element={<HallAdmin />} />
@@ -32,7 +34,6 @@ function App() {
                     <Route path="/admin-dashboard/view-schedule" element={<Admin />} />
                     <Route path="/admin-dashboard/manage-users" element={<Admin />} />
                     <Route path="/admin-dashboard/send-emails" element={<Admin />} />
-
                 </Routes>
             </div>
         </Router>
