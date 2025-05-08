@@ -5,8 +5,9 @@ import './Admin.css';
 import ViewAllHallsPage from './AdminPages/ViewAllHallsPage';
 import ApproveRegistrationsPage from './AdminPages/ApproveRegistrationsPage';
 import ViewHallsSchedulePage from './AdminPages/ViewHallsSchedulePage';
-import ManageUsersPage from './AdminPages/ManageUsersPage';
+import ManageUsersPage from './AdminPages/ManageUsersPage/ManageUsersPage';
 import SendEmailsPage from './AdminPages/SendEmailsPage';
+import Footer from '../pageComponents/Footer';
 
 class Admin extends Component {
     constructor(props) {
@@ -52,7 +53,6 @@ class Admin extends Component {
 
     render() {
         const { activeSection } = this.state;
-        const currentYear = new Date().getFullYear();
 
         return (
             <div className="global-admin-container">
@@ -169,22 +169,8 @@ class Admin extends Component {
                     {this.renderContent()}
                 </main>
 
-                <footer className="global-admin-footer">
-                    <div className="global-admin-footer-content">
-                        <div className="global-admin-footer-logo">
-                            <div className="global-admin-footer-logo-icon"></div>
-                            <span className="global-admin-footer-logo-text">TrainOn</span>
-                        </div>
-                        <div className="global-admin-footer-links">
-                            <a href="/terms" className="global-admin-footer-link">Termeni și condiții</a>
-                            <a href="/privacy" className="global-admin-footer-link">Politica de confidențialitate</a>
-                            <a href="/contact" className="global-admin-footer-link">Contact</a>
-                        </div>
-                        <div className="global-admin-footer-copyright">
-                            &copy; {currentYear} Platforma de Administrare
-                        </div>
-                    </div>
-                </footer>
+                {/* Folosim Footer ca componentă separată */}
+                <Footer />
             </div>
         );
     }

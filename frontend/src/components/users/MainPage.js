@@ -4,6 +4,7 @@ import { MapPin, ChevronDown, LogOut, Calendar } from 'lucide-react';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
+import Footer from '../pageComponents/Footer'; // Import Footer component
 import './MainPage.css';
 
 // Adăugăm doar această componentă în fișierul MainPage.js
@@ -317,6 +318,8 @@ class MainPage extends React.Component {
                         />
                     </>
                 )}
+
+                <Footer />
             </div>
         );
     }

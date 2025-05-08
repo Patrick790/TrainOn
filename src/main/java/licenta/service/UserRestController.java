@@ -5,8 +5,10 @@ import licenta.persistence.IUserSpringRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,10 +20,12 @@ import java.util.stream.StreamSupport;
 public class UserRestController {
 
     private final IUserSpringRepository userSpringRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserRestController(IUserSpringRepository userSpringRepository) {
+    public UserRestController(IUserSpringRepository userSpringRepository, PasswordEncoder passwordEncoder) {
         this.userSpringRepository = userSpringRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/{id}")
@@ -48,6 +52,26 @@ public class UserRestController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
+        // Criptăm parola înainte de salvare, similar cu metoda din UserInfoService
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Verificăm dacă data creării este setată
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(new Date());
+        }
+
+        // Verificăm dacă statusul contului este setat
+        if (user.getAccountStatus() == null) {
+            // Setăm statusul contului în funcție de tipul utilizatorului
+            if ("hall_admin".equals(user.getUserType())) {
+                // Pentru administratorii de sală, setăm statusul la "verified"
+                user.setAccountStatus("verified");
+            } else {
+                // Pentru utilizatorii obișnuiți, setăm statusul la "verified"
+                user.setAccountStatus("verified");
+            }
+        }
+
         return userSpringRepository.save(user);
     }
 
@@ -69,6 +93,12 @@ public class UserRestController {
             if (updatedUser.getCounty() != null) existingUser.setCounty(updatedUser.getCounty());
             if (updatedUser.getCity() != null) existingUser.setCity(updatedUser.getCity());
             if (updatedUser.getBirthDate() != null) existingUser.setBirthDate(updatedUser.getBirthDate());
+            if (updatedUser.getUserType() != null) existingUser.setUserType(updatedUser.getUserType());
+
+            // Dacă primim o parolă nouă în cererea de actualizare, o criptăm înainte de a o salva
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
 
             // Only admin can update the account status
             if (updatedUser.getAccountStatus() != null) {

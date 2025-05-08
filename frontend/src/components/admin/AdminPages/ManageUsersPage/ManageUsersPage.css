@@ -682,3 +682,71 @@
         align-self: flex-end;
     }
 }
+
+/* Stilizare bară de acțiuni admin */
+.admin-actions-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #4b5563;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-action-button:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.admin-action-button .action-icon {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.admin-action-button.create-user {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    border-color: #c7d2fe;
+}
+
+.admin-action-button.create-user:hover {
+    background-color: #e0e7ff;
+    border-color: #a5b4fc;
+}
+
+.admin-action-button.create-hall-admin {
+    background-color: #fffbeb;
+    color: #d97706;
+    border-color: #fef3c7;
+}
+
+.admin-action-button.create-hall-admin:hover {
+    background-color: #fef3c7;
+    border-color: #fde68a;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .admin-actions-bar {
+        flex-direction: column;
+    }
+
+    .admin-action-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

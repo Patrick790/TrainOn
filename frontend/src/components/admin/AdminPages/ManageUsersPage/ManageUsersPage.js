@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ManageUsersPage.css';
 import axios from 'axios';
+import CreateUserModal from './CreateUserModal';
 
 const ManageUsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -21,6 +22,9 @@ const ManageUsersPage = () => {
         county: '',
         userType: ''
     });
+    // New state for create modals
+    const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+    const [isCreateHallAdminModalOpen, setIsCreateHallAdminModalOpen] = useState(false);
 
     const API_URL = 'http://localhost:8080';
 
@@ -270,6 +274,29 @@ const ManageUsersPage = () => {
         }
     };
 
+    // Handler to add a new user to the list after creation
+    const handleUserCreated = (newUser) => {
+        setUsers(prevUsers => [...prevUsers, newUser]);
+
+        // If the new user meets current filter criteria, add to filtered users as well
+        const isActive = newUser.accountStatus === null || newUser.accountStatus === 'verified';
+        const matchesStatusFilter =
+            (statusFilter === 'active' && isActive) ||
+            (statusFilter === 'suspended' && newUser.accountStatus === 'suspended') ||
+            statusFilter === 'all';
+
+        const matchesCityFilter = !cityFilter || newUser.city === cityFilter;
+
+        if (matchesStatusFilter && matchesCityFilter) {
+            setFilteredUsers(prevFiltered => [...prevFiltered, newUser]);
+        }
+
+        // Add city to available cities if new
+        if (newUser.city && !availableCities.includes(newUser.city)) {
+            setAvailableCities(prev => [...prev, newUser.city].sort());
+        }
+    };
+
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
 
@@ -320,6 +347,21 @@ const ManageUsersPage = () => {
     return (
         <div className="global-admin-page">
             <h2 className="global-admin-page-title">Gestiunea utilizatorilor</h2>
+
+            <div className="admin-actions-bar">
+                <button
+                    className="admin-action-button create-user"
+                    onClick={() => setIsCreateUserModalOpen(true)}
+                >
+                    <span className="action-icon">+</span> Creează utilizator nou
+                </button>
+                <button
+                    className="admin-action-button create-hall-admin"
+                    onClick={() => setIsCreateHallAdminModalOpen(true)}
+                >
+                    <span className="action-icon">+</span> Creează administrator sală
+                </button>
+            </div>
 
             <div className="user-filters">
                 <div className="filters-left">
@@ -414,6 +456,7 @@ const ManageUsersPage = () => {
                 )}
             </div>
 
+            {/* Modal for viewing/editing existing user */}
             {isModalOpen && selectedUser && (
                 <div className="user-modal-overlay" onClick={closeModal}>
                     <div className="user-modal" onClick={e => e.stopPropagation()}>
@@ -592,6 +635,28 @@ const ManageUsersPage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Modal for creating new regular user */}
+            <CreateUserModal
+                isOpen={isCreateUserModalOpen}
+                onClose={() => setIsCreateUserModalOpen(false)}
+                onUserCreated={handleUserCreated}
+                userType="user"
+                title="Creare utilizator nou"
+                API_URL={API_URL}
+                getAuthHeader={getAuthHeader}
+            />
+
+            {/* Modal for creating new hall admin */}
+            <CreateUserModal
+                isOpen={isCreateHallAdminModalOpen}
+                onClose={() => setIsCreateHallAdminModalOpen(false)}
+                onUserCreated={handleUserCreated}
+                userType="hall_admin"
+                title="Creare administrator sală nou"
+                API_URL={API_URL}
+                getAuthHeader={getAuthHeader}
+            />
         </div>
     );
 };

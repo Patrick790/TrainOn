@@ -7,6 +7,8 @@ import ProfileCreationPage from './components/users/ProfileCreationPage';
 import HallAdmin from './components/halladmin/HallAdmin';
 import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 import Admin from "./components/admin/Admin";
+import PrivacyPolicy from './components/pageComponents/PrivacyPolicy';
+import TermsOfService from './components/pageComponents/TermsOfService';
 
 function App() {
     return (
@@ -18,6 +20,10 @@ function App() {
                     <Route path="/sportsHalls/:id" element={<SportsHallDetailPage />} />
                     <Route path="/search" element={<SearchResultsPage />} />
                     <Route path="/profile-creation" element={<ProfileCreationPage />} />
+
+                    {/* Legal Pages */}
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
 
                     {/* Hall Admin Routes */}
                     <Route path="/hall-admin-dashboard" element={<HallAdmin />} />

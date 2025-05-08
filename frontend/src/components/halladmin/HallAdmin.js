@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './HallAdmin.css';
+import Footer from '../pageComponents/Footer';
 import MyHalls from './AdminPages/MyHallsPage';
 import AddHallPage from './AdminPages/AddHallPage';
 import ManageSchedulePage from './AdminPages/ManageSchedulePage';
@@ -51,7 +52,6 @@ class HallAdmin extends Component {
 
     render() {
         const { activeSection } = this.state;
-        const currentYear = new Date().getFullYear();
 
         return (
             <div className="admin-container">
@@ -132,22 +132,8 @@ class HallAdmin extends Component {
                     {this.renderContent()}
                 </main>
 
-                <footer className="app-footer">
-                    <div className="footer-content">
-                        <div className="footer-logo">
-                            <div className="footer-logo-icon"></div>
-                            <span className="footer-logo-text">Licenta</span>
-                        </div>
-                        <div className="footer-links">
-                            <a href="/terms" className="footer-link">Termeni și condiții</a>
-                            <a href="/privacy" className="footer-link">Politica de confidențialitate</a>
-                            <a href="/contact" className="footer-link">Contact</a>
-                        </div>
-                        <div className="footer-copyright">
-                            &copy; {currentYear} Platforma de Administrare Săli Sport
-                        </div>
-                    </div>
-                </footer>
+                {/* Replace the old footer with the new Footer component */}
+                <Footer />
             </div>
         );
     }

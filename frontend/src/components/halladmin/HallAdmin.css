@@ -215,101 +215,6 @@
     margin-bottom: 2rem;
 }
 
-/* Footer Styles - Updated to be thinner */
-.app-footer {
-    background-color: #1f2937;
-    color: #e5e7eb;
-    padding: 1rem 2rem; /* Slightly increased padding */
-    font-size: 0.8rem; /* Smaller font size */
-    border-top: 1px solid #374151;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 1rem; /* Increased gap */
-}
-
-.footer-left {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem; /* Increased gap */
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; /* Slightly increased gap */
-}
-
-.footer-logo-icon {
-    width: 2.25rem; /* Slightly larger icon */
-    height: 2.25rem;
-    background-color: #6d28d9;
-    border-radius: 8px;
-}
-
-.footer-logo-text {
-    font-size: 1.3rem; /* Slightly larger text */
-    font-weight: 700;
-    color: #f9fafb;
-    letter-spacing: -0.5px;
-}
-
-.footer-license {
-    color: #d1d5db;
-    font-size: 0.85rem; /* Slightly larger font */
-}
-
-.footer-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.footer-links {
-    display: flex;
-    gap: 1.5rem; /* Maintained gap */
-    margin: 0.35rem 0; /* Slightly increased margin */
-}
-
-.footer-link {
-    color: #d1d5db;
-    text-decoration: none;
-    font-size: 0.85rem; /* Slightly larger font size */
-    transition: color 0.2s ease;
-    position: relative;
-}
-
-.footer-link:hover {
-    color: #f9fafb;
-}
-
-.footer-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: #8b5cf6;
-    transition: width 0.3s ease;
-}
-
-.footer-link:hover::after {
-    width: 100%;
-}
-
-.footer-copyright {
-    color: #9ca3af;
-    font-size: 0.75rem; /* Slightly larger font size */
-    text-align: right;
-    margin-top: 0.35rem; /* Slightly increased margin */
-}
-
 /* Admin Pages */
 .admin-page {
     max-width: 1200px;
@@ -426,10 +331,6 @@
         padding: 1.5rem 2rem;
     }
 
-    .app-footer {
-        padding: 0.75rem 2rem; /* Further reduced padding */
-    }
-
     .admin-buttons-container {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -443,12 +344,6 @@
         margin-top: 1rem;
         width: 100%;
         justify-content: flex-end;
-    }
-
-    .footer-links {
-        flex-direction: column;
-        gap: 0.5rem; /* Reduced gap */
-        align-items: center;
     }
 }
 

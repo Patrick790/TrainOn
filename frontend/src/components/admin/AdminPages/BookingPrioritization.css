@@ -1,0 +1,100 @@
+/* Stiluri pentru componenta de prioritizare a rezervărilor */
+
+.bp-booking-prioritization {
+    margin-bottom: 1.5rem;
+}
+
+.bp-generate-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.bp-generate-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #10b981;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.bp-generate-button:hover:not(:disabled) {
+    background-color: #059669;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    transform: translateY(-1px);
+}
+
+.bp-generate-button:disabled {
+    background-color: #6ee7b7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.bp-generate-button.bp-generating {
+    background-color: #6ee7b7;
+    cursor: not-allowed;
+}
+
+.bp-spinner {
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    border-width: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: bp-spin 1s linear infinite;
+}
+
+@keyframes bp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.bp-result-message {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    animation: bp-fadeIn 0.3s ease;
+    cursor: pointer;
+}
+
+.bp-result-message.bp-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.bp-result-message.bp-error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border-left: 4px solid #ef4444;
+}
+
+@keyframes bp-fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .bp-generate-button-container {
+        justify-content: center;
+    }
+
+    .bp-generate-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

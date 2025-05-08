@@ -508,176 +508,6 @@
     margin-bottom: 2rem;
 }
 
-/* Footer Styles cu clase unice */
-.global-admin-footer {
-    background-color: #1f2937;
-    color: #e5e7eb;
-    padding: 1rem 2rem;
-    font-size: 0.8rem;
-    border-top: 1px solid #374151;
-}
-
-.global-admin-footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 1rem;
-}
-
-.global-admin-footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-/* Footer logo styling - versiunea simplă ca înainte */
-.global-admin-footer-logo-icon {
-    width: 2.25rem;
-    height: 2.25rem;
-    background: linear-gradient(135deg, #6d28d9, #9333ea);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
-}
-
-.global-admin-footer-logo-icon::after {
-    content: "⚡";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1rem;
-    color: white;
-}
-
-.global-admin-footer-logo-icon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.4) 50%,
-            rgba(255, 255, 255, 0) 100%
-    );
-    transform: skewX(-25deg);
-    animation: lightningFlash 3s infinite;
-}
-
-.global-admin-footer-logo-text {
-    font-size: 1.5rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: 'Montserrat', sans-serif;
-    animation: shineText 3s linear infinite;
-}
-
-.global-admin-footer-links {
-    display: flex;
-    gap: 1.5rem;
-    margin: 0.35rem 0;
-}
-
-.global-admin-footer-link {
-    color: #d1d5db;
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s ease;
-    position: relative;
-}
-
-.global-admin-footer-link:hover {
-    color: #f9fafb;
-}
-
-.global-admin-footer-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: #8b5cf6;
-    transition: width 0.3s ease;
-}
-
-.global-admin-footer-link:hover::after {
-    width: 100%;
-}
-
-.global-admin-footer-copyright {
-    color: #9ca3af;
-    font-size: 0.75rem;
-    text-align: right;
-    margin-top: 0.35rem;
-}
-
-/* Animații */
-@keyframes shineText {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
-}
-
-@keyframes lightningFlash {
-    0%, 20%, 100% { left: -100%; }
-    25%, 45% { left: 100%; }
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
-}
-
-@keyframes flash {
-    0%, 100% {
-        opacity: 0;
-        width: 20px;
-    }
-    5%, 15% {
-        opacity: 1;
-        width: 30px;
-    }
-}
-
-@keyframes rotateCube {
-    0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
-    25% { transform: rotateY(90deg) rotateX(90deg); }
-    50% { transform: rotateY(180deg) rotateX(0deg); }
-    75% { transform: rotateY(270deg) rotateX(-90deg); }
-}
-
-@keyframes gradientBackground {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes moveLightLine {
-    0% { left: -100%; }
-    100% { left: 100%; }
-}
-
-@keyframes lightningMove {
-    0%, 100% {
-        width: 15px;
-        opacity: 0.7;
-    }
-    50% {
-        width: 25px;
-        opacity: 1;
-        box-shadow: 0 0 15px 5px rgba(124, 58, 237, 0.9);
-    }
-}
-
 /* Pagini Admin */
 .global-admin-page {
     max-width: 1200px;
@@ -779,6 +609,63 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Animații */
+@keyframes shineText {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes lightningFlash {
+    0%, 20%, 100% { left: -100%; }
+    25%, 45% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes flash {
+    0%, 100% {
+        opacity: 0;
+        width: 20px;
+    }
+    5%, 15% {
+        opacity: 1;
+        width: 30px;
+    }
+}
+
+@keyframes rotateCube {
+    0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+    25% { transform: rotateY(90deg) rotateX(90deg); }
+    50% { transform: rotateY(180deg) rotateX(0deg); }
+    75% { transform: rotateY(270deg) rotateX(-90deg); }
+}
+
+@keyframes gradientBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes moveLightLine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes lightningMove {
+    0%, 100% {
+        width: 15px;
+        opacity: 0.7;
+    }
+    50% {
+        width: 25px;
+        opacity: 1;
+        box-shadow: 0 0 15px 5px rgba(124, 58, 237, 0.9);
+    }
+}
+
 /* Responsive */
 @media (max-width: 1280px) {
     .global-admin-buttons-container {
@@ -803,10 +690,6 @@
         padding: 1.5rem 2rem;
     }
 
-    .global-admin-footer {
-        padding: 0.75rem 2rem;
-    }
-
     .global-admin-buttons-container {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -820,21 +703,6 @@
         margin-top: 1rem;
         width: 100%;
         justify-content: flex-end;
-    }
-
-    .global-admin-footer-links {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .global-admin-footer-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .global-admin-footer-copyright {
-        text-align: center;
     }
 }
 
