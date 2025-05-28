@@ -7,6 +7,7 @@ import AddHallPage from './AdminPages/AddHallPage';
 import ManageSchedulePage from './AdminPages/ManageSchedulePage';
 import ViewReservationsPage from './AdminPages/ViewReservationsPage';
 import ManageReviewsPage from './AdminPages/ManageReviewsPage';
+import AdminHeader from './AdminPages/Header';
 
 class HallAdmin extends Component {
     constructor(props) {
@@ -55,19 +56,10 @@ class HallAdmin extends Component {
 
         return (
             <div className="admin-container">
-                <header className="header">
-                    <div className="logo-container">
-                        <Link to="/hall-admin-dashboard" className="logo-link">
-                            <div className="logo"></div>
-                            <span className="logo-text">Licenta</span>
-                        </Link>
-                    </div>
-                    <div className="auth-buttons">
-                        <button onClick={this.handleLogout} className="auth-button">
-                            Ieșire
-                        </button>
-                    </div>
-                </header>
+                <AdminHeader
+                    isLoggedIn={true} // Pass the appropriate value
+                    onLogout={this.handleLogout}
+                />
 
                 <nav className="admin-nav">
                     <div className="admin-buttons-container">
@@ -132,7 +124,6 @@ class HallAdmin extends Component {
                     {this.renderContent()}
                 </main>
 
-                {/* Replace the old footer with the new Footer component */}
                 <Footer />
             </div>
         );

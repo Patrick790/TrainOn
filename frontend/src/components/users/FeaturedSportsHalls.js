@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FeaturedSportsHalls.css';
 
@@ -7,6 +7,7 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
     const [sportsHalls, setSportsHalls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // Adăugăm stare pentru animație și tranziție fluidă
     const [isChanging, setIsChanging] = useState(false);
@@ -95,14 +96,21 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
         return rating.toFixed(1);
     };
 
+    // Funcție pentru navigarea la pagina de recenzii când se face click pe rating
+    const handleRatingClick = (hallId, e) => {
+        e.preventDefault(); // Prevenim comportamentul implicit al link-ului
+        e.stopPropagation(); // Oprim propagarea evenimentului
+        navigate(`/sportsHalls/${hallId}/reviews`);
+    };
+
     // Funcție pentru a genera stelele de rating
-    const renderStars = (rating) => {
+    const renderStars = (rating, hallId) => {
         const fullStars = Math.floor(rating);
         const hasHalfStar = rating % 1 >= 0.5;
         const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
         return (
-            <div className="sports-hall-stars">
+            <div className="sports-hall-stars" onClick={(e) => handleRatingClick(hallId, e)}>
                 {[...Array(fullStars)].map((_, i) => (
                     <span key={`full-${i}`} className="sports-hall-star-full">★</span>
                 ))}
@@ -156,7 +164,7 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
                                             {formatPrice(hall.tariff)}
                                         </span>
                                         <span className="sports-hall-rating">
-                                            {renderStars(rating)}
+                                            {renderStars(rating, hall.id)}
                                         </span>
                                     </div>
 

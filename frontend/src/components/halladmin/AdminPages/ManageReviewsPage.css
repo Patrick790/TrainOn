@@ -1,0 +1,241 @@
+/* ManageReviewsPage.css (Clean Design) */
+
+.reviews-manager {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Hall Selector Styles */
+.hall-selector {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hall-selector label {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #4b5563;
+}
+
+.select-wrapper {
+    position: relative;
+    min-width: 300px;
+}
+
+.select-wrapper select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 1rem;
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.select-wrapper .select-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+}
+
+/* Filters Styles */
+.reviews-filters {
+    display: flex;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.filters-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-buttons button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background-color: white;
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-buttons button:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.filter-buttons button.active {
+    background-color: #6d28d9;
+    color: white;
+    border-color: #6d28d9;
+}
+
+/* Reviews List Styles - CLEAN DESIGN */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.review-card {
+    position: relative;
+    background: none;
+    border-radius: 0;
+    padding: 0;
+    border-bottom: 1px solid #e9e6f3;
+    padding-bottom: 1.5rem;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.review-user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    background-color: #6d28d9;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.review-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.review-date {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.review-content {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-left: 52px; /* Aliniază conținutul cu textul utilizatorului */
+}
+
+.review-content p {
+    margin: 0;
+}
+
+/* Last review shouldn't have a border */
+.review-card:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Loading, Error and Empty States */
+.reviews-loading,
+.reviews-error,
+.reviews-empty {
+    text-align: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.reviews-loading {
+    color: #6b7280;
+}
+
+.reviews-error {
+    color: #ef4444;
+}
+
+.reviews-empty {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .hall-selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .select-wrapper {
+        width: 100%;
+    }
+
+    .reviews-filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filters-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .review-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}

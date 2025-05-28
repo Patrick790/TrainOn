@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ChevronDown, LogOut, Calendar } from 'lucide-react';
+import { MapPin, ChevronDown, Calendar } from 'lucide-react';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
+import Header from './Header';
 import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
-import Footer from '../pageComponents/Footer'; // Import Footer component
+import Footer from '../pageComponents/Footer';
 import './MainPage.css';
 
-// Adăugăm doar această componentă în fișierul MainPage.js
+// ReservationOptionsModal component remains unchanged
 class ReservationOptionsModal extends React.Component {
     render() {
         const { isOpen, onClose } = this.props;
@@ -75,12 +76,11 @@ class MainPage extends React.Component {
             isActivityDropdownOpen: false,
             isLoginModalOpen: false,
             isRegisterModalOpen: false,
-            isReservationModalOpen: false,  // Adăugăm această stare pentru modalul de rezervare
+            isReservationModalOpen: false,
             isLoggedIn: localStorage.getItem('isLoggedIn') === 'true'
         };
     }
 
-    // Toate metodele existente rămân neschimbate
     componentDidMount() {
         this.checkLoginStatus();
         window.addEventListener('storage', this.checkLoginStatus);
@@ -163,15 +163,12 @@ class MainPage extends React.Component {
         window.location.href = '/';
     }
 
-    // Adăugăm doar aceste două metode
     toggleReservationModal = () => {
-        // Deschide modalul doar dacă utilizatorul este autentificat
         if (this.state.isLoggedIn) {
             this.setState(prevState => ({
                 isReservationModalOpen: !prevState.isReservationModalOpen
             }));
         } else {
-            // Dacă nu este autentificat, deschide modalul de login
             this.toggleLoginModal();
         }
     }
@@ -187,31 +184,13 @@ class MainPage extends React.Component {
 
         return (
             <div className="main-container">
-                <header className="header">
-                    <div className="logo-container">
-                        <Link to="/" className="logo-link">
-                            <div className="logo"></div>
-                            <span className="logo-text">Licenta</span>
-                        </Link>
-                    </div>
-                    <div className="auth-buttons">
-                        {isLoggedIn ? (
-                            <button onClick={this.handleLogout} className="auth-button logout-button">
-                                <LogOut size={16} />
-                                Deconectare
-                            </button>
-                        ) : (
-                            <>
-                                <button onClick={this.toggleLoginModal} className="auth-button">
-                                    Intra in cont
-                                </button>
-                                <button onClick={this.toggleRegisterModal} className="auth-button">
-                                    Inregistrare
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </header>
+                {/* Use the new Header component */}
+                <Header
+                    isLoggedIn={isLoggedIn}
+                    onLoginClick={this.toggleLoginModal}
+                    onRegisterClick={this.toggleRegisterModal}
+                    onLogout={this.handleLogout}
+                />
 
                 <main className="main-content">
                     <div className="search-container">
@@ -285,7 +264,7 @@ class MainPage extends React.Component {
                 {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls */}
                 <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
 
-                {/* Adăugăm doar acest div pentru butonul de rezervare */}
+                {/* Adăugăm div pentru butonul de rezervare */}
                 <div className="reservation-cta">
                     <p className="reservation-text">
                         Dorești să efectuezi o rezervare rapidă? Folosește sistemul nostru inteligent

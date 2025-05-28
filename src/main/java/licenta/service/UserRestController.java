@@ -29,13 +29,13 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('user', 'admin')")
+    @PreAuthorize("hasAnyAuthority('user', 'admin', 'hall_admin')")
     public User getUserById(@PathVariable Long id) {
         return userSpringRepository.findById(id).orElse(null);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('user', 'admin')")
+    @PreAuthorize("hasAnyAuthority('user', 'admin', 'hall_admin')")
     public Iterable<User> getAllUsers(@RequestParam(required = false) String accountStatus) {
         Iterable<User> users = userSpringRepository.findAll();
 
@@ -82,7 +82,7 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('user', 'admin')")
+    @PreAuthorize("hasAnyAuthority('user', 'admin', 'hall_admin')")
     public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         User existingUser = userSpringRepository.findById(id).orElse(null);
         if (existingUser != null) {

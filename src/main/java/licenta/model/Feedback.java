@@ -3,6 +3,8 @@ package licenta.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "feedbacks")
 public class Feedback extends BruteEntity<Long> {
@@ -12,8 +14,8 @@ public class Feedback extends BruteEntity<Long> {
     private SportsHall hall;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "rating")
     private Integer rating;
@@ -21,14 +23,26 @@ public class Feedback extends BruteEntity<Long> {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "date")
+    private Date date;
+
     public Feedback() {
     }
 
-    public Feedback(SportsHall hall, Team team, Integer rating, String comment) {
+    public Feedback(SportsHall hall, User user, Integer rating, String comment, Date date) {
         this.hall = hall;
-        this.team = team;
+        this.user = user;
         this.rating = rating;
         this.comment = comment;
+        this.date = date;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public SportsHall getHall() {
@@ -39,12 +53,12 @@ public class Feedback extends BruteEntity<Long> {
         this.hall = hall;
     }
 
-    public Team getTeam() {
-        return team;
+    public User getUser() {
+        return user;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Integer getRating() {
@@ -68,7 +82,7 @@ public class Feedback extends BruteEntity<Long> {
         return "Feedback{" +
                 "id=" + getId() +
                 ", hall=" + hall +
-                ", team=" + team +
+                ", user=" + user +
                 ", rating=" + rating +
                 ", comment='" + comment + '\'' +
                 '}';

@@ -56,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
                         .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET pentru săli sunt publice
                         .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
+                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll() // Permite accesul public la endpoint-ul de recenzii
+                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll() // Permite accesul public la detalii specifice de recenzii
                         .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza săli
                         .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
                         .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli

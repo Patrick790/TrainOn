@@ -4,11 +4,13 @@ import MainPage from './components/users/MainPage';
 import SportsHallDetailPage from './components/users/SportsHallDetailPage';
 import SearchResultsPage from './components/users/SearchResultsPage';
 import ProfileCreationPage from './components/users/ProfileCreationPage';
+import ProfilePage from './components/users/profile/ProfilePage';
 import HallAdmin from './components/halladmin/HallAdmin';
 import EditHallPage from './components/halladmin/AdminPages/EditHallPage';
 import Admin from "./components/admin/Admin";
 import PrivacyPolicy from './components/pageComponents/PrivacyPolicy';
 import TermsOfService from './components/pageComponents/TermsOfService';
+import HallReviews from './components/feedback/HallReviews';
 
 function App() {
     return (
@@ -20,6 +22,8 @@ function App() {
                     <Route path="/sportsHalls/:id" element={<SportsHallDetailPage />} />
                     <Route path="/search" element={<SearchResultsPage />} />
                     <Route path="/profile-creation" element={<ProfileCreationPage />} />
+                    <Route path="/profil" element={<ProfilePage />} />
+                    <Route path="/sportsHalls/:hallId/reviews" element={<HallReviews />} />
 
                     {/* Legal Pages */}
                     <Route path="/privacy" element={<PrivacyPolicy />} />

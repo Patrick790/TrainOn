@@ -1,0 +1,481 @@
+/* ProfilePage.css */
+
+.profile-page {
+    min-height: 100vh;
+    background-image: url('../bgrProfile.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+}
+
+.profile-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent; /* Complet transparent */
+    z-index: 1;
+}
+
+.profile-container {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 2;
+}
+
+/* Sidebar */
+.profile-sidebar {
+    width: 280px;
+    background: rgba(0, 0, 0, 0.1); /* Foarte transparent, doar o umbră subtilă */
+    backdrop-filter: blur(3px); /* Blur minim */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Bordură foarte subtilă */
+    padding: 2rem 0;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Umbră foarte subtilă */
+    border-radius: 16px;
+    margin: 1rem 0 1rem 1rem;
+}
+
+.profile-user-info {
+    text-align: center;
+    padding: 0 2rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(168, 85, 247, 0.6));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-user-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); /* Umbră puternică pentru lizibilitate */
+}
+
+.profile-user-info p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.profile-nav {
+    padding: 0 1rem;
+}
+
+.profile-nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.profile-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* Foarte subtil */
+    color: white;
+}
+
+.profile-nav-item.active {
+    background: rgba(124, 58, 237, 0.2); /* Puțin mai vizibil pentru elementul activ */
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Area */
+.profile-content {
+    flex: 1;
+    padding: 2rem;
+    margin: 1rem 1rem 1rem 0;
+}
+
+.profile-section {
+    background: rgba(0, 0, 0, 0.08); /* Foarte transparent */
+    backdrop-filter: blur(3px); /* Blur minim */
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Personal Data Section */
+.personal-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.data-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.data-field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.data-value {
+    font-size: 1rem;
+    color: white;
+    padding: 8px 0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.edit-input {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    backdrop-filter: blur(3px);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.edit-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Buttons */
+.edit-button, .save-button, .cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-button {
+    background-color: rgba(124, 58, 237, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.edit-button:hover {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.save-button {
+    background-color: rgba(16, 185, 129, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.save-button:hover {
+    background-color: rgba(5, 150, 105, 0.8);
+}
+
+.cancel-button {
+    background-color: rgba(107, 114, 128, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cancel-button:hover {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+.edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.add-button {
+    background-color: rgba(124, 58, 237, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-button:hover {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+/* Reservation Profiles */
+.reservation-profiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.profile-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+    transition: all 0.2s;
+}
+
+.profile-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.profile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.profile-card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.profile-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.profile-badge.default {
+    background-color: rgba(59, 130, 246, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-card-content p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.profile-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.edit-profile-btn, .delete-profile-btn {
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+}
+
+.edit-profile-btn {
+    background-color: rgba(107, 114, 128, 0.6);
+}
+
+.edit-profile-btn:hover {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+.delete-profile-btn {
+    background-color: rgba(220, 38, 38, 0.6);
+}
+
+.delete-profile-btn:hover {
+    background-color: rgba(185, 28, 28, 0.8);
+}
+
+/* Security Section */
+.security-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+}
+
+.security-item.danger {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.security-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.security-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.security-button {
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: rgba(124, 58, 237, 0.7);
+    color: white;
+}
+
+.security-button:hover {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.security-button.danger {
+    background-color: rgba(220, 38, 38, 0.7);
+    color: white;
+}
+
+.security-button.danger:hover {
+    background-color: rgba(185, 28, 28, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-page::before {
+        background-color: transparent;
+    }
+
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+        position: static;
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .profile-nav {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0;
+    }
+
+    .profile-nav-item {
+        white-space: nowrap;
+        margin-bottom: 0;
+    }
+
+    .profile-content {
+        padding: 1rem;
+        margin: 0 1rem 1rem;
+    }
+
+    .personal-data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reservation-profiles {
+        grid-template-columns: 1fr;
+    }
+
+    .security-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .edit-button, .save-button, .cancel-button {
+        justify-content: center;
+    }
+}

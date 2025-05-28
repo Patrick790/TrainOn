@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, ChevronDown, LogOut, Star, ArrowLeft, Users, DollarSign, Compass, Info } from 'lucide-react';
+import { MapPin, ChevronDown, Star, ArrowLeft, Users, DollarSign, Compass, Info } from 'lucide-react';
 import axios from 'axios';
+import Header from './Header';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SportsHallMap from './SportsHallMap';
@@ -99,6 +100,11 @@ const SportsHallDetailPage = () => {
         // Implementare căutare
     };
 
+    // Funcție pentru navigarea la pagina de recenzii
+    const goToReviews = () => {
+        navigate(`/sportsHalls/${id}/reviews`);
+    };
+
     // Funcții pentru gestionarea modalului de rezervare
     const openReservationModal = () => {
         if (isLoggedIn) {
@@ -162,7 +168,7 @@ const SportsHallDetailPage = () => {
         const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
         return (
-            <div className="detail-stars">
+            <div className="detail-stars" onClick={goToReviews} style={{ cursor: 'pointer' }} title="Vezi recenziile">
                 {[...Array(fullStars)].map((_, i) => (
                     <Star key={`full-${i}`} className="star-full" fill="#FFD700" color="#FFD700" size={18} />
                 ))}
@@ -205,32 +211,15 @@ const SportsHallDetailPage = () => {
 
     return (
         <div className="main-container">
-            {/* Header - similar cu MainPage */}
-            <header className="header">
-                <div className="logo-container">
-                    <div className="logo"></div>
-                    <span className="logo-text">Licenta</span>
-                </div>
-                <div className="auth-buttons">
-                    {isLoggedIn ? (
-                        <button onClick={handleLogout} className="auth-button logout-button">
-                            <LogOut size={16} />
-                            Deconectare
-                        </button>
-                    ) : (
-                        <>
-                            <button onClick={toggleLoginModal} className="auth-button">
-                                Intra in cont
-                            </button>
-                            <button onClick={toggleRegisterModal} className="auth-button">
-                                Inregistrare
-                            </button>
-                        </>
-                    )}
-                </div>
-            </header>
+            {/* Folosim noua componentă Header */}
+            <Header
+                isLoggedIn={isLoggedIn}
+                onLoginClick={toggleLoginModal}
+                onRegisterClick={toggleRegisterModal}
+                onLogout={handleLogout}
+            />
 
-            {/* Main content - combinăm search bar din MainPage cu conținutul specific paginii de detalii */}
+            {/* Main content cu search bar */}
             <main className="main-content">
                 <div className="search-container">
                     <form onSubmit={handleSearch} className="search-bar">
@@ -321,6 +310,9 @@ const SportsHallDetailPage = () => {
                             </div>
                             <div className="detail-page-rating">
                                 {renderStars(rating)}
+                                <Link to={`/sportsHalls/${id}/reviews`} className="view-reviews-link">
+                                    Vezi toate recenziile
+                                </Link>
                             </div>
                         </div>
                         {sportsHall.type && <div className="detail-page-badge">{sportsHall.type}</div>}
