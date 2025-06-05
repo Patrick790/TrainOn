@@ -7,6 +7,7 @@ import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SportsHallMap from './SportsHallMap';
 import ReservationOptionsModal from './ReservationOptionsModal';
+import Footer from '../pageComponents/Footer';
 import './SportsHallDetailPage.css';
 
 const SportsHallDetailPage = () => {
@@ -20,33 +21,73 @@ const SportsHallDetailPage = () => {
     // State pentru modalul de opțiuni de rezervare
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
-    // State pentru header și search bar - similar cu MainPage
+    // State pentru header și search bar - cu orașe dinamice
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-    const [location, setLocation] = useState('Cluj-Napoca');
+    const [location, setLocation] = useState(''); // Nu mai presetăm Cluj-Napoca
     const [activity, setActivity] = useState('Sport');
     const [searchQuery, setSearchQuery] = useState('');
+    const [cities, setCities] = useState([]); // Array pentru orașele încărcate din baza de date
+    const [loadingCities, setLoadingCities] = useState(true); // Loading state pentru orașe
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
     const [isActivityDropdownOpen, setIsActivityDropdownOpen] = useState(false);
 
     const API_URL = 'http://localhost:8080';
 
     useEffect(() => {
-        const fetchSportsHall = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/sportsHalls/${id}`);
-                setSportsHall(response.data);
-                setLoading(false);
-            } catch (err) {
-                console.error('Eroare la încărcarea sălii:', err);
-                setError('Nu s-a putut încărca sala de sport.');
-                setLoading(false);
-            }
+        const fetchData = async () => {
+            // Încărcăm datele sălii și orașele în paralel
+            const promises = [
+                fetchSportsHall(),
+                fetchCities()
+            ];
+
+            await Promise.all(promises);
         };
 
-        fetchSportsHall();
+        fetchData();
     }, [id]);
+
+    // Funcție pentru încărcarea sălii de sport
+    const fetchSportsHall = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/sportsHalls/${id}`);
+            setSportsHall(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Eroare la încărcarea sălii:', err);
+            setError('Nu s-a putut încărca sala de sport.');
+            setLoading(false);
+        }
+    };
+
+    // Nouă funcție pentru încărcarea orașelor din baza de date
+    const fetchCities = async () => {
+        setLoadingCities(true);
+        try {
+            const response = await fetch(`${API_URL}/sportsHalls/cities`);
+            if (response.ok) {
+                const citiesData = await response.json();
+                const cities = Array.isArray(citiesData) ? citiesData : [];
+
+                setCities(cities);
+                // Setăm primul oraș ca default dacă există orașe disponibile
+                if (cities.length > 0) {
+                    setLocation(cities[0]);
+                }
+                setLoadingCities(false);
+            } else {
+                console.error('Eroare la încărcarea orașelor:', response.status);
+                setCities([]);
+                setLoadingCities(false);
+            }
+        } catch (error) {
+            console.error('Eroare la încărcarea orașelor:', error);
+            setCities([]);
+            setLoadingCities(false);
+        }
+    };
 
     const checkLoginStatus = () => {
         setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
@@ -97,7 +138,20 @@ const SportsHallDetailPage = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Implementare căutare
+
+        // Verificăm dacă au fost selectate orașul
+        if (!location) {
+            alert('Vă rugăm să selectați un oraș pentru căutare.');
+            return;
+        }
+
+        const searchParams = new URLSearchParams();
+        searchParams.append('city', location);
+        searchParams.append('activity', activity);
+        if (searchQuery) {
+            searchParams.append('query', searchQuery);
+        }
+        window.location.href = `/search?${searchParams.toString()}`;
     };
 
     // Funcție pentru navigarea la pagina de recenzii
@@ -191,8 +245,8 @@ const SportsHallDetailPage = () => {
         return facilitiesString.split(',').map(facility => facility.trim());
     };
 
-    const locations = ['Cluj-Napoca', 'Timisoara', 'Bucuresti', 'Iasi'];
-    const activities = ['Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
+    // Folosim orașele din baza de date în loc de array-ul hardcodat
+    const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
 
     if (loading) {
         return <div className="detail-page-loading">Se încarcă...</div>;
@@ -230,20 +284,29 @@ const SportsHallDetailPage = () => {
                                     className="selected-option"
                                     onClick={toggleLocationDropdown}
                                 >
-                                    {location}
+                                    {loadingCities
+                                        ? 'Se încarcă orașele...'
+                                        : location || 'Selectează orașul'
+                                    }
                                     <ChevronDown className="icon-small" />
                                 </div>
-                                {isLocationDropdownOpen && (
+                                {isLocationDropdownOpen && !loadingCities && (
                                     <div className="options-list">
-                                        {locations.map((loc) => (
-                                            <div
-                                                key={loc}
-                                                className="option"
-                                                onClick={() => handleLocationChange(loc)}
-                                            >
-                                                {loc}
+                                        {cities.length > 0 ? (
+                                            cities.map((city) => (
+                                                <div
+                                                    key={city}
+                                                    className="option"
+                                                    onClick={() => handleLocationChange(city)}
+                                                >
+                                                    {city}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="option disabled">
+                                                Nu există orașe disponibile
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -282,7 +345,11 @@ const SportsHallDetailPage = () => {
                             className="search-input"
                         />
 
-                        <button type="submit" className="search-button">
+                        <button
+                            type="submit"
+                            className="search-button"
+                            disabled={loadingCities || !location}
+                        >
                             CAUTĂ
                         </button>
                     </form>
@@ -462,23 +529,8 @@ const SportsHallDetailPage = () => {
                 </div>
             </div>
 
-            {/* Footer */}
-            <footer className="app-footer">
-                <div className="footer-content">
-                    <div className="footer-logo">
-                        <div className="footer-logo-icon"></div>
-                        <span className="footer-logo-text">Licenta</span>
-                    </div>
-                    <div className="footer-links">
-                        <a href="/terms" className="footer-link">Termeni și condiții</a>
-                        <a href="/privacy" className="footer-link">Politica de confidențialitate</a>
-                        <a href="/contact" className="footer-link">Contact</a>
-                    </div>
-                    <div className="footer-copyright">
-                        &copy; {new Date().getFullYear()} Platforma de Administrare Săli Sport
-                    </div>
-                </div>
-            </footer>
+            {/* Footer Global */}
+            <Footer />
 
             {/* Modals */}
             {!isLoggedIn && (

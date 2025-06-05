@@ -8,6 +8,7 @@ class MyHallsPage extends Component {
         super(props);
         this.state = {
             halls: [],
+            hallRatings: {}, // Obiect pentru a stoca rating-urile fiecărei săli
             loading: true,
             error: null,
             redirectToEdit: null
@@ -45,6 +46,10 @@ class MyHallsPage extends Component {
 
             const halls = await response.json();
             console.log('Halls loaded:', halls);
+
+            // După încărcarea sălilor, încărcăm rating-urile pentru fiecare
+            await this.fetchRatingsForHalls(halls);
+
             this.setState({ halls, loading: false });
         } catch (error) {
             console.error('Error fetching halls:', error);
@@ -54,6 +59,56 @@ class MyHallsPage extends Component {
                 halls: []
             });
         }
+    }
+
+    fetchRatingsForHalls = async (halls) => {
+        const hallRatings = {};
+
+        // Încărcăm rating-urile pentru fiecare sală în paralel
+        await Promise.all(
+            halls.map(async (hall) => {
+                try {
+                    const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hall.id}`);
+                    if (response.ok) {
+                        const feedbacks = await response.json();
+                        const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
+                        hallRatings[hall.id] = ratingData;
+                    } else {
+                        // Dacă nu putem încărca feedback-urile, setăm valori default
+                        hallRatings[hall.id] = {
+                            averageRating: 0,
+                            totalReviews: 0
+                        };
+                    }
+                } catch (error) {
+                    console.error(`Error fetching ratings for hall ${hall.id}:`, error);
+                    hallRatings[hall.id] = {
+                        averageRating: 0,
+                        totalReviews: 0
+                    };
+                }
+            })
+        );
+
+        this.setState({ hallRatings });
+    }
+
+    calculateRatingFromFeedbacks = (feedbacks) => {
+        if (!feedbacks || feedbacks.length === 0) {
+            return {
+                averageRating: 0,
+                totalReviews: 0
+            };
+        }
+
+        // Calculăm media rating-urilor
+        const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
+        const averageRating = totalRating / feedbacks.length;
+
+        return {
+            averageRating: Math.round(averageRating * 10) / 10, // Rotunjim la o zecimală
+            totalReviews: feedbacks.length
+        };
     }
 
     getCoverImage = (hall) => {
@@ -67,11 +122,10 @@ class MyHallsPage extends Component {
     }
 
     handleEditClick = (hallId) => {
-        this.setState({ redirectToEdit: hallId });
+        this.setState({ redirectToEdit: `/edit-hall/${hallId}` });
     }
 
     renderRatingStars = (rating) => {
-        // Codul existent pentru rating
         const totalStars = 5;
         const fullStars = Math.floor(rating);
         const hasHalfStar = rating % 1 >= 0.3 && rating % 1 <= 0.7;
@@ -141,10 +195,10 @@ class MyHallsPage extends Component {
     }
 
     render() {
-        const { halls, loading, error, redirectToEdit } = this.state;
+        const { halls, hallRatings, loading, error, redirectToEdit } = this.state;
 
         if (redirectToEdit) {
-            return <Navigate to={`/edit-hall/${redirectToEdit}`} />;
+            return <Navigate to={redirectToEdit} />;
         }
 
         if (loading) {
@@ -163,6 +217,7 @@ class MyHallsPage extends Component {
                     {halls.length > 0 ? (
                         halls.map(hall => {
                             const coverImageUrl = this.getCoverImage(hall);
+                            const ratingData = hallRatings[hall.id] || { averageRating: 0, totalReviews: 0 };
 
                             return (
                                 <div key={hall.id} className="hall-card">
@@ -189,17 +244,18 @@ class MyHallsPage extends Component {
                                         <p className="hall-location">{hall.city}, {hall.county}</p>
                                         <p className="hall-description">{hall.description || 'Fără descriere'}</p>
 
-                                        {/* Temporar, până când avem ratings reale */}
+                                        {/* Rating real din baza de date */}
                                         <div className="hall-rating">
-                                            {this.renderRatingStars(0)}
+                                            {this.renderRatingStars(ratingData.averageRating)}
                                             <span className="rating-text">
-                                                0 (0 recenzii)
+                                                {ratingData.averageRating > 0
+                                                    ? `${ratingData.averageRating} (${ratingData.totalReviews} ${ratingData.totalReviews === 1 ? 'recenzie' : 'recenzii'})`
+                                                    : 'Fără recenzii'
+                                                }
                                             </span>
                                         </div>
 
                                         <div className="hall-actions">
-                                            <button className="hall-action-button">Program</button>
-                                            <button className="hall-action-button">Rezervări</button>
                                             <button
                                                 className="hall-action-button edit"
                                                 onClick={() => this.handleEditClick(hall.id)}

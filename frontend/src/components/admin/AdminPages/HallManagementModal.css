@@ -1,0 +1,698 @@
+/* Hall Management Modal Styles - Enhanced Design */
+.hall-management-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(15, 15, 35, 0.9));
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.hall-management-modal {
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 1200px;
+    max-height: 95vh;
+    overflow: hidden;
+    box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.25),
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hall-management-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 40px;
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6, #a855f7);
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.hall-management-modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.hall-management-modal-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hall-management-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+}
+
+.hall-management-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.hall-management-modal-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.hall-management-loading,
+.hall-management-error {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 1.2rem;
+}
+
+.hall-management-loading {
+    color: #6d28d9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.hall-management-loading::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid #6d28d9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hall-management-error {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    margin: 20px;
+}
+
+.hall-management-main-info {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 48px;
+    margin-bottom: 40px;
+}
+
+.hall-management-image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+}
+
+.hall-management-cover-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease;
+}
+
+.hall-management-cover-image:hover {
+    transform: scale(1.02);
+}
+
+.hall-management-placeholder {
+    width: 100%;
+    height: 280px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.hall-management-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.hall-management-initial {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #6b7280;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.hall-management-rating-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 20px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.modal-rating-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.modal-half-star-container {
+    position: relative;
+}
+
+.modal-half-star {
+    position: absolute;
+    clip-path: inset(0 50% 0 0);
+}
+
+.modal-star-background {
+    position: relative;
+}
+
+.hall-management-rating-text {
+    font-size: 1rem;
+    color: #0369a1;
+    font-weight: 600;
+    text-align: center;
+}
+
+.hall-management-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.hall-management-field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hall-management-field label {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.875rem;
+}
+
+.hall-management-field span {
+    color: #334155;
+    font-size: 1.125rem;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    min-height: 24px;
+    line-height: 1.5;
+}
+
+.hall-management-input,
+.hall-management-textarea {
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.hall-management-input:focus,
+.hall-management-textarea:focus {
+    outline: none;
+    border-color: #6d28d9;
+    box-shadow:
+            0 0 0 4px rgba(109, 40, 217, 0.1),
+            0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.hall-management-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.hall-management-location,
+.hall-management-contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.hall-management-admin-info {
+    padding: 24px;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 2px solid rgba(14, 165, 233, 0.2);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hall-management-admin-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0ea5e9, #3b82f6, #6366f1);
+}
+
+.hall-management-admin-info label {
+    font-weight: 700;
+    color: #075985;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hall-management-admin-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-name {
+    font-weight: 700;
+    color: #0c4a6e;
+    font-size: 1.125rem;
+}
+
+.admin-email {
+    font-size: 1rem;
+    color: #0369a1;
+}
+
+.hall-status-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    min-width: 100px;
+}
+
+.hall-status-badge.active {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+    border: 1px solid #34d399;
+}
+
+.hall-status-badge.inactive {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.hall-management-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding-top: 32px;
+    border-top: 2px solid #e2e8f0;
+    margin-top: 8px;
+}
+
+.hall-management-btn {
+    padding: 16px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hall-management-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.hall-management-btn:hover::before {
+    left: 100%;
+}
+
+.hall-management-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.hall-management-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+}
+
+.edit-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(107, 114, 128, 0.3);
+}
+
+.cancel-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4b5563, #374151);
+    box-shadow: 0 10px 25px -5px rgba(107, 114, 128, 0.4);
+}
+
+.deactivate-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.3);
+}
+
+.deactivate-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+}
+
+.activate-btn {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.3);
+}
+
+.activate-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #047857, #065f46);
+    box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+}
+
+/* Confirmation Dialog */
+.hall-management-confirm-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.hall-management-confirm-dialog {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.25),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.4s ease-out;
+}
+
+.hall-management-confirm-dialog h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.hall-management-confirm-dialog p {
+    margin: 0 0 20px 0;
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 1.125rem;
+}
+
+.warning-text {
+    color: #dc2626 !important;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    padding: 20px;
+    border-radius: 16px;
+    border: 2px solid #fecaca;
+    margin: 20px 0;
+}
+
+.hall-management-confirm-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 32px;
+}
+
+.confirm-deactivate-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.3);
+}
+
+.confirm-deactivate-btn:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+}
+
+.confirm-activate-btn {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.3);
+}
+
+.confirm-activate-btn:hover {
+    background: linear-gradient(135deg, #047857, #065f46);
+    box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hall-management-modal {
+        max-width: 95vw;
+    }
+
+    .hall-management-main-info {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .hall-management-image-section {
+        order: -1;
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .hall-management-modal-overlay {
+        padding: 10px;
+    }
+
+    .hall-management-modal {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    .hall-management-modal-header {
+        padding: 24px;
+    }
+
+    .hall-management-modal-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .hall-management-modal-content {
+        padding: 24px;
+    }
+
+    .hall-management-main-info {
+        gap: 24px;
+    }
+
+    .hall-management-location,
+    .hall-management-contact {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .hall-management-actions {
+        flex-direction: column;
+    }
+
+    .hall-management-btn {
+        justify-content: center;
+    }
+
+    .hall-management-confirm-dialog {
+        margin: 20px;
+        padding: 24px;
+    }
+
+    .hall-management-confirm-actions {
+        flex-direction: column;
+    }
+
+    .hall-management-cover-image,
+    .hall-management-placeholder {
+        height: 200px;
+    }
+
+    .hall-management-initial {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hall-management-modal-header {
+        padding: 16px;
+    }
+
+    .hall-management-modal-content {
+        padding: 16px;
+    }
+
+    .hall-management-modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .hall-management-details-section {
+        gap: 20px;
+    }
+
+    .hall-management-field {
+        gap: 8px;
+    }
+
+    .hall-management-input,
+    .hall-management-textarea {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+
+    .hall-management-btn {
+        padding: 12px 24px;
+        font-size: 0.875rem;
+    }
+}

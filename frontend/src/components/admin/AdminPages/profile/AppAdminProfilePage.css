@@ -1,0 +1,535 @@
+/* AppAdminProfilePage.css */
+
+.app-admin-profile-page {
+    min-height: 100vh;
+    background-image: url('./bgrProfile.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+}
+
+.app-admin-profile-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    z-index: 1;
+}
+
+.app-admin-profile-container {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 2;
+}
+
+/* Sidebar */
+.app-admin-profile-sidebar {
+    width: 280px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem 0;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    margin: 1rem 0 1rem 1rem;
+}
+
+.app-admin-profile-user-info {
+    text-align: center;
+    padding: 0 2rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+}
+
+.app-admin-profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(168, 85, 247, 0.6));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.app-admin-profile-user-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.app-admin-profile-user-info p {
+    margin: 0 0 0.5rem 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.app-admin-profile-role {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(124, 58, 237, 0.3);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.app-admin-profile-nav {
+    padding: 0 1rem;
+}
+
+.app-admin-profile-nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.95);
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.app-admin-profile-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.app-admin-profile-nav-item.active {
+    background: rgba(124, 58, 237, 0.2);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Area */
+.app-admin-profile-content {
+    flex: 1;
+    padding: 2rem;
+    margin: 1rem 1rem 1rem 0;
+}
+
+.app-admin-profile-section {
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-admin-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-admin-section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Personal Data Section */
+.app-admin-personal-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.app-admin-data-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.app-admin-data-field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.app-admin-data-value {
+    font-size: 1rem;
+    color: white;
+    padding: 8px 0;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.app-admin-edit-input {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    backdrop-filter: blur(3px);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.app-admin-edit-input:focus {
+    outline: none;
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.app-admin-edit-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Buttons */
+.app-admin-edit-button, .app-admin-save-button, .app-admin-cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.app-admin-edit-button {
+    background-color: rgba(124, 58, 237, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-admin-edit-button:hover {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.app-admin-save-button {
+    background-color: rgba(16, 185, 129, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-admin-save-button:hover {
+    background-color: rgba(5, 150, 105, 0.8);
+}
+
+.app-admin-cancel-button {
+    background-color: rgba(107, 114, 128, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-admin-cancel-button:hover {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+.app-admin-edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Security Section */
+.app-admin-security-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.app-admin-security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
+}
+
+.app-admin-security-item.danger {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.app-admin-security-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.app-admin-security-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.app-admin-security-button {
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: rgba(124, 58, 237, 0.7);
+    color: white;
+}
+
+.app-admin-security-button:hover {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.app-admin-security-button.danger {
+    background-color: rgba(220, 38, 38, 0.7);
+    color: white;
+}
+
+.app-admin-security-button.danger:hover {
+    background-color: rgba(185, 28, 28, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .app-admin-profile-page::before {
+        background-color: transparent;
+    }
+
+    .app-admin-profile-container {
+        flex-direction: column;
+    }
+
+    .app-admin-profile-sidebar {
+        width: 100%;
+        position: static;
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .app-admin-profile-nav {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0;
+    }
+
+    .app-admin-profile-nav-item {
+        white-space: nowrap;
+        margin-bottom: 0;
+        min-width: fit-content;
+    }
+
+    .app-admin-profile-content {
+        padding: 1rem;
+        margin: 0 1rem 1rem;
+    }
+
+    .app-admin-personal-data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-admin-security-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .app-admin-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .app-admin-edit-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .app-admin-edit-button, .app-admin-save-button, .app-admin-cancel-button {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-admin-profile-sidebar {
+        padding: 0.5rem;
+    }
+
+    .app-admin-profile-user-info {
+        padding: 0 1rem 1rem;
+    }
+
+    .app-admin-profile-content {
+        padding: 0.5rem;
+    }
+
+    .app-admin-profile-section {
+        padding: 1rem;
+    }
+}
+
+/* Add these styles to your AppAdminProfilePage.css file */
+
+/* Error state for app admin input fields */
+.app-admin-edit-input.error {
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.app-admin-edit-input.error:focus {
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Override app admin save and cancel buttons to look like security buttons */
+.app-admin-security-item .app-admin-save-button,
+.app-admin-security-item .app-admin-cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.app-admin-security-item .app-admin-save-button {
+    background-color: rgba(124, 58, 237, 0.7);
+}
+
+.app-admin-security-item .app-admin-save-button:hover:not(:disabled) {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.app-admin-security-item .app-admin-cancel-button {
+    background-color: rgba(107, 114, 128, 0.7);
+}
+
+.app-admin-security-item .app-admin-cancel-button:hover:not(:disabled) {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Disabled button styles for app admin */
+.app-admin-security-item .app-admin-save-button:disabled,
+.app-admin-security-item .app-admin-cancel-button:disabled,
+.app-admin-security-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.app-admin-security-item .app-admin-save-button:disabled:hover {
+    background-color: rgba(124, 58, 237, 0.7);
+}
+
+.app-admin-security-item .app-admin-cancel-button:disabled:hover {
+    background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Loading state for app admin buttons */
+.app-admin-security-item .app-admin-save-button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.app-admin-security-item .app-admin-save-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: app-admin-spin 1s linear infinite;
+}
+
+@keyframes app-admin-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Better spacing for app admin password form */
+.app-admin-security-item .app-admin-personal-data-grid {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.app-admin-security-item .app-admin-edit-actions {
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Error message styling for app admin */
+.app-admin-error-message {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.app-admin-general-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    text-align: center;
+    color: #ef4444;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments for app admin password form */
+@media (max-width: 768px) {
+    .app-admin-security-item .app-admin-personal-data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-admin-security-item .app-admin-edit-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .app-admin-security-item .app-admin-save-button,
+    .app-admin-security-item .app-admin-cancel-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,6 +1,6 @@
 package licenta.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -39,6 +39,14 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    // CÂMP NOU PENTRU STATUS
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private HallStatus status = HallStatus.ACTIVE;
+
     @OneToMany(mappedBy = "sportsHall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<SportsHallImage> images = new ArrayList<>();
@@ -51,10 +59,33 @@ public class SportsHall extends BruteEntity<Long> {
     @JsonIgnoreProperties("selectedHalls")
     private List<ReservationProfile> reservationProfiles = new ArrayList<>();
 
+    // NOUĂ relație One-to-Many către Schedule
+    @OneToMany(mappedBy = "sportsHall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Schedule> schedules = new ArrayList<>();
+
+    // ENUM PENTRU STATUS
+    public enum HallStatus {
+        ACTIVE("Activ"),
+        INACTIVE("Inactiv");
+
+        private final String displayName;
+
+        HallStatus(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     public SportsHall() {
+        this.status = HallStatus.ACTIVE; // Default status
     }
 
     public SportsHall(String name, String address, Integer capacity, String type, Float tariff, String facilities, String county, String city, String description, List<SportsHallImage> images) {
+        this();
         this.name = name;
         this.address = address;
         this.capacity = capacity;
@@ -84,13 +115,69 @@ public class SportsHall extends BruteEntity<Long> {
         image.setSportsHall(null);
     }
 
-    // Getter și setter pentru reservationProfiles
+    // Metode helper pentru Schedule
+    public void addSchedule(Schedule schedule) {
+        schedules.add(schedule);
+        schedule.setSportsHall(this);
+    }
+
+    public void removeSchedule(Schedule schedule) {
+        schedules.remove(schedule);
+        schedule.setSportsHall(null);
+    }
+
+    // Metoda pentru a activa sala
+    public void activate() {
+        this.status = HallStatus.ACTIVE;
+    }
+
+    // Metoda pentru a dezactiva sala
+    public void deactivate() {
+        this.status = HallStatus.INACTIVE;
+    }
+
+    // Metoda pentru a verifica dacă sala este activă
+    public boolean isActive() {
+        return this.status == HallStatus.ACTIVE;
+    }
+
+    // Metoda pentru a obține programul formatat
+    public String getFormattedSchedule() {
+        if (schedules == null || schedules.isEmpty()) {
+            return "Program: Nu este definit";
+        }
+
+        StringBuilder sb = new StringBuilder("Program:\n");
+        schedules.stream()
+                .filter(Schedule::getIsActive)
+                .sorted((s1, s2) -> s1.getDayOfWeek().compareTo(s2.getDayOfWeek()))
+                .forEach(schedule ->
+                        sb.append(schedule.getDayName())
+                                .append(": ")
+                                .append(schedule.getStartTime())
+                                .append("-")
+                                .append(schedule.getEndTime())
+                                .append("\n")
+                );
+
+        return sb.toString();
+    }
+
+    // Getters și Setters
     public List<ReservationProfile> getReservationProfiles() {
         return reservationProfiles;
     }
 
     public void setReservationProfiles(List<ReservationProfile> reservationProfiles) {
         this.reservationProfiles = reservationProfiles;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
 
     public String getName() {
@@ -173,6 +260,22 @@ public class SportsHall extends BruteEntity<Long> {
         this.description = description;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public HallStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HallStatus status) {
+        this.status = status;
+    }
+
     public Long getAdminId() {
         return adminId;
     }
@@ -191,6 +294,7 @@ public class SportsHall extends BruteEntity<Long> {
                 ", type='" + type + '\'' +
                 ", tariff=" + tariff +
                 ", facilities='" + facilities + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

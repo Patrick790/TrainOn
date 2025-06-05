@@ -43,11 +43,11 @@ class Header extends React.Component {
                     <div className="main-auth-buttons">
                         {isLoggedIn ? (
                             <>
-                                <Link to="/profil" className="main-auth-button profile-button">
+                                <Link to="/profile" className="main-auth-button profile-button">
                                     <User size={16} className="button-icon" />
                                     <span className="button-text">Profilul meu</span>
                                 </Link>
-                                <Link to="/rezervari" className="main-auth-button reservations-button">
+                                <Link to="/reservations" className="main-auth-button reservations-button">
                                     <Calendar size={16} className="button-icon" />
                                     <span className="button-text">Rezervari</span>
                                 </Link>

@@ -74,7 +74,7 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
     // Funcție pentru a formata prețul
     const formatPrice = (price) => {
         if (!price) return 'Preț la cerere';
-        return `${price} RON/oră`;
+        return `${price} RON/1h30`;
     };
 
     // Funcție pentru a calcula un rating demonstrativ
@@ -96,7 +96,6 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
         return rating.toFixed(1);
     };
 
-    // Funcție pentru navigarea la pagina de recenzii când se face click pe rating
     const handleRatingClick = (hallId, e) => {
         e.preventDefault(); // Prevenim comportamentul implicit al link-ului
         e.stopPropagation(); // Oprim propagarea evenimentului

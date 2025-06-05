@@ -8,7 +8,6 @@ import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
 import Footer from '../pageComponents/Footer';
 import './MainPage.css';
 
-// ReservationOptionsModal component remains unchanged
 class ReservationOptionsModal extends React.Component {
     render() {
         const { isOpen, onClose } = this.props;
@@ -19,7 +18,7 @@ class ReservationOptionsModal extends React.Component {
                 <div className="reservation-modal-content">
                     <h2 className="reservation-modal-title">Opțiuni de rezervare</h2>
                     <p className="reservation-modal-description">
-                        Alege modul în care dorești să faci rezervare
+                        Alege modul în care dorești să rezervi
                     </p>
 
                     <div className="reservation-options">
@@ -39,7 +38,7 @@ class ReservationOptionsModal extends React.Component {
 
                         <div
                             className="reservation-option"
-                            onClick={() => { window.location.href = '/reserve-remaining'; onClose(); }}
+                            onClick={() => { window.location.href = '/fcfs-reservation'; onClose(); }}
                         >
                             <div className="reservation-option-icon">
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -69,9 +68,11 @@ class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            location: 'Cluj-Napoca', // Presetat pentru Cluj-Napoca
+            location: '', // Nu mai presetăm Cluj-Napoca
             activity: 'Sport',
             searchQuery: '',
+            cities: [], // Array pentru orașele încărcate din baza de date
+            loadingCities: true, // Loading state pentru orașe
             isLocationDropdownOpen: false,
             isActivityDropdownOpen: false,
             isLoginModalOpen: false,
@@ -83,12 +84,46 @@ class MainPage extends React.Component {
 
     componentDidMount() {
         this.checkLoginStatus();
+        this.fetchCities(); // Încărcăm orașele la mount
         window.addEventListener('storage', this.checkLoginStatus);
     }
 
     componentWillUnmount() {
         window.removeEventListener('storage', this.checkLoginStatus);
     }
+
+    // Nouă metodă pentru încărcarea orașelor din baza de date
+    fetchCities = async () => {
+        this.setState({ loadingCities: true });
+        try {
+            const response = await fetch('http://localhost:8080/sportsHalls/cities');
+            if (response.ok) {
+                const citiesData = await response.json();
+                const cities = Array.isArray(citiesData) ? citiesData : [];
+
+                this.setState({
+                    cities,
+                    loadingCities: false,
+                    // Setăm primul oraș ca default dacă există orașe disponibile
+                    location: cities.length > 0 ? cities[0] : ''
+                });
+            } else {
+                console.error('Eroare la încărcarea orașelor:', response.status);
+                this.setState({
+                    cities: [],
+                    loadingCities: false,
+                    location: ''
+                });
+            }
+        } catch (error) {
+            console.error('Eroare la încărcarea orașelor:', error);
+            this.setState({
+                cities: [],
+                loadingCities: false,
+                location: ''
+            });
+        }
+    };
 
     checkLoginStatus = () => {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -129,6 +164,13 @@ class MainPage extends React.Component {
 
     handleSearch = (e) => {
         e.preventDefault();
+
+        // Verificăm dacă au fost selectate orașul
+        if (!this.state.location) {
+            alert('Vă rugăm să selectați un oraș pentru căutare.');
+            return;
+        }
+
         const searchParams = new URLSearchParams();
         searchParams.append('city', this.state.location);
         searchParams.append('activity', this.state.activity);
@@ -178,7 +220,8 @@ class MainPage extends React.Component {
     }
 
     render() {
-        const locations = ['Cluj-Napoca', 'Timisoara', 'Bucuresti', 'Iasi'];
+        // Folosim orașele din baza de date în loc de array-ul hardcodat
+        const { cities, loadingCities } = this.state;
         const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
         const { isLoggedIn } = this.state;
 
@@ -202,20 +245,29 @@ class MainPage extends React.Component {
                                         className="selected-option"
                                         onClick={this.toggleLocationDropdown}
                                     >
-                                        {this.state.location}
+                                        {loadingCities
+                                            ? 'Se încarcă orașele...'
+                                            : this.state.location || 'Selectează orașul'
+                                        }
                                         <ChevronDown className="icon-small" />
                                     </div>
-                                    {this.state.isLocationDropdownOpen && (
+                                    {this.state.isLocationDropdownOpen && !loadingCities && (
                                         <div className="options-list">
-                                            {locations.map((location) => (
-                                                <div
-                                                    key={location}
-                                                    className="option"
-                                                    onClick={() => this.handleLocationChange(location)}
-                                                >
-                                                    {location}
+                                            {cities.length > 0 ? (
+                                                cities.map((city) => (
+                                                    <div
+                                                        key={city}
+                                                        className="option"
+                                                        onClick={() => this.handleLocationChange(city)}
+                                                    >
+                                                        {city}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="option disabled">
+                                                    Nu există orașe disponibile
                                                 </div>
-                                            ))}
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -254,15 +306,28 @@ class MainPage extends React.Component {
                                 className="search-input"
                             />
 
-                            <button type="submit" className="search-button">
+                            <button
+                                type="submit"
+                                className="search-button"
+                                disabled={loadingCities || !this.state.location}
+                            >
                                 CAUTĂ
                             </button>
                         </form>
                     </div>
                 </main>
 
-                {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls */}
-                <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
+                {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls doar dacă nu se încarcă */}
+                {!loadingCities && this.state.location && (
+                    <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
+                )}
+
+                {/* Afișăm un mesaj de loading pentru sălile recomandate dacă se încarcă orașele */}
+                {loadingCities && (
+                    <div className="loading-featured-halls">
+                        <p>Se încarcă sălile recomandate...</p>
+                    </div>
+                )}
 
                 {/* Adăugăm div pentru butonul de rezervare */}
                 <div className="reservation-cta">

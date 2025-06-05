@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ManageUsersPage.css';
 import axios from 'axios';
 import CreateUserModal from './CreateUserModal';
+import ReservationProfilesModal from './ReservationProfilesModal';
 
 const ManageUsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -11,7 +12,7 @@ const ManageUsersPage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [cityFilter, setCityFilter] = useState('');
-    const [statusFilter, setStatusFilter] = useState('active'); // 'active', 'suspended', 'all'
+    const [statusFilter, setStatusFilter] = useState('active');
     const [availableCities, setAvailableCities] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editFormData, setEditFormData] = useState({
@@ -25,6 +26,9 @@ const ManageUsersPage = () => {
     // New state for create modals
     const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
     const [isCreateHallAdminModalOpen, setIsCreateHallAdminModalOpen] = useState(false);
+
+    // Nou state pentru modalul de profiluri de rezervare
+    const [isReservationProfilesModalOpen, setIsReservationProfilesModalOpen] = useState(false);
 
     const API_URL = 'http://localhost:8080';
 
@@ -297,6 +301,21 @@ const ManageUsersPage = () => {
         }
     };
 
+    // Funcție pentru a deschide modalul profilurilor de rezervare
+    const handleOpenReservationProfiles = () => {
+        setIsReservationProfilesModalOpen(true);
+    };
+
+    // Funcție pentru a închide modalul profilurilor de rezervare
+    const handleCloseReservationProfiles = () => {
+        setIsReservationProfilesModalOpen(false);
+    };
+
+    // Verifică dacă utilizatorul are teamType (este în echipă)
+    const hasTeamType = (user) => {
+        return user.teamType && user.teamType.trim() !== '';
+    };
+
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
 
@@ -567,6 +586,12 @@ const ManageUsersPage = () => {
                                                 <span className="detail-label">Data înregistrării:</span>
                                                 <span className="detail-value">{formatDate(selectedUser.createdAt)}</span>
                                             </div>
+                                            {selectedUser.teamType && (
+                                                <div className="user-detail-item">
+                                                    <span className="detail-label">Tip echipă:</span>
+                                                    <span className="detail-value">{selectedUser.teamType}</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -611,6 +636,16 @@ const ManageUsersPage = () => {
                                 </>
                             ) : (
                                 <>
+                                    {/* Butonul pentru profiluri de rezervare - doar pentru utilizatori cu teamType */}
+                                    {hasTeamType(selectedUser) && (
+                                        <button
+                                            className="user-action-btn reservation-profiles"
+                                            onClick={handleOpenReservationProfiles}
+                                        >
+                                            Profiluri rezervare
+                                        </button>
+                                    )}
+
                                     {selectedUser.accountStatus === 'suspended' ? (
                                         <button
                                             className="user-action-btn activate"
@@ -654,6 +689,16 @@ const ManageUsersPage = () => {
                 onUserCreated={handleUserCreated}
                 userType="hall_admin"
                 title="Creare administrator sală nou"
+                API_URL={API_URL}
+                getAuthHeader={getAuthHeader}
+            />
+
+            {/* Modal pentru profiluri de rezervare */}
+            <ReservationProfilesModal
+                isOpen={isReservationProfilesModalOpen}
+                onClose={handleCloseReservationProfiles}
+                userId={selectedUser?.id}
+                userName={selectedUser?.name}
                 API_URL={API_URL}
                 getAuthHeader={getAuthHeader}
             />

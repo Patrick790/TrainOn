@@ -27,7 +27,7 @@ class ViewHallsSchedulePage extends Component {
             showMessage: false,
             savingMaintenance: false,
             maxMaintenanceSlots: null,
-            reservations: [] // Adăugăm starea pentru lista de rezervări
+            reservations: []
         };
     }
 
@@ -89,6 +89,25 @@ class ViewHallsSchedulePage extends Component {
         }
     }
 
+    // Metodă pentru a obține programul sălii din baza de date
+    fetchHallSchedule = async (hallId, token) => {
+        try {
+            const response = await fetch(`http://localhost:8080/schedules/hall/${hallId}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Eroare la încărcarea programului sălii: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching hall schedule:', error);
+            return [];
+        }
+    }
+
     getStartOfWeek = (date) => {
         const dayOfWeek = date.getDay();
         const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
@@ -102,37 +121,73 @@ class ViewHallsSchedulePage extends Component {
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
     }
 
-    createEmptySchedule = (weekStart) => {
+    // Modifică pentru a include programul sălii
+    createScheduleWithHallAvailability = (weekStart, hallSchedule) => {
         const schedule = {};
 
         // Generăm sloturile orare în formatul "HH:MM - HH:MM"
         const timeSlots = [
-            "07:00 - 08:30",
-            "08:30 - 10:00",
-            "10:00 - 11:30",
-            "11:30 - 13:00",
-            "13:00 - 14:30",
-            "14:30 - 16:00",
-            "16:00 - 17:30",
-            "17:30 - 19:00",
-            "19:00 - 20:30",
-            "20:30 - 22:00",
-            "22:00 - 23:30"
+            { id: "07:00 - 08:30", startTime: "07:00", endTime: "08:30" },
+            { id: "08:30 - 10:00", startTime: "08:30", endTime: "10:00" },
+            { id: "10:00 - 11:30", startTime: "10:00", endTime: "11:30" },
+            { id: "11:30 - 13:00", startTime: "11:30", endTime: "13:00" },
+            { id: "13:00 - 14:30", startTime: "13:00", endTime: "14:30" },
+            { id: "14:30 - 16:00", startTime: "14:30", endTime: "16:00" },
+            { id: "16:00 - 17:30", startTime: "16:00", endTime: "17:30" },
+            { id: "17:30 - 19:00", startTime: "17:30", endTime: "19:00" },
+            { id: "19:00 - 20:30", startTime: "19:00", endTime: "20:30" },
+            { id: "20:30 - 22:00", startTime: "20:30", endTime: "22:00" },
+            { id: "22:00 - 23:30", startTime: "22:00", endTime: "23:30" }
         ];
 
-        // Creăm programul gol pentru toată săptămâna
+        // Creăm programul pentru toată săptămâna
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(weekStart);
             currentDate.setDate(currentDate.getDate() + i);
             const dateKey = this.formatDate(currentDate);
+            const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+            // Convertim la formatul folosit în backend (1 = Monday, 7 = Sunday)
+            const backendDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
             schedule[dateKey] = {};
+
+            // Găsim programul pentru această zi
+            const daySchedule = hallSchedule.find(s => s.dayOfWeek === backendDayOfWeek);
+
             timeSlots.forEach(slot => {
-                schedule[dateKey][slot] = 'available';
+                if (!daySchedule || !daySchedule.isActive) {
+                    // Ziua este închisă - toate sloturile sunt indisponibile
+                    schedule[dateKey][slot.id] = 'unavailable';
+                } else {
+                    // Verificăm dacă slotul este în intervalul de funcționare
+                    if (this.isSlotInWorkingHours(slot, daySchedule.startTime, daySchedule.endTime)) {
+                        schedule[dateKey][slot.id] = 'available';
+                    } else {
+                        schedule[dateKey][slot.id] = 'unavailable';
+                    }
+                }
             });
         }
 
         return schedule;
+    }
+
+    // Metodă helper pentru a verifica dacă un slot este în orele de funcționare
+    isSlotInWorkingHours = (slot, workingStartTime, workingEndTime) => {
+        const slotStart = this.timeToMinutes(slot.startTime);
+        const slotEnd = this.timeToMinutes(slot.endTime);
+        const workingStart = this.timeToMinutes(workingStartTime);
+        const workingEnd = this.timeToMinutes(workingEndTime);
+
+        // Slotul trebuie să fie complet în intervalul de lucru
+        return slotStart >= workingStart && slotEnd <= workingEnd;
+    }
+
+    // Metodă helper pentru a converti ora în minute
+    timeToMinutes = (timeString) => {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
     }
 
     fetchSchedule = async (hallId, weekStart) => {
@@ -142,31 +197,30 @@ class ViewHallsSchedulePage extends Component {
             const token = localStorage.getItem('jwtToken');
             if (!token) throw new Error('Nu sunteți autentificat corect');
 
-            const emptySchedule = this.createEmptySchedule(weekStart);
             const startDateStr = this.formatDate(weekStart);
-
-            // Calculăm sfârșitul săptămânii
             const endDate = new Date(weekStart);
             endDate.setDate(endDate.getDate() + 6);
             const endDateStr = this.formatDate(endDate);
 
             // Obținem toate datele necesare în paralel
-            const [maintenanceReservations, bookingReservations] = await Promise.all([
+            const [hallSchedule, maintenanceReservations, bookingReservations] = await Promise.all([
+                this.fetchHallSchedule(hallId, token),
                 this.fetchMaintenanceReservations(hallId, startDateStr, token),
                 this.fetchBookingReservations(hallId, weekStart, token)
             ]);
 
-            // Actualizăm programul cu rezervările existente
-            const updatedSchedule = { ...emptySchedule };
+            // Creăm programul bazat pe orele de funcționare ale sălii
+            const scheduleWithAvailability = this.createScheduleWithHallAvailability(weekStart, hallSchedule);
             const originalMaintenanceSlots = [];
 
-            // Marcăm sloturile de mentenanță
+            // Marcăm sloturile de mentenanță (doar pe cele disponibile)
             maintenanceReservations.forEach(reservation => {
                 const dateKey = this.formatDate(new Date(reservation.date));
                 const slotId = reservation.timeSlot;
 
-                if (updatedSchedule[dateKey] && updatedSchedule[dateKey][slotId]) {
-                    updatedSchedule[dateKey][slotId] = 'maintenance';
+                if (scheduleWithAvailability[dateKey] &&
+                    scheduleWithAvailability[dateKey][slotId] === 'available') {
+                    scheduleWithAvailability[dateKey][slotId] = 'maintenance';
                     originalMaintenanceSlots.push({
                         id: reservation.id,
                         date: dateKey,
@@ -175,35 +229,34 @@ class ViewHallsSchedulePage extends Component {
                 }
             });
 
-            // Marcăm sloturile rezervate
+            // Marcăm sloturile rezervate (doar pe cele disponibile)
             bookingReservations.forEach(reservation => {
                 const dateKey = this.formatDate(new Date(reservation.date));
                 const slotId = reservation.timeSlot;
 
-                if (updatedSchedule[dateKey] && updatedSchedule[dateKey][slotId]) {
-                    updatedSchedule[dateKey][slotId] = 'booked';
+                if (scheduleWithAvailability[dateKey] &&
+                    scheduleWithAvailability[dateKey][slotId] === 'available') {
+                    scheduleWithAvailability[dateKey][slotId] = 'booked';
                 }
             });
 
             // Numărăm intervalele de mentenanță
             let maintenanceCount = 0;
-            Object.values(updatedSchedule).forEach(daySchedule => {
+            Object.values(scheduleWithAvailability).forEach(daySchedule => {
                 Object.values(daySchedule).forEach(status => {
                     if (status === 'maintenance') maintenanceCount++;
                 });
             });
 
-            // Pentru a afișa informațiile despre echipe și profiluri, trebuie să interogăm și detaliile rezervărilor
-            // Obținem informațiile despre profilurile de rezervare și utilizatori pentru fiecare rezervare
             const enhancedReservations = await this.enhanceReservationsWithDetails(bookingReservations, token);
 
             this.setState({
-                schedule: updatedSchedule,
+                schedule: scheduleWithAvailability,
                 maintenanceCount,
                 originalMaintenanceSlots,
                 changedMaintenanceSlots: [],
                 tableLoading: false,
-                reservations: enhancedReservations // Adăugăm rezervările îmbogățite în state
+                reservations: enhancedReservations
             });
         } catch (error) {
             console.error('Error fetching schedule:', error);
@@ -216,23 +269,11 @@ class ViewHallsSchedulePage extends Component {
 
     // Metodă pentru îmbogățirea rezervărilor cu informații despre echipe și profiluri
     enhanceReservationsWithDetails = async (reservations, token) => {
-        // Adăugăm informații despre rezervare (nume echipă, nume profil, etc.)
-        // Dacă este necesar, putem face cereri suplimentare pentru a obține aceste informații
-
-        // Deoarece nu știm exact formatul datelor din backend, vom simula acest proces
-        // În implementarea reală, s-ar putea face cereri API pentru a obține datele asociate
-
         return reservations.map(reservation => {
-            // Verificăm dacă există utilizator și adăugăm informațiile
             if (reservation.user) {
-                // Dacă utilizatorul are un nume de echipă, îl folosim, altfel folosim numele utilizatorului
                 reservation.user.teamName = reservation.user.teamName || reservation.user.name || 'Echipă nespecificată';
-
-                // Adăugăm numele profilului de rezervare (în implementarea reală ar putea proveni din alt endpoint)
-                // Aici simulăm această informație
                 reservation.profileName = 'Profil ' + (reservation.user.teamType || 'Standard');
             }
-
             return reservation;
         });
     }
@@ -254,7 +295,6 @@ class ViewHallsSchedulePage extends Component {
     }
 
     fetchBookingReservations = async (hallId, weekStart, token) => {
-        // Creăm un array cu toate zilele săptămânii
         const weekDates = [];
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(weekStart);
@@ -262,7 +302,6 @@ class ViewHallsSchedulePage extends Component {
             weekDates.push(this.formatDate(currentDate));
         }
 
-        // Obținem rezervările pentru fiecare zi
         const bookingPromises = weekDates.map(dateStr =>
             fetch(`http://localhost:8080/reservations?hallId=${hallId}&date=${dateStr}&type=reservation`, {
                 method: 'GET',
@@ -333,15 +372,14 @@ class ViewHallsSchedulePage extends Component {
         });
     }
 
+    // Modifică pentru a verifica disponibilitatea
     toggleMaintenanceSlot = (date, slotId) => {
-        // Check if the date is in the past or today
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         const slotDate = new Date(date);
         slotDate.setHours(0, 0, 0, 0);
 
-        // Block both current day and past days
         if (slotDate <= today) {
             this.setState({
                 errorMessage: 'Nu puteți marca mentenanță pentru ziua curentă sau pentru zile din trecut',
@@ -351,37 +389,24 @@ class ViewHallsSchedulePage extends Component {
         }
 
         this.setState(prevState => {
-            // Verificăm dacă avem schedule[date] și schedule[date][slotId]
-            if (!prevState.schedule[date]) {
-                console.error(`Date ${date} not found in schedule`);
+            if (!prevState.schedule[date] || !prevState.schedule[date][slotId]) {
                 return {
-                    errorMessage: 'Eroare la modificarea slotului: data nu a fost găsită în program',
+                    errorMessage: 'Eroare: intervalul orar nu a fost găsit în program',
                     showMessage: true
                 };
             }
 
-            if (!prevState.schedule[date][slotId]) {
-                console.error(`Slot ${slotId} not found in schedule for date ${date}`);
+            const currentStatus = prevState.schedule[date][slotId];
+
+            // Verificăm dacă slotul este indisponibil din cauza programului sălii
+            if (currentStatus === 'unavailable') {
                 return {
-                    errorMessage: 'Eroare la modificarea slotului: intervalul orar nu a fost găsit în program',
+                    errorMessage: 'Nu puteți marca pentru mentenanță un interval în afara orelor de funcționare ale sălii',
                     showMessage: true
                 };
             }
 
-            const updatedSchedule = JSON.parse(JSON.stringify(prevState.schedule));
-            const currentStatus = updatedSchedule[date][slotId];
-            let updatedMaintenanceCount = prevState.maintenanceCount;
-            let updatedChangedSlots = [...prevState.changedMaintenanceSlots];
-
-            // Check if the slot is already in maintenance
-            if (currentStatus === 'maintenance') {
-                return this.handleRemoveMaintenance(
-                    updatedSchedule, updatedMaintenanceCount, updatedChangedSlots,
-                    date, slotId, prevState.originalMaintenanceSlots
-                );
-            }
-
-            // Check if the slot is already booked
+            // Verificăm dacă slotul este deja rezervat
             if (currentStatus === 'booked') {
                 return {
                     errorMessage: 'Nu puteți marca pentru mentenanță un interval deja rezervat',
@@ -389,7 +414,17 @@ class ViewHallsSchedulePage extends Component {
                 };
             }
 
-            // No maintenance slot limit check here - unlimited maintenance slots allowed
+            const updatedSchedule = JSON.parse(JSON.stringify(prevState.schedule));
+            let updatedMaintenanceCount = prevState.maintenanceCount;
+            let updatedChangedSlots = [...prevState.changedMaintenanceSlots];
+
+            if (currentStatus === 'maintenance') {
+                return this.handleRemoveMaintenance(
+                    updatedSchedule, updatedMaintenanceCount, updatedChangedSlots,
+                    date, slotId, prevState.originalMaintenanceSlots
+                );
+            }
+
             return this.handleAddMaintenance(
                 updatedSchedule, updatedMaintenanceCount, updatedChangedSlots,
                 date, slotId, prevState.originalMaintenanceSlots
@@ -485,13 +520,11 @@ class ViewHallsSchedulePage extends Component {
 
             this.setState({ savingMaintenance: true });
 
-            // Process slots that need to be added and deleted
             await Promise.all([
                 ...this.processAddMaintenanceSlots(changedMaintenanceSlots, selectedHallId, token),
                 ...this.processDeleteMaintenanceSlots(changedMaintenanceSlots, token)
             ]);
 
-            // Reload schedule
             await this.fetchSchedule(selectedHallId, this.state.currentWeekStart);
 
             this.showTemporaryMessage('Intervalele de mentenanță au fost salvate cu succes!', true);
@@ -558,11 +591,9 @@ class ViewHallsSchedulePage extends Component {
             });
     }
 
-    // Handler pentru finalizarea generării rezervărilor
     handleGenerationComplete = (success, errorMessage) => {
         if (success) {
             this.showTemporaryMessage('Rezervările au fost generate cu succes.', true);
-            // Reîncărcăm programul pentru a afișa noile rezervări
             this.fetchSchedule(this.state.selectedHallId, this.state.currentWeekStart);
         } else {
             this.showTemporaryMessage(`Eroare la generarea rezervărilor: ${errorMessage || 'Eroare necunoscută'}`, false);
@@ -627,7 +658,6 @@ class ViewHallsSchedulePage extends Component {
                                 </div>
                             )}
 
-                            {/* Componenta de prioritizare */}
                             <BookingPrioritization
                                 onGenerationComplete={this.handleGenerationComplete}
                             />
@@ -679,12 +709,11 @@ class ViewHallsSchedulePage extends Component {
                                 )}
                             </div>
 
-                            {/* Transmitem și informațiile despre rezervări către ScheduleTableComponent */}
                             <ScheduleTableComponent
                                 schedule={schedule}
                                 tableLoading={tableLoading}
                                 maintenanceCount={maintenanceCount}
-                                maxMaintenanceSlots={null} // No limit
+                                maxMaintenanceSlots={null}
                                 onToggleMaintenance={this.toggleMaintenanceSlot}
                                 onWeekChange={this.handleWeekChange}
                                 isPastDateBlocked={true}
@@ -694,7 +723,7 @@ class ViewHallsSchedulePage extends Component {
                                 maxFutureWeeks={8}
                                 isReadOnly={false}
                                 showWeekNavigation={true}
-                                reservations={reservations} // Transmitem rezervările către componentă
+                                reservations={reservations}
                             />
 
                             <div className="vhsp-schedule-actions">

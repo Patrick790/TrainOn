@@ -392,3 +392,35 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* Adaugă aceste stiluri în ViewAllHallsPage.css */
+
+.global-hall-status-indicator.active {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #34d399;
+}
+
+.global-hall-status-indicator.inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+/* Stil pentru card-urile sălilor inactive */
+.global-hall-card.inactive {
+    opacity: 0.7;
+    border: 2px solid #f87171;
+}
+
+.global-hall-card.inactive .global-hall-image {
+    filter: grayscale(50%);
+}
+
+.global-hall-card.inactive .global-hall-placeholder {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.global-hall-card.inactive .global-hall-name {
+    color: #6b7280;
+}

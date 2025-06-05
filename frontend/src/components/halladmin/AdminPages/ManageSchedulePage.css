@@ -114,92 +114,54 @@
     color: #6b7280;
 }
 
-.msp-schedule-actions {
+/* Stiluri pentru tab-uri */
+.msp-tabs-container {
+    margin-bottom: 2rem;
+}
+
+.msp-tabs {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2.5rem;
+    background-color: white;
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f3f4f6;
 }
 
-.msp-maintenance-info {
-    flex: 1;
-}
-
-.msp-maintenance-limit-warning {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #b91c1c;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    background-color: #fee2e2;
-    border-radius: 6px;
-    border: 1px solid #fecaca;
-}
-
-.msp-maintenance-changes-pending {
+.msp-tab {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #4b5563;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    background-color: #f3f4f6;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-    margin-top: 0.5rem;
-}
-
-.msp-action-buttons {
-    display: flex;
-    gap: 1rem;
-}
-
-.msp-maintenance-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #f97316;
-    color: white;
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    background: none;
+    color: #6b7280;
+    font-weight: 500;
     font-size: 0.95rem;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+    flex: 1;
+    justify-content: center;
 }
 
-.msp-maintenance-button:hover:not(:disabled) {
-    background-color: #ea580c;
-    box-shadow: 0 4px 8px rgba(249, 115, 22, 0.4);
-    transform: translateY(-1px);
+.msp-tab:hover {
+    color: #374151;
+    background-color: #f9fafb;
 }
 
-.msp-maintenance-button:disabled {
-    background-color: #fdba74;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.msp-tab-active {
+    color: #7c3aed;
+    background-color: #f3f4f6;
+    font-weight: 600;
 }
 
-.msp-button-spinner {
-    width: 16px;
-    height: 16px;
-    margin: 0 8px 0 0;
-    border-width: 2px;
-    border: 2px solid #f3f4f6;
-    border-top: 2px solid #ea580c;
-    border-radius: 50%;
-    animation: msp-spin 1s linear infinite;
+.msp-tab-content {
+    margin-bottom: 2rem;
 }
 
-@keyframes msp-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.msp-reservations-placeholder {
+    /* Placeholder pentru tab-ul de rezervări */
 }
 
 .msp-empty-state {
@@ -260,15 +222,13 @@
         align-items: flex-start;
     }
 
-    .msp-schedule-actions {
+    .msp-tabs {
         flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
+        gap: 0.5rem;
     }
 
-    .msp-action-buttons {
-        flex-direction: column;
-        gap: 0.75rem;
+    .msp-tab {
+        justify-content: flex-start;
     }
 }
 
@@ -284,10 +244,6 @@
     }
 
     .msp-hall-select-input {
-        width: 100%;
-    }
-
-    .msp-maintenance-button {
         width: 100%;
     }
 }

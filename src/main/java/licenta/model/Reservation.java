@@ -28,6 +28,9 @@ public class Reservation extends BruteEntity<Long> {
     @Column(name = "type", nullable = false)
     private String type;
 
+    @Column(name = "status")
+    private String status = "CONFIRMED";
+
 
     public Reservation() {
     }
@@ -39,6 +42,7 @@ public class Reservation extends BruteEntity<Long> {
         this.timeSlot = timeSlot;
         this.price = price;
         this.type = type;
+        this.status = "CONFIRMED";
     }
 
     public String getTimeSlot() {
@@ -87,6 +91,14 @@ public class Reservation extends BruteEntity<Long> {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public boolean isMaintenance() {

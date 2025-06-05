@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import './Admin.css';
 
+import AdminHeader from './AdminPages/AdminHeader';
 import ViewAllHallsPage from './AdminPages/ViewAllHallsPage';
 import ApproveRegistrationsPage from './AdminPages/ApproveRegistrationsPage';
 import ViewHallsSchedulePage from './AdminPages/ViewHallsSchedulePage';
@@ -13,7 +13,8 @@ class Admin extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeSection: 'view-all-halls'
+            activeSection: 'view-all-halls',
+            isLoggedIn: localStorage.getItem('isLoggedIn') === 'true'
         };
     }
 
@@ -27,6 +28,9 @@ class Admin extends Component {
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('userType');
+
+        // Update state
+        this.setState({ isLoggedIn: false });
 
         // Redirect to home page
         window.location.href = '/';
@@ -52,59 +56,14 @@ class Admin extends Component {
     }
 
     render() {
-        const { activeSection } = this.state;
+        const { activeSection, isLoggedIn } = this.state;
 
         return (
             <div className="global-admin-container">
-                <header className="global-admin-header">
-                    {/* Linii de lumină animate pentru fundal */}
-                    <div className="light-line"></div>
-                    <div className="light-line"></div>
-                    <div className="light-line"></div>
-                    <div className="light-line"></div>
-
-                    <div className="global-admin-logo-container">
-                        <Link to="/admin-dashboard" className="global-admin-logo-link">
-                            <div className="global-admin-logo">
-                                <div className="global-admin-logo-inner">
-                                    <div className="global-admin-logo-face front"></div>
-                                    <div className="global-admin-logo-face back"></div>
-                                    <div className="global-admin-logo-face right"></div>
-                                    <div className="global-admin-logo-face left"></div>
-                                    <div className="global-admin-logo-face top"></div>
-                                    <div className="global-admin-logo-face bottom"></div>
-                                </div>
-                            </div>
-                            <div className="global-admin-logo-text">
-                                TrainOn
-                                <div className="global-admin-logo-flash"></div>
-                                <div className="global-admin-logo-flash"></div>
-                                <div className="global-admin-logo-flash"></div>
-                                <div className="global-admin-logo-flash"></div>
-                                <div className="global-admin-logo-flash"></div>
-                                <div className="global-admin-logo-flash"></div>
-                            </div>
-                        </Link>
-                    </div>
-
-                    <div className="global-admin-header-right">
-                        <div className="global-admin-header-user">
-                            <div className="global-admin-user-avatar">
-                                <div className="global-admin-user-initial">A</div>
-                            </div>
-                            <div className="global-admin-user-info">
-                                <span className="global-admin-user-name">Administrator</span>
-                            </div>
-                        </div>
-
-                        <div className="global-admin-auth-buttons">
-                            <button onClick={this.handleLogout} className="global-admin-auth-button">
-                                <span className="button-text">Ieșire</span>
-                                <span className="button-icon">→</span>
-                            </button>
-                        </div>
-                    </div>
-                </header>
+                <AdminHeader
+                    isLoggedIn={isLoggedIn}
+                    onLogout={this.handleLogout}
+                />
 
                 <nav className="global-admin-nav">
                     <div className="global-admin-buttons-container">
@@ -169,7 +128,6 @@ class Admin extends Component {
                     {this.renderContent()}
                 </main>
 
-                {/* Folosim Footer ca componentă separată */}
                 <Footer />
             </div>
         );

@@ -10,6 +10,7 @@ import licenta.persistence.IUserSpringRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +36,8 @@ public class SportsHallRestController {
 
     @Autowired
     public SportsHallRestController(ISportsHallSpringRepository sportsHallSpringRepository,
-                                    ISportsHallImageSpringRepository sportsHallImageSpringRepository, IUserSpringRepository userSpringRepository,
+                                    ISportsHallImageSpringRepository sportsHallImageSpringRepository,
+                                    IUserSpringRepository userSpringRepository,
                                     ObjectMapper objectMapper) {
         this.sportsHallSpringRepository = sportsHallSpringRepository;
         this.sportsHallImageSpringRepository = sportsHallImageSpringRepository;
@@ -43,16 +45,60 @@ public class SportsHallRestController {
         this.objectMapper = objectMapper;
     }
 
+    // IMPORTANT: Endpoint-urile specifice trebuie să fie ÎNAINTEA celor generice
+
+    // 1. Endpoint pentru cities - PRIMUL
+    @GetMapping("/cities")
+    public ResponseEntity<?> getAvailableCities() {
+        try {
+            List<String> cities = sportsHallSpringRepository.findDistinctCities();
+            logger.info("Found {} distinct cities", cities.size());
+            return ResponseEntity.ok(cities);
+        } catch (Exception e) {
+            logger.error("Error fetching available cities", e);
+            return ResponseEntity.internalServerError().body("Eroare la obținerea orașelor: " + e.getMessage());
+        }
+    }
+
+    // 2. Endpoint pentru admin - AL DOILEA
+    @GetMapping("/admin/{adminId}")
+    public ResponseEntity<?> getSportsHallsByAdminId(@PathVariable Long adminId) {
+        try {
+            List<SportsHall> halls = sportsHallSpringRepository.findByAdminId(adminId);
+            logger.info("Found {} sports halls for admin ID: {}", halls.size(), adminId);
+            return ResponseEntity.ok(halls);
+        } catch(Exception e) {
+            logger.error("Error fetching sports halls for admin ID: {}", adminId, e);
+            return ResponseEntity.internalServerError().body("Eroare la obtinerea salilor de sport: " + e.getMessage());
+        }
+    }
+
+    // 3. Endpoint general pentru toate sălile (cu filtrare opțională după oraș) - AL TREILEA
+    @GetMapping
+    public ResponseEntity<?> getAllSportsHalls(@RequestParam(required = false) String city) {
+        try {
+            if (city != null && !city.trim().isEmpty()) {
+                List<SportsHall> halls = sportsHallSpringRepository.findByCityOrderByName(city);
+                logger.info("Found {} sports halls for city: {}", halls.size(), city);
+                return ResponseEntity.ok(halls);
+            } else {
+                Iterable<SportsHall> allHalls = sportsHallSpringRepository.findAll();
+                logger.info("Returning all sports halls");
+                return ResponseEntity.ok(allHalls);
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching sports halls for city: {}", city, e);
+            return ResponseEntity.internalServerError().body("Eroare la obținerea sălilor de sport: " + e.getMessage());
+        }
+    }
+
+    // 4. Endpoint pentru ID specific - ULTIMUL din GET-uri
     @GetMapping("/{id}")
     public SportsHall getSportsHallById(@PathVariable Long id) {
         return sportsHallSpringRepository.findById(id).orElse(null);
     }
 
-    @GetMapping
-    public Iterable<SportsHall> getAllSportsHalls() {
-        return sportsHallSpringRepository.findAll();
-    }
-
+    // 5. POST pentru crearea unei săli noi
     @PostMapping
     public ResponseEntity<?> createSportsHall(
             @RequestParam("sportsHall") String sportsHallJson,
@@ -64,11 +110,12 @@ public class SportsHallRestController {
         logger.info("Number of params: {}", params.size());
         logger.info("Number of files: {}", files.size());
 
-
         try {
             // Parsam JSON-ul pentru a obtine obiectul SportsHall
             SportsHall sportsHall = objectMapper.readValue(sportsHallJson, SportsHall.class);
             logger.info("Deserialized sports hall: {}", sportsHall);
+
+            sportsHall.setStatus(SportsHall.HallStatus.ACTIVE);
 
             // Obținem utilizatorul curent autentificat
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -175,8 +222,7 @@ public class SportsHallRestController {
         }
     }
 
-    // Modificări pentru metoda updateSportsHall în SportsHallRestController.java
-
+    // 6. PUT pentru actualizarea unei săli existente
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSportsHall(
             @PathVariable Long id,
@@ -346,16 +392,136 @@ public class SportsHallRestController {
         }
     }
 
-    @GetMapping("/admin/{adminId}")
-    public ResponseEntity<?> getSportsHallsByAdminId(@PathVariable Long adminId) {
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivateHall(@PathVariable Long id) {
         try {
-            List<SportsHall> halls = sportsHallSpringRepository.findByAdminId(adminId);
-            logger.info("Found {} sports halls for admin ID: {}", halls.size(), adminId);
-            return ResponseEntity.ok(halls);
+            // Verifică permisiunile utilizatorului
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (!hasPermissionToManageHall(id, authentication)) {
+                logger.warn("User {} does not have permission to manage hall {}",
+                        authentication != null ? authentication.getName() : "null", id);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Nu aveți permisiunea să gestionați această sală");
+            }
 
-        } catch(Exception e) {
-            logger.error("Error fetching sports halls for admin ID: {}", adminId, e);
-            return ResponseEntity.internalServerError().body("Eroare la obtinerea salilor de sport: " + e.getMessage());
+            Optional<SportsHall> hallOpt = sportsHallSpringRepository.findById(id);
+            if (hallOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            SportsHall hall = hallOpt.get();
+            hall.setStatus(SportsHall.HallStatus.INACTIVE); // Setează direct statusul
+
+            SportsHall savedHall = sportsHallSpringRepository.save(hall);
+            logger.info("Deactivated sports hall with ID: {} by user: {}",
+                    id, authentication.getName());
+
+            return ResponseEntity.ok(savedHall);
+
+        } catch (Exception e) {
+            logger.error("Error deactivating sports hall with ID: {}", id, e);
+            return ResponseEntity.internalServerError()
+                    .body("Eroare la dezactivarea sălii: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<?> activateHall(@PathVariable Long id) {
+        try {
+            // Verifică permisiunile utilizatorului
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (!hasPermissionToManageHall(id, authentication)) {
+                logger.warn("User {} does not have permission to manage hall {}",
+                        authentication != null ? authentication.getName() : "null", id);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Nu aveți permisiunea să gestionați această sală");
+            }
+
+            Optional<SportsHall> hallOpt = sportsHallSpringRepository.findById(id);
+            if (hallOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            SportsHall hall = hallOpt.get();
+            hall.setStatus(SportsHall.HallStatus.ACTIVE); // Setează direct statusul
+
+            SportsHall savedHall = sportsHallSpringRepository.save(hall);
+            logger.info("Activated sports hall with ID: {} by user: {}",
+                    id, authentication.getName());
+
+            return ResponseEntity.ok(savedHall);
+
+        } catch (Exception e) {
+            logger.error("Error activating sports hall with ID: {}", id, e);
+            return ResponseEntity.internalServerError()
+                    .body("Eroare la activarea sălii: " + e.getMessage());
+        }
+    }
+
+    private boolean hasPermissionToManageHall(Long hallId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            logger.warn("No authentication found");
+            return false;
+        }
+
+        logger.info("Checking permissions for user: {} with authorities: {}",
+                authentication.getName(), authentication.getAuthorities());
+
+        // Dacă utilizatorul este admin, are acces la toate sălile
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("admin"));
+
+        if (isAdmin) {
+            logger.info("User {} is admin, access granted", authentication.getName());
+            return true;
+        }
+
+        // Dacă utilizatorul este hall_admin, verifică dacă este owner-ul sălii
+        boolean isHallAdmin = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("hall_admin"));
+
+        if (isHallAdmin) {
+            String userEmail = authentication.getName();
+            Optional<User> userOpt = userSpringRepository.findByEmail(userEmail);
+
+            if (userOpt.isPresent()) {
+                Optional<SportsHall> hallOpt = sportsHallSpringRepository.findById(hallId);
+                if (hallOpt.isPresent()) {
+                    boolean isOwner = hallOpt.get().getAdminId().equals(userOpt.get().getId());
+                    logger.info("User {} is hall_admin, owner check: {}", userEmail, isOwner);
+                    return isOwner;
+                } else {
+                    logger.warn("Hall with ID {} not found", hallId);
+                    return false;
+                }
+            } else {
+                logger.warn("User with email {} not found", userEmail);
+                return false;
+            }
+        }
+
+        logger.warn("User {} does not have required permissions (authorities: {})",
+                authentication.getName(), authentication.getAuthorities());
+        return false;
+    }
+
+    // Endpoint pentru a obține doar sălile active
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveHalls(@RequestParam(required = false) String city) {
+        try {
+            List<SportsHall> activeHalls;
+            if (city != null && !city.trim().isEmpty()) {
+                activeHalls = sportsHallSpringRepository.findByCityAndStatusOrderByName(city, SportsHall.HallStatus.ACTIVE);
+            } else {
+                activeHalls = sportsHallSpringRepository.findByStatusOrderByName(SportsHall.HallStatus.ACTIVE);
+            }
+
+            logger.info("Found {} active sports halls", activeHalls.size());
+            return ResponseEntity.ok(activeHalls);
+
+        } catch (Exception e) {
+            logger.error("Error fetching active sports halls", e);
+            return ResponseEntity.internalServerError().body("Eroare la obținerea sălilor active: " + e.getMessage());
         }
     }
 }

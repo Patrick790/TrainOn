@@ -34,6 +34,16 @@ public class ReservationRestController {
         return reservationSpringRepository.findById(id).orElse(null);
     }
 
+    // ENDPOINT NOU - pentru a obține rezervările unui utilizator
+    @GetMapping("/user/{userId}")
+    public List<Reservation> getReservationsByUser(@PathVariable Long userId) {
+        return StreamSupport.stream(reservationSpringRepository.findAll().spliterator(), false)
+                .filter(reservation -> reservation.getUser() != null &&
+                        reservation.getUser().getId().equals(userId))
+                .filter(reservation -> "reservation".equals(reservation.getType())) // Doar rezervările, nu mentenanța
+                .collect(Collectors.toList());
+    }
+
     @GetMapping
     public Iterable<Reservation> getReservations(
             @RequestParam(required = false) Long hallId,
@@ -53,6 +63,25 @@ public class ReservationRestController {
                 .filter(reservation -> date == null || dateEquals(reservation.getDate(), date))
                 .filter(reservation -> type == null || type.equals(reservation.getType()))
                 .collect(Collectors.toList());
+    }
+
+    // ENDPOINT NOU - pentru anularea unei rezervări
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Reservation> cancelReservation(@PathVariable Long id) {
+        try {
+            Reservation reservation = reservationSpringRepository.findById(id).orElse(null);
+            if (reservation == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Setăm statusul la CANCELLED în loc să ștergem rezervarea
+            reservation.setStatus("CANCELLED");
+            Reservation updatedReservation = reservationSpringRepository.save(reservation);
+
+            return new ResponseEntity<>(updatedReservation, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Metodă utilitară pentru a compara doar data (fără oră)

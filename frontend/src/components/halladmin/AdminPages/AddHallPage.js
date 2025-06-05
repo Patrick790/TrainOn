@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './AddHallPage.css';
-import { Camera, X, ImagePlus } from 'lucide-react';
+import { X, ImagePlus, Plus } from 'lucide-react';
 
 const COUNTIES = [
     'Alba', 'Arad', 'Argeș', 'Bacău', 'Bihor', 'Bistrița-Năsăud', 'Botoșani',
@@ -347,7 +347,7 @@ class AddHallPage extends Component {
 
         return (
             <div className="admin-page">
-                <h1 className="admin-page-title">Adaugă Sală Nouă</h1>
+                <h1 className="admin-page-title">Adaugă o sală</h1>
 
                 {submitSuccess && (
                     <div className="success-message">
@@ -504,7 +504,7 @@ class AddHallPage extends Component {
                                 'Se salvează...'
                             ) : (
                                 <>
-                                    <Camera size={20} /> Adaugă Sală
+                                    <Plus size={20} /> Adaugă Sală
                                 </>
                             )}
                         </button>

@@ -8,6 +8,7 @@ class SportsHallDetailsModal extends Component {
         this.state = {
             hall: null,
             admin: null,
+            hallRating: { averageRating: 0, totalReviews: 0 }, // Adăugat pentru rating-uri din DB
             loading: true,
             error: null,
             currentImageIndex: 0,
@@ -43,12 +44,18 @@ class SportsHallDetailsModal extends Component {
             const hall = await hallResponse.json();
             this.setState({ hall });
 
-            // Obținem datele administratorului dacă există
+            // Obținem datele administratorului și rating-urile în paralel
+            const promises = [];
+
             if (hall.adminId) {
-                this.fetchAdminData(hall.adminId);
-            } else {
-                this.setState({ loading: false });
+                promises.push(this.fetchAdminData(hall.adminId));
             }
+
+            // Adăugat: încărcăm rating-urile din baza de date
+            promises.push(this.fetchHallRating(hallId));
+
+            await Promise.all(promises);
+            this.setState({ loading: false });
 
         } catch (error) {
             console.error('Error fetching hall details:', error);
@@ -71,14 +78,45 @@ class SportsHallDetailsModal extends Component {
 
             if (response.ok) {
                 const admin = await response.json();
-                this.setState({ admin, loading: false });
-            } else {
-                this.setState({ loading: false });
+                this.setState({ admin });
             }
         } catch (err) {
             console.error(`Eroare la obținerea datelor pentru admin:`, err);
-            this.setState({ loading: false });
         }
+    }
+
+    // Nouă metodă pentru încărcarea rating-urilor din baza de date
+    fetchHallRating = async (hallId) => {
+        try {
+            const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hallId}`);
+
+            if (response.ok) {
+                const feedbacks = await response.json();
+                const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
+                this.setState({ hallRating: ratingData });
+            } else {
+                // Setăm valori default dacă nu putem încărca feedback-urile
+                this.setState({ hallRating: { averageRating: 0, totalReviews: 0 } });
+            }
+        } catch (error) {
+            console.error(`Error fetching hall rating:`, error);
+            this.setState({ hallRating: { averageRating: 0, totalReviews: 0 } });
+        }
+    }
+
+    // Nouă metodă pentru calcularea rating-ului din feedback-uri
+    calculateRatingFromFeedbacks = (feedbacks) => {
+        if (!feedbacks || feedbacks.length === 0) {
+            return { averageRating: 0, totalReviews: 0 };
+        }
+
+        const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
+        const averageRating = totalRating / feedbacks.length;
+
+        return {
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalReviews: feedbacks.length
+        };
     }
 
     handleImageNav = (direction) => {
@@ -125,7 +163,7 @@ class SportsHallDetailsModal extends Component {
 
     render() {
         const { isOpen } = this.props;
-        const { hall, admin, loading, error, currentImageIndex, fadeIn } = this.state;
+        const { hall, admin, hallRating, loading, error, currentImageIndex, fadeIn } = this.state;
 
         if (!isOpen) return null;
 
@@ -238,7 +276,7 @@ class SportsHallDetailsModal extends Component {
                                                     <DollarSign size={16} className="modal-info-icon" />
                                                     <div>
                                                         <span className="modal-info-label">Tarif</span>
-                                                        <span className="modal-info-value">{hall.tariff || 0} lei/oră</span>
+                                                        <span className="modal-info-value">{hall.tariff || 0} lei/1h30</span>
                                                     </div>
                                                 </div>
                                                 <div className="modal-info-item">
@@ -308,10 +346,21 @@ class SportsHallDetailsModal extends Component {
                                                 <h3>Rating și recenzii</h3>
                                             </div>
                                             <div className="modal-rating">
-                                                {this.renderRatingStars(0)}
-                                                <span className="modal-rating-text">0 (0 recenzii)</span>
+                                                {/* Folosește rating-ul real din baza de date */}
+                                                {this.renderRatingStars(hallRating.averageRating)}
+                                                <span className="modal-rating-text">
+                                                    {hallRating.averageRating > 0
+                                                        ? `${hallRating.averageRating} (${hallRating.totalReviews} ${hallRating.totalReviews === 1 ? 'recenzie' : 'recenzii'})`
+                                                        : '0 (0 recenzii)'
+                                                    }
+                                                </span>
                                             </div>
-                                            <p className="modal-no-reviews">Nu există recenzii încă pentru această sală.</p>
+                                            <p className="modal-no-reviews">
+                                                {hallRating.totalReviews > 0
+                                                    ? `Această sală are ${hallRating.totalReviews} ${hallRating.totalReviews === 1 ? 'recenzie' : 'recenzii'}.`
+                                                    : 'Nu există recenzii încă pentru această sală.'
+                                                }
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

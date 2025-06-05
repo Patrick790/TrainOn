@@ -36,16 +36,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Permitem cererile către endpoint-urile publice să treacă fără verificare JWT
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
-                "OPTIONS".equals(method) || // Add support for OPTIONS requests
+                "OPTIONS".equals(method) ||
+                // Doar GET requests pentru sportsHalls sunt excluse de la filtrare
                 (path.startsWith("/sportsHalls") && "GET".equals(method)) ||
+                path.equals("/sportsHalls/cities") ||
+                (path.startsWith("/schedules/hall/") && "GET".equals(method)) ||
+                // ACTUALIZAT - Permite doar anumite endpoint-uri de rezervări fără autentificare
+                (path.equals("/reservations") && "GET".equals(method)) || // Doar listarea generală
+                (path.startsWith("/reservations/maintenance") && "GET".equals(method)) || // Mentenanța
                 (path.startsWith("/images") && "GET".equals(method)) ||
+                path.startsWith("/payment/stripe/webhook") ||
                 (path.startsWith("/feedbacks") && "GET".equals(method));
-
-        // Nu am adăugat excepții pentru /reservationProfiles deoarece
-        // toate operațiile pe profiluri de rezervare necesită autentificare
     }
 
     @Override
@@ -58,6 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         logger.info("Authorization header: {}", authHeader != null ? "present" : "missing");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("No valid Authorization header found");
             filterChain.doFilter(request, response);
             return;
         }
@@ -72,13 +76,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // Log pentru debugging
                 logger.info("User authorities: {}", userDetails.getAuthorities());
+                logger.info("Request path: {}, method: {}", request.getRequestURI(), request.getMethod());
 
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.info("Successfully authenticated user: {}", username);
+                    logger.info("Successfully authenticated user: {} with authorities: {}", username, userDetails.getAuthorities());
                 } else {
                     logger.warn("Token validation failed for user: {}", username);
                 }

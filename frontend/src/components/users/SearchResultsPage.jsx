@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, ChevronDown, LogOut, Star, Search } from 'lucide-react';
+import { MapPin, ChevronDown, Star, Search } from 'lucide-react';
 import axios from 'axios';
+import Header from './Header';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
+import Footer from '../pageComponents/Footer';
 import './SearchResultsPage.css';
 
 const SearchResultsPage = () => {
@@ -22,17 +24,53 @@ const SearchResultsPage = () => {
     const [hoveredMarker, setHoveredMarker] = useState(null);
     const [mapReady, setMapReady] = useState(false); // Stare pentru a urmări dacă harta este gata
 
-    // State pentru header și search bar - similar cu MainPage
+    // State pentru header și search bar - cu orașe dinamice
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-    const [selectedCity, setSelectedCity] = useState(queryParams.get('city') || 'Cluj-Napoca');
+    const [selectedCity, setSelectedCity] = useState(queryParams.get('city') || '');
     const [selectedActivity, setSelectedActivity] = useState(queryParams.get('activity') || 'Sport');
     const [searchQuery, setSearchQuery] = useState(queryParams.get('query') || '');
+    const [cities, setCities] = useState([]); // Array pentru orașele încărcate din baza de date
+    const [loadingCities, setLoadingCities] = useState(true); // Loading state pentru orașe
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
     const [isActivityDropdownOpen, setIsActivityDropdownOpen] = useState(false);
 
     const API_URL = 'http://localhost:8080';
+
+    // Nouă funcție pentru încărcarea orașelor din baza de date
+    const fetchCities = async () => {
+        setLoadingCities(true);
+        try {
+            const response = await fetch(`${API_URL}/sportsHalls/cities`);
+            if (response.ok) {
+                const citiesData = await response.json();
+                const cities = Array.isArray(citiesData) ? citiesData : [];
+
+                setCities(cities);
+
+                // Dacă nu avem un oraș selectat din query params și avem orașe disponibile
+                if (!selectedCity && cities.length > 0) {
+                    setSelectedCity(cities[0]);
+                }
+
+                setLoadingCities(false);
+            } else {
+                console.error('Eroare la încărcarea orașelor:', response.status);
+                setCities([]);
+                setLoadingCities(false);
+            }
+        } catch (error) {
+            console.error('Eroare la încărcarea orașelor:', error);
+            setCities([]);
+            setLoadingCities(false);
+        }
+    };
+
+    // Încărcăm orașele când componenta se montează
+    useEffect(() => {
+        fetchCities();
+    }, []);
 
     // Funcție pentru geocodarea adreselor (obținerea coordonatelor din adresă)
     const geocodeAddress = async (address, city, id) => {
@@ -70,6 +108,11 @@ const SearchResultsPage = () => {
 
     // Încarcă sălile de sport în funcție de parametrii de căutare
     useEffect(() => {
+        // Nu încărcăm sălile până nu avem orașele încărcate și un oraș selectat
+        if (loadingCities || !selectedCity) {
+            return;
+        }
+
         const fetchSportsHalls = async () => {
             try {
                 setLoading(true);
@@ -138,7 +181,7 @@ const SearchResultsPage = () => {
         };
 
         fetchSportsHalls();
-    }, [selectedCity, selectedActivity, searchQuery, API_URL]);
+    }, [selectedCity, selectedActivity, searchQuery, loadingCities, API_URL]);
 
     // Funcție separată pentru inițializarea hărții
     const initializeMap = () => {
@@ -372,6 +415,13 @@ const SearchResultsPage = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
+
+        // Verificăm dacă au fost selectate orașul
+        if (!selectedCity) {
+            alert('Vă rugăm să selectați un oraș pentru căutare.');
+            return;
+        }
+
         updateURLParams('query', searchQuery);
     };
 
@@ -433,37 +483,18 @@ const SearchResultsPage = () => {
         return `${price} RON/oră`;
     };
 
-    const locations = ['Cluj-Napoca', 'Timisoara', 'Bucuresti', 'Iasi'];
+    // Folosim orașele din baza de date în loc de array-ul hardcodat
     const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
 
     return (
         <div className="main-container">
-            {/* Header - identic cu MainPage */}
-            <header className="header">
-                <div className="logo-container">
-                    <Link to="/" className="logo-link">
-                        <div className="logo"></div>
-                        <span className="logo-text">Licenta</span>
-                    </Link>
-                </div>
-                <div className="auth-buttons">
-                    {isLoggedIn ? (
-                        <button onClick={handleLogout} className="auth-button logout-button">
-                            <LogOut size={16} />
-                            Deconectare
-                        </button>
-                    ) : (
-                        <>
-                            <button onClick={toggleLoginModal} className="auth-button">
-                                Intra in cont
-                            </button>
-                            <button onClick={toggleRegisterModal} className="auth-button">
-                                Inregistrare
-                            </button>
-                        </>
-                    )}
-                </div>
-            </header>
+            {/* Header global */}
+            <Header
+                isLoggedIn={isLoggedIn}
+                onLoginClick={toggleLoginModal}
+                onRegisterClick={toggleRegisterModal}
+                onLogout={handleLogout}
+            />
 
             {/* Search Bar - similar cu MainPage dar fără background image */}
             <div className="srp-search-container">
@@ -475,20 +506,29 @@ const SearchResultsPage = () => {
                                 className="srp-selected-option"
                                 onClick={toggleLocationDropdown}
                             >
-                                {selectedCity}
+                                {loadingCities
+                                    ? 'Se încarcă orașele...'
+                                    : selectedCity || 'Selectează orașul'
+                                }
                                 <ChevronDown className="srp-icon-small" />
                             </div>
-                            {isLocationDropdownOpen && (
+                            {isLocationDropdownOpen && !loadingCities && (
                                 <div className="srp-options-list">
-                                    {locations.map((loc) => (
-                                        <div
-                                            key={loc}
-                                            className="srp-option"
-                                            onClick={() => handleLocationChange(loc)}
-                                        >
-                                            {loc}
+                                    {cities.length > 0 ? (
+                                        cities.map((city) => (
+                                            <div
+                                                key={city}
+                                                className="srp-option"
+                                                onClick={() => handleLocationChange(city)}
+                                            >
+                                                {city}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="srp-option disabled">
+                                            Nu există orașe disponibile
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -527,7 +567,11 @@ const SearchResultsPage = () => {
                         className="srp-search-input"
                     />
 
-                    <button type="submit" className="srp-search-button">
+                    <button
+                        type="submit"
+                        className="srp-search-button"
+                        disabled={loadingCities || !selectedCity}
+                    >
                         <Search size={18} />
                         CAUTĂ
                     </button>
@@ -537,16 +581,28 @@ const SearchResultsPage = () => {
             {/* Conținut rezultate căutare */}
             <div className="srp-results-content">
                 <h1 className="srp-results-title">
-                    Săli de sport în {selectedCity}
-                    {selectedActivity !== 'Sport' && ` - ${selectedActivity}`}
-                    {searchQuery && ` - "${searchQuery}"`}
+                    {loadingCities ? (
+                        'Se încarcă...'
+                    ) : selectedCity ? (
+                        <>
+                            Săli de sport în {selectedCity}
+                            {selectedActivity !== 'Sport' && ` - ${selectedActivity}`}
+                            {searchQuery && ` - "${searchQuery}"`}
+                        </>
+                    ) : (
+                        'Selectați un oraș pentru a vedea sălile disponibile'
+                    )}
                 </h1>
 
                 <div className="srp-results-layout">
                     {/* Lista de săli */}
                     <div className="srp-results-list">
-                        {loading ? (
-                            <div className="srp-loading">Se încarcă...</div>
+                        {loadingCities ? (
+                            <div className="srp-loading">Se încarcă orașele...</div>
+                        ) : !selectedCity ? (
+                            <div className="srp-no-results">Vă rugăm să selectați un oraș pentru a vedea sălile disponibile.</div>
+                        ) : loading ? (
+                            <div className="srp-loading">Se încarcă sălile...</div>
                         ) : error ? (
                             <div className="srp-error">{error}</div>
                         ) : sportsHalls.length === 0 ? (
@@ -587,12 +643,24 @@ const SearchResultsPage = () => {
                                         </div>
                                         {hall.facilities && (
                                             <div className="srp-result-facilities">
-                                                {hall.facilities.split(',').slice(0, 3).map((facility, idx) => (
-                                                    <span key={idx} className="srp-facility-badge">{facility.trim()}</span>
-                                                ))}
-                                                {hall.facilities.split(',').length > 3 && (
-                                                    <span className="srp-facility-more">+ {hall.facilities.split(',').length - 3} mai multe</span>
-                                                )}
+                                                {(() => {
+                                                    const facilitiesArray = hall.facilities.split(',').map(f => f.trim());
+                                                    // Calculăm câte facilități încap într-un spațiu limitat
+                                                    const maxVisible = 2; // Reducem la 2 pentru a fi siguri că nu se suprapun
+                                                    const visibleFacilities = facilitiesArray.slice(0, maxVisible);
+                                                    const remainingCount = facilitiesArray.length - maxVisible;
+
+                                                    return (
+                                                        <>
+                                                            {visibleFacilities.map((facility, idx) => (
+                                                                <span key={idx} className="srp-facility-badge">{facility}</span>
+                                                            ))}
+                                                            {remainingCount > 0 && (
+                                                                <span className="srp-facility-more">+ {remainingCount} mai multe</span>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
                                             </div>
                                         )}
                                         <Link to={`/sportsHalls/${hall.id}`} className="srp-result-link">
@@ -611,23 +679,8 @@ const SearchResultsPage = () => {
                 </div>
             </div>
 
-            {/* Footer */}
-            <footer className="app-footer">
-                <div className="footer-content">
-                    <div className="footer-logo">
-                        <div className="footer-logo-icon"></div>
-                        <span className="footer-logo-text">Licenta</span>
-                    </div>
-                    <div className="footer-links">
-                        <a href="/terms" className="footer-link">Termeni și condiții</a>
-                        <a href="/privacy" className="footer-link">Politica de confidențialitate</a>
-                        <a href="/contact" className="footer-link">Contact</a>
-                    </div>
-                    <div className="footer-copyright">
-                        &copy; {new Date().getFullYear()} Platforma de Administrare Săli Sport
-                    </div>
-                </div>
-            </footer>
+            {/* Footer Global */}
+            <Footer />
 
             {/* Modals */}
             {!isLoggedIn && (
@@ -644,39 +697,6 @@ const SearchResultsPage = () => {
                     />
                 </>
             )}
-
-            {/* Stiluri inline pentru a rezolva problema cu hover-ul cardurilor */}
-            <style>
-                {`
-                .srp-result-card {
-                    display: flex;
-                    background-color: white;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-                    overflow: hidden;
-                    height: 180px;
-                    cursor: pointer;
-                    /* Adăugăm un border transparent implicit pentru a rezerva spațiul */
-                    border: 2px solid transparent;
-                    /* Adăugăm o tranziție subtilă doar pentru box-shadow */
-                    transition: box-shadow 0.2s ease;
-                    /* Asigurăm că poziția rămâne fixă */
-                    position: relative;
-                }
-
-                .srp-result-card:hover {
-                    /* Păstrăm același box-shadow, dar cu intensitate crescută */
-                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-                    /* Nu modificăm alte proprietăți care ar putea cauza mișcare */
-                }
-
-                .srp-result-highlighted {
-                    border: 2px solid #6d28d9;
-                    box-shadow: 0 6px 12px rgba(109, 40, 217, 0.2);
-                    /* Nu mai este nevoie să modificăm alte proprietăți */
-                }
-                `}
-            </style>
         </div>
     );
 };

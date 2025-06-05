@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ReservationOptionsModal.css';
 
-const ReservationOptionsModal = ({ isOpen, onClose, onReserveRemaining }) => {
+const ReservationOptionsModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
 
     if (!isOpen) return null;
@@ -10,6 +10,12 @@ const ReservationOptionsModal = ({ isOpen, onClose, onReserveRemaining }) => {
     const handleCreateProfile = () => {
         // În loc să deschidă un modal, va naviga către pagina de profil
         navigate('/profile-creation');
+        onClose();
+    };
+
+    const handleReserveRemaining = () => {
+        // Navighează către pagina FCFS
+        navigate('/fcfs-reservation');
         onClose();
     };
 
@@ -33,7 +39,7 @@ const ReservationOptionsModal = ({ isOpen, onClose, onReserveRemaining }) => {
                         <p>Personalizează opțiunile pentru algoritm de prioritizare</p>
                     </div>
 
-                    <div className="reservation-option" onClick={onReserveRemaining}>
+                    <div className="reservation-option" onClick={handleReserveRemaining}>
                         <div className="reservation-option-icon">
                             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>

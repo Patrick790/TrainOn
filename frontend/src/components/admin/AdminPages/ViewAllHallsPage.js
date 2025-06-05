@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Star, User } from 'lucide-react';
 import './ViewAllHallsPage.css';
 import SportsHallDetailsModal from './SportsHallDetailsModal';
-
+import HallManagementModal from './HallManagementModal';
 
 class ViewAllHallsPage extends Component {
     constructor(props) {
@@ -11,11 +11,14 @@ class ViewAllHallsPage extends Component {
             halls: [],
             cities: [],
             admins: {},
+            hallRatings: {}, // Obiect pentru a stoca rating-urile fiecărei săli
             selectedCity: 'all',
             loading: true,
             error: null,
             modalOpen: false,
-            selectedHallId: null
+            selectedHallId: null,
+            managementModalOpen: false,
+            managementHallId: null
         };
     }
 
@@ -58,8 +61,9 @@ class ViewAllHallsPage extends Component {
                 loading: false
             });
 
-            // După ce avem sălile, obținem informațiile administratorilor
+            // După ce avem sălile, obținem informațiile administratorilor și rating-urile
             await this.fetchAdminsData(halls);
+            await this.fetchRatingsForHalls(halls);
 
         } catch (error) {
             console.error('Error fetching halls:', error);
@@ -110,6 +114,56 @@ class ViewAllHallsPage extends Component {
         }
     }
 
+    fetchRatingsForHalls = async (halls) => {
+        const hallRatings = {};
+
+        // Încărcăm rating-urile pentru fiecare sală în paralel
+        await Promise.all(
+            halls.map(async (hall) => {
+                try {
+                    const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hall.id}`);
+                    if (response.ok) {
+                        const feedbacks = await response.json();
+                        const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
+                        hallRatings[hall.id] = ratingData;
+                    } else {
+                        // Dacă nu putem încărca feedback-urile, setăm valori default
+                        hallRatings[hall.id] = {
+                            averageRating: 0,
+                            totalReviews: 0
+                        };
+                    }
+                } catch (error) {
+                    console.error(`Error fetching ratings for hall ${hall.id}:`, error);
+                    hallRatings[hall.id] = {
+                        averageRating: 0,
+                        totalReviews: 0
+                    };
+                }
+            })
+        );
+
+        this.setState({ hallRatings });
+    }
+
+    calculateRatingFromFeedbacks = (feedbacks) => {
+        if (!feedbacks || feedbacks.length === 0) {
+            return {
+                averageRating: 0,
+                totalReviews: 0
+            };
+        }
+
+        // Calculăm media rating-urilor
+        const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
+        const averageRating = totalRating / feedbacks.length;
+
+        return {
+            averageRating: Math.round(averageRating * 10) / 10, // Rotunjim la o zecimală
+            totalReviews: feedbacks.length
+        };
+    }
+
     getCoverImage = (hall) => {
         if (hall.images && hall.images.length > 0) {
             const coverImage = hall.images.find(img => img.description === 'cover');
@@ -157,9 +211,29 @@ class ViewAllHallsPage extends Component {
     }
 
     handleManage = (hallId) => {
-        // Funcția pentru gestionarea sălii
-        console.log(`Gestionare sală cu ID: ${hallId}`);
+        this.setState({
+            managementModalOpen: true,
+            managementHallId: hallId
+        });
     }
+
+    handleCloseManagementModal = () => {
+        this.setState({
+            managementModalOpen: false,
+            managementHallId: null
+        });
+    }
+
+    handleHallUpdated = (updatedHall) => {
+        // Actualizează lista de săli cu datele noi
+        this.setState(prevState => ({
+            halls: prevState.halls.map(hall =>
+                hall.id === updatedHall.id ? updatedHall : hall
+            )
+        }));
+    }
+
+    // Elimină funcția handleHallDeactivated, nu mai e necesară
 
     renderRatingStars = (rating) => {
         const totalStars = 5;
@@ -231,7 +305,7 @@ class ViewAllHallsPage extends Component {
     }
 
     render() {
-        const { halls, cities, selectedCity, loading, error, modalOpen, selectedHallId } = this.state;
+        const { halls, cities, selectedCity, loading, error, modalOpen, selectedHallId, hallRatings, managementModalOpen, managementHallId } = this.state;
 
         if (loading) {
             return (
@@ -283,12 +357,13 @@ class ViewAllHallsPage extends Component {
                             const coverImageUrl = this.getCoverImage(hall);
                             const adminName = this.getAdminName(hall.adminId);
                             const adminEmail = this.getAdminEmail(hall.adminId);
+                            const ratingData = hallRatings[hall.id] || { averageRating: 0, totalReviews: 0 };
 
                             return (
-                                <div key={hall.id} className="global-hall-card">
+                                <div key={hall.id} className={`global-hall-card ${hall.status?.toLowerCase()}`}>
                                     <div className="global-hall-image-container">
-                                        <div className="global-hall-status-indicator active">
-                                            Activ
+                                        <div className={`global-hall-status-indicator ${hall.status?.toLowerCase()}`}>
+                                            {hall.status === 'ACTIVE' ? 'Activ' : 'Inactiv'}
                                         </div>
 
                                         {coverImageUrl ? (
@@ -324,11 +399,14 @@ class ViewAllHallsPage extends Component {
 
                                         <p className="global-hall-description">{hall.description || 'Fără descriere'}</p>
 
-                                        {/* Temporar, până când avem ratings reale */}
+                                        {/* Rating real din baza de date */}
                                         <div className="global-hall-rating">
-                                            {this.renderRatingStars(0)}
+                                            {this.renderRatingStars(ratingData.averageRating)}
                                             <span className="global-rating-text">
-                                                0 (0 recenzii)
+                                                {ratingData.averageRating > 0
+                                                    ? `${ratingData.averageRating} (${ratingData.totalReviews} ${ratingData.totalReviews === 1 ? 'recenzie' : 'recenzii'})`
+                                                    : 'Fără recenzii'
+                                                }
                                             </span>
                                         </div>
 
@@ -362,6 +440,15 @@ class ViewAllHallsPage extends Component {
                         isOpen={modalOpen}
                         hallId={selectedHallId}
                         onClose={this.handleCloseModal}
+                    />
+                )}
+
+                {managementModalOpen && managementHallId && (
+                    <HallManagementModal
+                        isOpen={managementModalOpen}
+                        hallId={managementHallId}
+                        onClose={this.handleCloseManagementModal}
+                        onHallUpdated={this.handleHallUpdated}
                     />
                 )}
             </div>

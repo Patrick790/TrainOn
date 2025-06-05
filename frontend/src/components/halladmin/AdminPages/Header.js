@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import './Header.css';
 
 class Header extends React.Component {
@@ -16,25 +16,25 @@ class Header extends React.Component {
                 <div className="light-line"></div>
 
                 <div className="main-logo-container">
-                        <div className="main-logo">
-                            <div className="main-logo-inner">
-                                <div className="main-logo-face front"></div>
-                                <div className="main-logo-face back"></div>
-                                <div className="main-logo-face right"></div>
-                                <div className="main-logo-face left"></div>
-                                <div className="main-logo-face top"></div>
-                                <div className="main-logo-face bottom"></div>
-                            </div>
+                    <div className="main-logo">
+                        <div className="main-logo-inner">
+                            <div className="main-logo-face front"></div>
+                            <div className="main-logo-face back"></div>
+                            <div className="main-logo-face right"></div>
+                            <div className="main-logo-face left"></div>
+                            <div className="main-logo-face top"></div>
+                            <div className="main-logo-face bottom"></div>
                         </div>
-                        <div className="main-logo-text">
-                            TrainOn
-                            <div className="main-logo-flash"></div>
-                            <div className="main-logo-flash"></div>
-                            <div className="main-logo-flash"></div>
-                            <div className="main-logo-flash"></div>
-                            <div className="main-logo-flash"></div>
-                            <div className="main-logo-flash"></div>
-                        </div>
+                    </div>
+                    <div className="main-logo-text">
+                        TrainOn
+                        <div className="main-logo-flash"></div>
+                        <div className="main-logo-flash"></div>
+                        <div className="main-logo-flash"></div>
+                        <div className="main-logo-flash"></div>
+                        <div className="main-logo-flash"></div>
+                        <div className="main-logo-flash"></div>
+                    </div>
                 </div>
 
                 <div className="main-header-right">
@@ -51,10 +51,16 @@ class Header extends React.Component {
 
                     <div className="main-auth-buttons">
                         {isLoggedIn ? (
-                            <button onClick={onLogout} className="main-auth-button">
-                                <span className="button-text">Deconectare</span>
-                                <LogOut size={16} className="button-icon" />
-                            </button>
+                            <>
+                                <Link to="/admin-profile" className="main-auth-button profile-button">
+                                    <User size={16} className="button-icon" />
+                                    <span className="button-text">Profilul meu</span>
+                                </Link>
+                                <button onClick={onLogout} className="main-auth-button">
+                                    <span className="button-text">Deconectare</span>
+                                    <LogOut size={16} className="button-icon" />
+                                </button>
+                            </>
                         ) : (
                             <>
                                 <button onClick={onLoginClick} className="main-auth-button login-button">

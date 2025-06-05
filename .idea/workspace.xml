@@ -4,41 +4,87 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="beginning of prioritization + footer pages">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/feedback/HallReviews.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/feedback/HallReviews.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/feedback/StarRating.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/feedback/StarRating.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/Header.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/Header.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageReviewsPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/Header.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/Header.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/bgrProfile.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/PersonalData.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/ProfilePage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/ProfilePage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/ReservationProfiles.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/SecuritySettings.js" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="idk">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/AdminHeader.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/AdminHeader.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminPersonalData.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminSecuritySettings.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/bgrProfile.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleManagement.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleManagement.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ViewReservationsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/bgrProfile.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/profile/AdminPersonalData.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/profile/AdminProfilePage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/profile/AdminProfilePage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/profile/AdminSecuritySettings.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/FCFSReservationPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/FCFSReservationPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentSuccesPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentSuccessPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/reservationsView/ReservationsPage.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/users/reservationsView/ReservationsPage.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Payment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/PaymentMethod.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/PaymentReservation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/PaymentStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Schedule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IPaymentSpringRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IScheduleSpringRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ScheduleRestController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/licenta/service/StripePaymentController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageReviewsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageReviewsPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/SportsHallDetailsModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewAllHallsPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewHallsSchedulePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ViewHallsSchedulePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/Header.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/Header.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ManageSchedulePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleTableComponent.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleTableComponent.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleTableComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ScheduleTableComponent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ViewReservationsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/ViewReservationsPage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/Header.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/Header.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/MainPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/MainPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/MainPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/MainPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/ReservationOptionsModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/ReservationOptionsModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SearchResultsPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/profile/ProfilePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/ProfilePage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/profile/SecuritySettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/profile/SecuritySettings.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/filter/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/Feedback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Feedback.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/persistence/IFeedbackSpringRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/IFeedbackSpringRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/FeedbackRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/FeedbackRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/Reservation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/Reservation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/SportsHall.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallSpringRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/persistence/ISportsHallSpringRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationProfileRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationProfileRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/SportsHallRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/UserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +116,7 @@
       <list>
         <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
       </list>
@@ -80,6 +127,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -103,7 +153,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;corretto-17&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/users&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/admin/AdminPages&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -125,21 +175,21 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin\AdminPages" />
+      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages" />
+      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages\profile" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users\profile" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages\ManageUsersPage" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users" />
-      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin\AdminButtons" />
-      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.StartApp">
+  <component name="RunManager" selected="Spring Boot.LicenseApplication">
     <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -379,7 +429,15 @@
       <workItem from="1747740720767" duration="1898000" />
       <workItem from="1747827772178" duration="5958000" />
       <workItem from="1748078349387" duration="7638000" />
-      <workItem from="1748428730942" duration="5433000" />
+      <workItem from="1748428730942" duration="9156000" />
+      <workItem from="1748455709871" duration="5976000" />
+      <workItem from="1748514630841" duration="12496000" />
+      <workItem from="1748594629527" duration="17611000" />
+      <workItem from="1748694840080" duration="10601000" />
+      <workItem from="1748765628863" duration="2723000" />
+      <workItem from="1748947852256" duration="14435000" />
+      <workItem from="1749027605582" duration="12806000" />
+      <workItem from="1749113341491" duration="14192000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -485,7 +543,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746721442621</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="idk">
+      <option name="closed" value="true" />
+      <created>1748443980242</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1748443980242</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -528,6 +594,7 @@
     <MESSAGE value="single hall + halls list" />
     <MESSAGE value="profile creation + reserve button in home" />
     <MESSAGE value="beginning of prioritization + footer pages" />
-    <option name="LAST_COMMIT_MESSAGE" value="beginning of prioritization + footer pages" />
+    <MESSAGE value="idk" />
+    <option name="LAST_COMMIT_MESSAGE" value="idk" />
   </component>
 </project>

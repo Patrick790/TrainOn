@@ -479,3 +479,156 @@
         justify-content: center;
     }
 }
+
+/* Add these styles to your ProfilePage.css file */
+
+/* Error state for input fields */
+.edit-input.error {
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.edit-input.error:focus {
+    border-color: rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Override save and cancel buttons to look like security buttons */
+.security-item .save-button,
+.security-item .cancel-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.security-item .save-button {
+    background-color: rgba(124, 58, 237, 0.7);
+}
+
+.security-item .save-button:hover:not(:disabled) {
+    background-color: rgba(109, 40, 217, 0.8);
+}
+
+.security-item .cancel-button {
+    background-color: rgba(107, 114, 128, 0.7);
+}
+
+.security-item .cancel-button:hover:not(:disabled) {
+    background-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Disabled button styles */
+.security-item .save-button:disabled,
+.security-item .cancel-button:disabled,
+.security-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.security-item .save-button:disabled:hover {
+    background-color: rgba(124, 58, 237, 0.7);
+}
+
+.security-item .cancel-button:disabled:hover {
+    background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Password strength indicator (optional enhancement) */
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.password-strength.weak {
+    color: #ef4444;
+}
+
+.password-strength.medium {
+    color: #f59e0b;
+}
+
+.password-strength.strong {
+    color: #10b981;
+}
+
+/* Loading state for buttons */
+.security-item .save-button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.security-item .save-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Better spacing for password form */
+.security-item .personal-data-grid {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.security-item .edit-actions {
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Error message styling */
+.error-message {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.general-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    text-align: center;
+    color: #ef4444;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments for password form */
+@media (max-width: 768px) {
+    .security-item .personal-data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .security-item .edit-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .security-item .save-button,
+    .security-item .cancel-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

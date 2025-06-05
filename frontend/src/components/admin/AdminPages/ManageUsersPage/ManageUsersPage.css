@@ -750,3 +750,15 @@
         justify-content: center;
     }
 }
+
+/* Buton pentru profiluri de rezervare */
+.user-action-btn.reservation-profiles {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fef3c7;
+}
+
+.user-action-btn.reservation-profiles:hover {
+    background-color: #fef3c7;
+    border-color: #fde68a;
+}

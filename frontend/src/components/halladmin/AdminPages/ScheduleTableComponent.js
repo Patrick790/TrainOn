@@ -130,6 +130,7 @@ class ScheduleTableComponent extends React.Component {
         return weekDays;
     }
 
+    // În ScheduleTableComponent.js, modifică metoda renderTimeSlots
     renderTimeSlots = () => {
         const { currentWeekStart, timeSlots } = this.state;
         const { schedule, isPastDateBlocked, isReadOnly, reservations } = this.props;
@@ -145,18 +146,13 @@ class ScheduleTableComponent extends React.Component {
                     currentDate.setDate(currentDate.getDate() + i);
                     const dateKey = this.formatDate(currentDate);
 
-                    // Check if date is in the past
                     const isPastDate = isPastDateBlocked && currentDate <= today;
-
-                    // Safely check if schedule and dateKey exist before accessing
                     const slotStatus = schedule && schedule[dateKey] && schedule[dateKey][slot.id]
                         ? schedule[dateKey][slot.id]
                         : 'available';
 
-                    // Caută informațiile despre rezervare dacă slotul este rezervat
                     let reservationInfo = null;
                     if (slotStatus === 'booked' && reservations) {
-                        // Caută rezervarea corespunzătoare acestui slot
                         reservationInfo = reservations.find(r =>
                             this.formatDate(new Date(r.date)) === dateKey &&
                             r.timeSlot === slot.id
@@ -164,13 +160,19 @@ class ScheduleTableComponent extends React.Component {
                     }
 
                     const isToday = this.isToday(currentDate);
+                    const isClickable = !isPastDate && !isReadOnly &&
+                        slotStatus !== 'booked' && slotStatus !== 'unavailable';
 
                     return (
                         <td
                             key={`${dateKey}_${slot.id}`}
                             className={`stc-schedule-slot stc-${slotStatus} ${isToday ? 'stc-today' : ''} ${isPastDate ? 'stc-past-date' : ''}`}
-                            onClick={() => !isPastDate && !isReadOnly && this.toggleMaintenanceSlot(dateKey, slot.id)}
+                            onClick={() => isClickable && this.toggleMaintenanceSlot(dateKey, slot.id)}
+                            style={{ cursor: isClickable ? 'pointer' : 'not-allowed' }}
                         >
+                            {slotStatus === 'unavailable' && (
+                                <span className="stc-slot-status stc-unavailable">Închis</span>
+                            )}
                             {slotStatus === 'maintenance' && (
                                 <span className="stc-slot-status stc-maintenance">Mentenanță</span>
                             )}
@@ -259,6 +261,10 @@ class ScheduleTableComponent extends React.Component {
                         <span>Disponibil</span>
                     </div>
                     <div className="stc-legend-item">
+                        <div className="stc-legend-color stc-unavailable"></div>
+                        <span>Închis</span>
+                    </div>
+                    <div className="stc-legend-item">
                         <div className="stc-legend-color stc-booked"></div>
                         <span>Rezervat</span>
                     </div>
@@ -270,12 +276,12 @@ class ScheduleTableComponent extends React.Component {
                             ) : (
                                 <span className="stc-maintenance-count">({maintenanceCount || 0})</span>
                             )}
-                        </span>
+        </span>
                     </div>
                     {!isReadOnly && (
                         <div className="stc-legend-info">
                             <Info size={16} />
-                            <span>Apăsați pe un interval pentru a marca/demarca mentenanță</span>
+                            <span>Apăsați pe un interval disponibil pentru a marca/demarca mentenanță</span>
                         </div>
                     )}
                 </div>
