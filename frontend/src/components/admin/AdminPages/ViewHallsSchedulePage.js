@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Info, AlertCircle, Wrench, Filter } from 'lucide-react';
+import { Info, AlertCircle, Wrench, Filter, Eye, EyeOff, ToggleLeft, ToggleRight, CheckCircle, XCircle, Loader } from 'lucide-react';
 import ScheduleTableComponent from '../../halladmin/AdminPages/ScheduleTableComponent';
 import BookingPrioritization from './BookingPrioritization';
 import './ViewHallsSchedulePage.css';
@@ -27,15 +27,105 @@ class ViewHallsSchedulePage extends Component {
             showMessage: false,
             savingMaintenance: false,
             maxMaintenanceSlots: null,
-            reservations: []
+            reservations: [],
+            // FCFS control states
+            fcfsEnabled: true,
+            fcfsLoading: false,
+            fcfsInitialLoading: true,
+            fcfsMessage: '',
+            fcfsError: '',
+            fcfsToggling: false
         };
     }
 
     async componentDidMount() {
-        await this.fetchAllHalls();
+        await Promise.all([
+            this.fetchAllHalls(),
+            this.fetchFcfsStatus()
+        ]);
     }
 
-    // API calls
+    // FCFS Control Methods
+    fetchFcfsStatus = async () => {
+        try {
+            this.setState({ fcfsInitialLoading: true });
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                this.setState({ fcfsError: 'Nu sunteți autentificat' });
+                return;
+            }
+
+            const response = await fetch('http://localhost:8080/admin/fcfs-status', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.setState({
+                    fcfsEnabled: data.fcfsEnabled,
+                    fcfsMessage: data.message,
+                    fcfsError: ''
+                });
+            } else {
+                throw new Error(`Eroare la încărcarea statusului: ${response.status}`);
+            }
+        } catch (err) {
+            console.error('Eroare la încărcarea statusului FCFS:', err);
+            this.setState({ fcfsError: 'Eroare la încărcarea statusului FCFS' });
+        } finally {
+            this.setState({ fcfsInitialLoading: false });
+        }
+    };
+
+    toggleFcfs = async () => {
+        try {
+            this.setState({ fcfsToggling: true, fcfsError: '' });
+
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                this.setState({ fcfsError: 'Nu sunteți autentificat' });
+                return;
+            }
+
+            const response = await fetch('http://localhost:8080/admin/fcfs-toggle', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.setState({
+                    fcfsEnabled: data.fcfsEnabled,
+                    fcfsMessage: data.message,
+                    fcfsError: ''
+                });
+
+                // Afișează mesajul timp de 4 secunde
+                setTimeout(() => {
+                    this.setState({ fcfsMessage: '' });
+                }, 4000);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Eroare la actualizarea statusului: ${response.status}`);
+            }
+        } catch (err) {
+            console.error('Eroare la schimbarea statusului FCFS:', err);
+            this.setState({ fcfsError: err.message || 'Eroare la schimbarea statusului FCFS' });
+        } finally {
+            this.setState({ fcfsToggling: false });
+        }
+    };
+
+    // API calls (existing methods remain the same)
     fetchAllHalls = async () => {
         try {
             const token = localStorage.getItem('jwtToken');
@@ -318,7 +408,7 @@ class ViewHallsSchedulePage extends Component {
         return allBookingResponses.flat();
     }
 
-    // Event handlers
+    // Event handlers (keeping existing methods)
     handleHallChange = (event) => {
         const hallId = event.target.value;
 
@@ -600,6 +690,98 @@ class ViewHallsSchedulePage extends Component {
         }
     };
 
+    // FCFS Toggle Component (inline for simplicity)
+    renderFcfsControl = () => {
+        const {
+            fcfsEnabled,
+            fcfsInitialLoading,
+            fcfsMessage,
+            fcfsError,
+            fcfsToggling
+        } = this.state;
+
+        if (fcfsInitialLoading) {
+            return (
+                <div className="vhsp-fcfs-control loading">
+                    <div className="vhsp-fcfs-loading">
+                        <Loader className="vhsp-spinner" size={20} />
+                        <span>Se încarcă...</span>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="vhsp-fcfs-control">
+                <div className="vhsp-fcfs-header">
+                    <div className="vhsp-fcfs-icon-wrapper">
+                        {fcfsEnabled ? (
+                            <Eye className="vhsp-fcfs-icon active" size={20} />
+                        ) : (
+                            <EyeOff className="vhsp-fcfs-icon inactive" size={20} />
+                        )}
+                    </div>
+                    <div className="vhsp-fcfs-info">
+                        <h4>Control FCFS</h4>
+                        <span className="vhsp-fcfs-subtitle">Rezervarea locurilor rămase</span>
+                    </div>
+                </div>
+
+                <div className="vhsp-fcfs-status">
+                    <div className={`vhsp-status-indicator ${fcfsEnabled ? 'active' : 'inactive'}`}>
+                        {fcfsEnabled ? (
+                            <>
+                                <CheckCircle size={16} />
+                                <span>Activat</span>
+                            </>
+                        ) : (
+                            <>
+                                <XCircle size={16} />
+                                <span>Dezactivat</span>
+                            </>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={this.toggleFcfs}
+                        disabled={fcfsToggling}
+                        className={`vhsp-fcfs-toggle-button ${fcfsEnabled ? 'active' : 'inactive'}`}
+                    >
+                        {fcfsToggling ? (
+                            <>
+                                <Loader className="vhsp-spinner-small" size={14} />
+                                <span>Se actualizează...</span>
+                            </>
+                        ) : (
+                            <>
+                                {fcfsEnabled ? (
+                                    <ToggleRight size={14} />
+                                ) : (
+                                    <ToggleLeft size={14} />
+                                )}
+                                <span>{fcfsEnabled ? 'Dezactivează' : 'Activează'}</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                {fcfsMessage && (
+                    <div className="vhsp-fcfs-message success">
+                        <CheckCircle size={14} />
+                        <span>{fcfsMessage}</span>
+                    </div>
+                )}
+
+                {fcfsError && (
+                    <div className="vhsp-fcfs-message error">
+                        <XCircle size={14} />
+                        <span>{fcfsError}</span>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     render() {
         const {
             halls,
@@ -657,6 +839,11 @@ class ViewHallsSchedulePage extends Component {
                                     {successMessage ? successMessage : errorMessage}
                                 </div>
                             )}
+
+                            {/* FCFS Control Section */}
+                            <div className="vhsp-fcfs-section">
+                                {this.renderFcfsControl()}
+                            </div>
 
                             <BookingPrioritization
                                 onGenerationComplete={this.handleGenerationComplete}

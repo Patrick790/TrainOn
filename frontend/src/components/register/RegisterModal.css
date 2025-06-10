@@ -141,6 +141,28 @@
             0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* Stiluri pentru select dropdown */
+.register-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+.register-select:focus {
+    border-color: #6d28d9;
+    box-shadow:
+            0 0 0 3px rgba(109, 40, 217, 0.1),
+            0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.register-select option {
+    padding: 0.5rem;
+    color: #4a5568;
+}
+
 /* Fixed floating label styles */
 .register-floating-label {
     position: absolute;
@@ -154,7 +176,8 @@
 }
 
 .register-input:focus ~ .register-floating-label,
-.register-input:not(:placeholder-shown) ~ .register-floating-label {
+.register-input:not(:placeholder-shown) ~ .register-floating-label,
+.register-select ~ .register-floating-label {
     top: -0.5rem;
     left: 0.8rem;
     font-size: 0.75rem;
@@ -295,7 +318,8 @@
     text-align: left;
 }
 
-.register-input-container.register-input-error .register-input {
+.register-input-container.register-input-error .register-input,
+.register-input-container.register-input-error .register-select {
     border-color: #ef4444;
 }
 

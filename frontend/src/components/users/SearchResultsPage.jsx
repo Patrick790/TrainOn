@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, ChevronDown, Star, Search } from 'lucide-react';
+import { MapPin, Star } from 'lucide-react';
 import axios from 'axios';
 import Header from './Header';
+import SearchBar from './SearchBar'; // Import componenta SearchBar separată
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import Footer from '../pageComponents/Footer';
@@ -24,53 +25,19 @@ const SearchResultsPage = () => {
     const [hoveredMarker, setHoveredMarker] = useState(null);
     const [mapReady, setMapReady] = useState(false); // Stare pentru a urmări dacă harta este gata
 
-    // State pentru header și search bar - cu orașe dinamice
+    // State pentru header și autentificare
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-    const [selectedCity, setSelectedCity] = useState(queryParams.get('city') || '');
-    const [selectedActivity, setSelectedActivity] = useState(queryParams.get('activity') || 'Sport');
-    const [searchQuery, setSearchQuery] = useState(queryParams.get('query') || '');
-    const [cities, setCities] = useState([]); // Array pentru orașele încărcate din baza de date
-    const [loadingCities, setLoadingCities] = useState(true); // Loading state pentru orașe
-    const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-    const [isActivityDropdownOpen, setIsActivityDropdownOpen] = useState(false);
+
+    // Parametrii de căutare din URL
+    const [searchParams, setSearchParams] = useState({
+        city: queryParams.get('city') || '',
+        sport: queryParams.get('sport') || '',
+        query: queryParams.get('query') || ''
+    });
 
     const API_URL = 'http://localhost:8080';
-
-    // Nouă funcție pentru încărcarea orașelor din baza de date
-    const fetchCities = async () => {
-        setLoadingCities(true);
-        try {
-            const response = await fetch(`${API_URL}/sportsHalls/cities`);
-            if (response.ok) {
-                const citiesData = await response.json();
-                const cities = Array.isArray(citiesData) ? citiesData : [];
-
-                setCities(cities);
-
-                // Dacă nu avem un oraș selectat din query params și avem orașe disponibile
-                if (!selectedCity && cities.length > 0) {
-                    setSelectedCity(cities[0]);
-                }
-
-                setLoadingCities(false);
-            } else {
-                console.error('Eroare la încărcarea orașelor:', response.status);
-                setCities([]);
-                setLoadingCities(false);
-            }
-        } catch (error) {
-            console.error('Eroare la încărcarea orașelor:', error);
-            setCities([]);
-            setLoadingCities(false);
-        }
-    };
-
-    // Încărcăm orașele când componenta se montează
-    useEffect(() => {
-        fetchCities();
-    }, []);
 
     // Funcție pentru geocodarea adreselor (obținerea coordonatelor din adresă)
     const geocodeAddress = async (address, city, id) => {
@@ -106,47 +73,38 @@ const SearchResultsPage = () => {
         }
     };
 
-    // Încarcă sălile de sport în funcție de parametrii de căutare
+    // Încarcă sălile de sport folosind noul endpoint de search
     useEffect(() => {
-        // Nu încărcăm sălile până nu avem orașele încărcate și un oraș selectat
-        if (loadingCities || !selectedCity) {
-            return;
-        }
-
         const fetchSportsHalls = async () => {
             try {
                 setLoading(true);
-                // Ar trebui să ai un endpoint care să permită filtrarea după oraș și tip de activitate
-                const response = await axios.get(`${API_URL}/sportsHalls`);
 
-                // Filtrăm rezultatele în funcție de parametrii de căutare
-                let filteredHalls = response.data;
+                // Construim URL-ul pentru noul endpoint de search
+                const searchURLParams = new URLSearchParams();
 
-                // Filtrare după oraș
-                if (selectedCity) {
-                    filteredHalls = filteredHalls.filter(hall =>
-                        hall.city.toLowerCase() === selectedCity.toLowerCase()
-                    );
+                if (searchParams.city) {
+                    searchURLParams.append('city', searchParams.city);
+                }
+                if (searchParams.sport && searchParams.sport !== 'Sport') {
+                    searchURLParams.append('sport', searchParams.sport);
+                }
+                if (searchParams.query) {
+                    searchURLParams.append('query', searchParams.query);
                 }
 
-                // Filtrare după activitate (presupunând că există un câmp 'type' sau similar)
-                if (selectedActivity && selectedActivity !== 'Sport') {
-                    filteredHalls = filteredHalls.filter(hall =>
-                        hall.type && hall.type.toLowerCase().includes(selectedActivity.toLowerCase())
-                    );
-                }
+                const searchURL = `${API_URL}/sportsHalls/search?${searchURLParams.toString()}`;
+                console.log('Fetching from URL:', searchURL);
+                console.log('Search parameters:', searchParams);
 
-                // Filtrare după termenul de căutare
-                if (searchQuery) {
-                    filteredHalls = filteredHalls.filter(hall =>
-                        hall.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (hall.description && hall.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                    );
-                }
+                // Folosim noul endpoint de search
+                const response = await axios.get(searchURL);
+
+                console.log(`Found ${response.data.length} results for search:`, searchParams);
+                console.log('Response data:', response.data);
 
                 // Verificăm și geocodăm adresele care nu au coordonate
                 const hallsWithCoordinates = await Promise.all(
-                    filteredHalls.map(async (hall) => {
+                    response.data.map(async (hall) => {
                         // Dacă sala are deja coordonate valide, le folosim
                         if (hall.latitude && hall.longitude &&
                             !isNaN(parseFloat(hall.latitude)) &&
@@ -175,13 +133,35 @@ const SearchResultsPage = () => {
                 setLoading(false);
             } catch (err) {
                 console.error('Eroare la încărcarea sălilor:', err);
+                console.error('Error details:', err.response?.data || err.message);
                 setError('Nu s-au putut încărca sălile de sport.');
                 setLoading(false);
             }
         };
 
-        fetchSportsHalls();
-    }, [selectedCity, selectedActivity, searchQuery, loadingCities, API_URL]);
+        // Doar dacă avem cel puțin un criteriu de căutare
+        if (searchParams.city || searchParams.sport || searchParams.query) {
+            console.log('Starting search with params:', searchParams);
+            fetchSportsHalls();
+        } else {
+            console.log('No search criteria provided');
+            setLoading(false);
+            setSportsHalls([]);
+        }
+    }, [searchParams, API_URL]);
+
+    // Actualizează parametrii când se schimbă URL-ul
+    useEffect(() => {
+        const currentParams = new URLSearchParams(location.search);
+        const newSearchParams = {
+            city: currentParams.get('city') || '',
+            sport: currentParams.get('sport') || '',
+            query: currentParams.get('query') || ''
+        };
+
+        console.log('URL changed, new params:', newSearchParams);
+        setSearchParams(newSearchParams);
+    }, [location.search]);
 
     // Funcție separată pentru inițializarea hărții
     const initializeMap = () => {
@@ -387,52 +367,6 @@ const SearchResultsPage = () => {
         setIsLoginModalOpen(false);
     };
 
-    const toggleLocationDropdown = () => {
-        setIsLocationDropdownOpen(!isLocationDropdownOpen);
-        setIsActivityDropdownOpen(false);
-    };
-
-    const toggleActivityDropdown = () => {
-        setIsActivityDropdownOpen(!isActivityDropdownOpen);
-        setIsLocationDropdownOpen(false);
-    };
-
-    const handleLocationChange = (city) => {
-        setSelectedCity(city);
-        setIsLocationDropdownOpen(false);
-        updateURLParams('city', city);
-    };
-
-    const handleActivityChange = (activity) => {
-        setSelectedActivity(activity);
-        setIsActivityDropdownOpen(false);
-        updateURLParams('activity', activity);
-    };
-
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-
-        // Verificăm dacă au fost selectate orașul
-        if (!selectedCity) {
-            alert('Vă rugăm să selectați un oraș pentru căutare.');
-            return;
-        }
-
-        updateURLParams('query', searchQuery);
-    };
-
-    // Actualizează parametrii URL fără a reîncărca pagina
-    const updateURLParams = (key, value) => {
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set(key, value);
-        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-        window.history.pushState({ path: newUrl }, '', newUrl);
-    };
-
     // Funcție pentru calcularea ratingului
     const calculateRating = (hall) => {
         if (!hall || !hall.capacity) return 3.0;
@@ -483,8 +417,28 @@ const SearchResultsPage = () => {
         return `${price} RON/oră`;
     };
 
-    // Folosim orașele din baza de date în loc de array-ul hardcodat
-    const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
+    // Functie pentru a genera mesajul din titlu
+    const getResultsTitle = () => {
+        if (!searchParams.city && !searchParams.sport && !searchParams.query) {
+            return 'Introduceți criterii de căutare pentru a vedea rezultatele';
+        }
+
+        let title = 'Săli de sport';
+
+        if (searchParams.query) {
+            title += ` "${searchParams.query}"`;
+        }
+
+        if (searchParams.city) {
+            title += ` în ${searchParams.city}`;
+        }
+
+        if (searchParams.sport && searchParams.sport !== 'Sport') {
+            title += ` - ${searchParams.sport}`;
+        }
+
+        return title;
+    };
 
     return (
         <div className="main-container">
@@ -496,111 +450,26 @@ const SearchResultsPage = () => {
                 onLogout={handleLogout}
             />
 
-            {/* Search Bar - similar cu MainPage dar fără background image */}
+            {/* Search Bar - folosim componenta separată cu styling pentru SearchResults */}
             <div className="srp-search-container">
-                <form onSubmit={handleSearch} className="srp-search-bar">
-                    <div className="srp-input-group">
-                        <MapPin className="srp-icon" />
-                        <div className="srp-custom-select">
-                            <div
-                                className="srp-selected-option"
-                                onClick={toggleLocationDropdown}
-                            >
-                                {loadingCities
-                                    ? 'Se încarcă orașele...'
-                                    : selectedCity || 'Selectează orașul'
-                                }
-                                <ChevronDown className="srp-icon-small" />
-                            </div>
-                            {isLocationDropdownOpen && !loadingCities && (
-                                <div className="srp-options-list">
-                                    {cities.length > 0 ? (
-                                        cities.map((city) => (
-                                            <div
-                                                key={city}
-                                                className="srp-option"
-                                                onClick={() => handleLocationChange(city)}
-                                            >
-                                                {city}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="srp-option disabled">
-                                            Nu există orașe disponibile
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="srp-input-group">
-                        <div className="srp-custom-select">
-                            <div
-                                className="srp-selected-option"
-                                onClick={toggleActivityDropdown}
-                            >
-                                {selectedActivity}
-                                <ChevronDown className="srp-icon-small" />
-                            </div>
-                            {isActivityDropdownOpen && (
-                                <div className="srp-options-list">
-                                    {activities.map((act) => (
-                                        <div
-                                            key={act}
-                                            className="srp-option"
-                                            onClick={() => handleActivityChange(act)}
-                                        >
-                                            {act}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        placeholder="Denumire sala de sport"
-                        className="srp-search-input"
-                    />
-
-                    <button
-                        type="submit"
-                        className="srp-search-button"
-                        disabled={loadingCities || !selectedCity}
-                    >
-                        <Search size={18} />
-                        CAUTĂ
-                    </button>
-                </form>
+                <div className="srp-search-wrapper">
+                    <SearchBar />
+                </div>
             </div>
 
             {/* Conținut rezultate căutare */}
             <div className="srp-results-content">
                 <h1 className="srp-results-title">
-                    {loadingCities ? (
-                        'Se încarcă...'
-                    ) : selectedCity ? (
-                        <>
-                            Săli de sport în {selectedCity}
-                            {selectedActivity !== 'Sport' && ` - ${selectedActivity}`}
-                            {searchQuery && ` - "${searchQuery}"`}
-                        </>
-                    ) : (
-                        'Selectați un oraș pentru a vedea sălile disponibile'
-                    )}
+                    {getResultsTitle()}
                 </h1>
 
                 <div className="srp-results-layout">
                     {/* Lista de săli */}
                     <div className="srp-results-list">
-                        {loadingCities ? (
-                            <div className="srp-loading">Se încarcă orașele...</div>
-                        ) : !selectedCity ? (
-                            <div className="srp-no-results">Vă rugăm să selectați un oraș pentru a vedea sălile disponibile.</div>
+                        {!searchParams.city && !searchParams.sport && !searchParams.query ? (
+                            <div className="srp-no-results">
+                                Vă rugăm să introduceți criterii de căutare: orașul, sportul sau numele sălii.
+                            </div>
                         ) : loading ? (
                             <div className="srp-loading">Se încarcă sălile...</div>
                         ) : error ? (

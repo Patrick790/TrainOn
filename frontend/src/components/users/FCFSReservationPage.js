@@ -8,6 +8,17 @@ const FCFS_LOCAL_STORAGE_HALL_KEY = 'fcfsSelectedHall';
 
 const FCFSReservationPage = () => {
     const navigate = useNavigate();
+
+    // State pentru verificarea accesului FCFS
+    const [fcfsAccess, setFcfsAccess] = useState({
+        canAccess: false,
+        loading: true,
+        message: '',
+        userType: null,
+        globalEnabled: false
+    });
+
+    // State-urile existente
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedHall, setSelectedHall] = useState('');
     const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -17,7 +28,74 @@ const FCFSReservationPage = () => {
     const [sportsHalls, setSportsHalls] = useState([]);
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedHallDetails, setSelectedHallDetails] = useState(null); // Nou state pentru detaliile sălii
+    const [selectedHallDetails, setSelectedHallDetails] = useState(null);
+
+    // Verifică accesul FCFS la montarea componentei
+    useEffect(() => {
+        checkFcfsAccess();
+    }, []);
+
+    // Funcție pentru verificarea accesului FCFS
+    const checkFcfsAccess = async () => {
+        try {
+            setFcfsAccess(prev => ({ ...prev, loading: true }));
+
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                setFcfsAccess({
+                    canAccess: false,
+                    loading: false,
+                    message: 'Nu sunteți autentificat',
+                    userType: null,
+                    globalEnabled: false
+                });
+                // Încărcăm oricum orașele pentru a permite navigarea
+                fetchCities();
+                return;
+            }
+
+            const response = await fetch('http://localhost:8080/fcfs/access-check', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setFcfsAccess({
+                    canAccess: data.canAccess,
+                    loading: false,
+                    message: data.reason || '',
+                    userType: data.userType,
+                    globalEnabled: data.fcfsEnabled
+                });
+            } else {
+                setFcfsAccess({
+                    canAccess: false,
+                    loading: false,
+                    message: 'Eroare la verificarea accesului',
+                    userType: null,
+                    globalEnabled: false
+                });
+            }
+
+            // Încărcăm orașele în orice caz pentru a permite navigarea
+            fetchCities();
+        } catch (error) {
+            console.error('Eroare la verificarea accesului FCFS:', error);
+            setFcfsAccess({
+                canAccess: false,
+                loading: false,
+                message: 'A apărut o eroare la verificarea accesului',
+                userType: null,
+                globalEnabled: false
+            });
+            // Încărcăm orașele chiar și în caz de eroare
+            fetchCities();
+        }
+    };
 
     const getWeekStart = (date) => {
         const start = new Date(date);
@@ -40,8 +118,6 @@ const FCFSReservationPage = () => {
         d.setHours(0, 0, 0, 0);
         return d;
     }, []);
-
-    useEffect(() => { fetchCities(); }, []);
 
     // LocalStorage persistence
     useEffect(() => {
@@ -87,15 +163,19 @@ const FCFSReservationPage = () => {
     }, [selectedCity]);
 
     useEffect(() => {
-        if (selectedHall) {
+        if (selectedHall && fcfsAccess.canAccess) {
             fetchAvailableSlots();
-            fetchHallDetails(); // Nouă funcție pentru a obține detaliile sălii
+            fetchHallDetails();
         } else {
             setAvailableSlots([]);
             setSelectedDate(null);
-            setSelectedHallDetails(null); // Resetează detaliile sălii
+            if (selectedHall) {
+                fetchHallDetails(); // Încărcăm detaliile sălii chiar dacă nu avem acces FCFS
+            } else {
+                setSelectedHallDetails(null);
+            }
         }
-    }, [selectedHall, currentWeek]);
+    }, [selectedHall, currentWeek, fcfsAccess.canAccess]);
 
     // Auto-select first valid day
     useEffect(() => {
@@ -148,7 +228,6 @@ const FCFSReservationPage = () => {
         }
     };
 
-    // Nouă funcție pentru a obține detaliile sălii selectate
     const fetchHallDetails = async () => {
         if (!selectedHall) return;
 
@@ -302,7 +381,7 @@ const FCFSReservationPage = () => {
         setSelectedSlots([]);
         setCurrentWeek(new Date());
         setSelectedDate(null);
-        setSelectedHallDetails(null); // Resetează detaliile sălii
+        setSelectedHallDetails(null);
     };
 
     const handleHallChange = (hallId) => {
@@ -311,7 +390,7 @@ const FCFSReservationPage = () => {
         setSelectedSlots([]);
         setCurrentWeek(new Date());
         setSelectedDate(null);
-        setSelectedHallDetails(null); // Resetează detaliile sălii
+        setSelectedHallDetails(null);
     };
 
     const handleSlotSelect = (slotId) => {
@@ -364,7 +443,6 @@ const FCFSReservationPage = () => {
             return;
         }
 
-        // Pregătește datele pentru pagina de plată
         const reservationData = selectedSlots.map(slotId => {
             const slotData = availableSlots.find(s => s.id === slotId);
             return {
@@ -376,7 +454,6 @@ const FCFSReservationPage = () => {
             };
         });
 
-        // Navighează către pagina de plată cu datele rezervării
         navigate('/payment', {
             state: {
                 reservations: reservationData,
@@ -415,11 +492,14 @@ const FCFSReservationPage = () => {
         });
     }, [selectedDate, selectedSlots, availableSlots]);
 
-    // Funcție pentru a formata prețul
     const formatPrice = (price) => {
-        if (price == null) return '50.00'; // Preț implicit dacă nu există
+        if (price == null) return '50.00';
         return Number(price).toFixed(2);
     };
+
+    // Verificăm dacă sunt disponibile intervalele generale
+    const hasAnyAvailableSlots = availableSlots.length > 0;
+    const shouldShowNoSlotsMessage = selectedHall && !fcfsAccess.loading && (!fcfsAccess.canAccess || (!loading && !hasAnyAvailableSlots));
 
     return (
         <div className="fcfs-reservation-page">
@@ -433,7 +513,9 @@ const FCFSReservationPage = () => {
                     <div className="fcfs-header">
                         <button onClick={() => navigate('/')} className="fcfs-back-button">← Înapoi</button>
                         <h1 className="fcfs-title">Rezervarea locurilor rămase</h1>
-                        <p className="fcfs-subtitle">Selectează ziua și ora dorită (un interval pe zi)</p>
+                        <p className="fcfs-subtitle">
+                            {fcfsAccess.loading ? 'Se verifică disponibilitatea...' : 'Selectează ziua și ora dorită (un interval pe zi)'}
+                        </p>
                     </div>
 
                     {/* Container pentru Filtre */}
@@ -441,14 +523,26 @@ const FCFSReservationPage = () => {
                         <div className="fcfs-filters">
                             <div className="fcfs-filter-group">
                                 <label htmlFor="city-select">Alege orașul:</label>
-                                <select id="city-select" value={selectedCity} onChange={(e) => handleCityChange(e.target.value)} className="fcfs-select" disabled={loading}>
+                                <select
+                                    id="city-select"
+                                    value={selectedCity}
+                                    onChange={(e) => handleCityChange(e.target.value)}
+                                    className="fcfs-select"
+                                    disabled={loading || fcfsAccess.loading}
+                                >
                                     <option value="">Selectează orașul</option>
                                     {cities.map(city => <option key={city} value={city}>{city}</option>)}
                                 </select>
                             </div>
                             <div className="fcfs-filter-group">
                                 <label htmlFor="hall-select">Alege sala de sport:</label>
-                                <select id="hall-select" value={selectedHall} onChange={(e) => handleHallChange(e.target.value)} className="fcfs-select" disabled={!selectedCity || sportsHalls.length === 0 || loading}>
+                                <select
+                                    id="hall-select"
+                                    value={selectedHall}
+                                    onChange={(e) => handleHallChange(e.target.value)}
+                                    className="fcfs-select"
+                                    disabled={!selectedCity || sportsHalls.length === 0 || loading || fcfsAccess.loading}
+                                >
                                     <option value="">Selectează sala</option>
                                     {sportsHalls.map(hall => <option key={hall.id} value={hall.id}>{hall.name}</option>)}
                                 </select>
@@ -464,9 +558,9 @@ const FCFSReservationPage = () => {
                     {selectedHall && (
                         <div className="fcfs-content">
                             <div className="fcfs-week-navigation">
-                                <button onClick={handlePreviousWeek} className="fcfs-nav-button" disabled={isPrevWeekButtonDisabled || loading}>←</button>
+                                <button onClick={handlePreviousWeek} className="fcfs-nav-button" disabled={isPrevWeekButtonDisabled || loading || !fcfsAccess.canAccess}>←</button>
                                 <h2 className="fcfs-week-title">{formatWeekRange()}</h2>
-                                <button onClick={handleNextWeek} className="fcfs-nav-button" disabled={isNextWeekButtonDisabled || loading}>→</button>
+                                <button onClick={handleNextWeek} className="fcfs-nav-button" disabled={isNextWeekButtonDisabled || loading || !fcfsAccess.canAccess}>→</button>
                             </div>
 
                             <div className="fcfs-hall-info">
@@ -484,97 +578,116 @@ const FCFSReservationPage = () => {
                                 </h3>
                             </div>
 
-                            <div className="fcfs-day-selector-container">
-                                <div className="fcfs-day-headers">
-                                    {dayHeaders.map((header, index) => <div key={index} className="fcfs-day-header-item">{header}</div>)}
-                                </div>
-                                <div className="fcfs-day-buttons">
-                                    {daysForSelector.map(day => {
-                                        const dayStr = day.toISOString().split('T')[0];
-                                        const isSelected = selectedDate && isSameDay(day, selectedDate);
-                                        const isPast = day < today;
-                                        const hasSlotsForDay = availableSlots.some(s => isSameDay(s.date, day));
-                                        const dayHasSelectedSlot = selectedSlots.some(slotId => {
-                                            const slotData = availableSlots.find(s => s.id === slotId);
-                                            return slotData && isSameDay(slotData.date, day);
-                                        });
-                                        const shouldShowIndicator = dayHasSelectedSlot && !isSameDay(day, today);
-
-                                        let buttonClass = 'fcfs-day-button';
-                                        if (isSelected) buttonClass += ' selected';
-                                        if (isPast && !isSameDay(day, today)) buttonClass += ' past';
-                                        if (!hasSlotsForDay && !isPast) buttonClass += ' no-slots';
-                                        if (dayHasSelectedSlot) buttonClass += ' has-selection';
-
-                                        const isDisabled = (isPast && !isSameDay(day, today)) || (!hasSlotsForDay && !isSameDay(day, today) && !isPast);
-
-                                        return (
-                                            <button
-                                                key={dayStr}
-                                                className={buttonClass}
-                                                onClick={() => {
-                                                    if (hasSlotsForDay || isSameDay(day,today)) {
-                                                        setSelectedDate(day);
-                                                    } else if (!isPast) {
-                                                        alert('Nu există intervale disponibile pentru această zi.');
-                                                    }
-                                                }}
-                                                disabled={isDisabled || loading}
-                                            >
-                                                {day.getDate()}
-                                                {shouldShowIndicator && <span className="selected-indicator">●</span>}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {selectedDate && (
-                                <div className="fcfs-time-slots-section">
-                                    <h4 className="fcfs-time-slots-title">
-                                        Intervalele disponibile pentru: {selectedDate.toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' })}
-                                        {hasSelectedSlotForSelectedDay && <span className="day-status"> (Interval selectat pentru această zi)</span>}
-                                    </h4>
-                                    {loading && slotsForSelectedDay.length === 0 ? (
-                                        <div className="fcfs-loading"><p>Se încarcă intervalele...</p></div>
-                                    ) : slotsForSelectedDay.length > 0 ? (
-                                        <div className="fcfs-slots-list-for-day">
-                                            {slotsForSelectedDay.map((slot, index) => (
-                                                <div
-                                                    key={slot.id}
-                                                    className={`fcfs-slot-card-timeonly ${selectedSlots.includes(slot.id) ? 'selected' : ''} animating-in`}
-                                                    style={{ animationDelay: `${index * 0.05}s` }}
-                                                    onClick={() => !loading && handleSlotSelect(slot.id)}
-                                                >
-                                                    <div className="fcfs-slot-time">{slot.timeSlot}</div>
-                                                    <div className="fcfs-slot-status-timeonly">{selectedSlots.includes(slot.id) ? 'Selectat' : 'Disponibil'}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="fcfs-no-slots">
-                                            <p>Nu sunt intervale orare disponibile pentru ziua selectată sau toate intervalele au expirat.</p>
-                                        </div>
-                                    )}
+                            {/* Mesaj când intervalele nu sunt disponibile */}
+                            {shouldShowNoSlotsMessage && (
+                                <div className="fcfs-no-slots">
+                                    <p>Nu au fost postate încă intervalele orare disponibile pentru această săptămână.</p>
+                                    <p>Vă rugăm să reveniți mai târziu sau să contactați administratorul pentru mai multe informații.</p>
                                 </div>
                             )}
 
-                            {(slotsForSelectedDay.length > 0 || selectedSlots.length > 0) && !loading && (
-                                <div className="fcfs-actions">
-                                    <div className="fcfs-buttons">
-                                        <button onClick={() => setSelectedSlots([])} className="fcfs-cancel-button" disabled={loading || selectedSlots.length === 0}>Anulează Selecția</button>
-                                        <button onClick={handleProceedToPayment} className="fcfs-confirm-button" disabled={selectedSlots.length === 0 || loading}>
-                                            Continuă la Plată
-                                        </button>
+                            {/* Afișarea normală când sunt disponibile intervale și utilizatorul are acces */}
+                            {!shouldShowNoSlotsMessage && fcfsAccess.canAccess && (
+                                <>
+                                    <div className="fcfs-day-selector-container">
+                                        <div className="fcfs-day-headers">
+                                            {dayHeaders.map((header, index) => <div key={index} className="fcfs-day-header-item">{header}</div>)}
+                                        </div>
+                                        <div className="fcfs-day-buttons">
+                                            {daysForSelector.map(day => {
+                                                const dayStr = day.toISOString().split('T')[0];
+                                                const isSelected = selectedDate && isSameDay(day, selectedDate);
+                                                const isPast = day < today;
+                                                const hasSlotsForDay = availableSlots.some(s => isSameDay(s.date, day));
+                                                const dayHasSelectedSlot = selectedSlots.some(slotId => {
+                                                    const slotData = availableSlots.find(s => s.id === slotId);
+                                                    return slotData && isSameDay(slotData.date, day);
+                                                });
+                                                const shouldShowIndicator = dayHasSelectedSlot && !isSameDay(day, today);
+
+                                                let buttonClass = 'fcfs-day-button';
+                                                if (isSelected) buttonClass += ' selected';
+                                                if (isPast && !isSameDay(day, today)) buttonClass += ' past';
+                                                if (!hasSlotsForDay && !isPast) buttonClass += ' no-slots';
+                                                if (dayHasSelectedSlot) buttonClass += ' has-selection';
+
+                                                const isDisabled = (isPast && !isSameDay(day, today)) || (!hasSlotsForDay && !isSameDay(day, today) && !isPast);
+
+                                                return (
+                                                    <button
+                                                        key={dayStr}
+                                                        className={buttonClass}
+                                                        onClick={() => {
+                                                            if (hasSlotsForDay || isSameDay(day,today)) {
+                                                                setSelectedDate(day);
+                                                            } else if (!isPast) {
+                                                                alert('Nu există intervale disponibile pentru această zi.');
+                                                            }
+                                                        }}
+                                                        disabled={isDisabled || loading}
+                                                    >
+                                                        {day.getDate()}
+                                                        {shouldShowIndicator && <span className="selected-indicator">●</span>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
+
+                                    {selectedDate && (
+                                        <div className="fcfs-time-slots-section">
+                                            <h4 className="fcfs-time-slots-title">
+                                                Intervalele disponibile pentru: {selectedDate.toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                                {hasSelectedSlotForSelectedDay && <span className="day-status"> (Interval selectat pentru această zi)</span>}
+                                            </h4>
+                                            {loading && slotsForSelectedDay.length === 0 ? (
+                                                <div className="fcfs-loading"><p>Se încarcă intervalele...</p></div>
+                                            ) : slotsForSelectedDay.length > 0 ? (
+                                                <div className="fcfs-slots-list-for-day">
+                                                    {slotsForSelectedDay.map((slot, index) => (
+                                                        <div
+                                                            key={slot.id}
+                                                            className={`fcfs-slot-card-timeonly ${selectedSlots.includes(slot.id) ? 'selected' : ''} animating-in`}
+                                                            style={{ animationDelay: `${index * 0.05}s` }}
+                                                            onClick={() => !loading && handleSlotSelect(slot.id)}
+                                                        >
+                                                            <div className="fcfs-slot-time">{slot.timeSlot}</div>
+                                                            <div className="fcfs-slot-status-timeonly">{selectedSlots.includes(slot.id) ? 'Selectat' : 'Disponibil'}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="fcfs-no-slots">
+                                                    <p>Nu sunt intervale orare disponibile pentru ziua selectată sau toate intervalele au expirat.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {(slotsForSelectedDay.length > 0 || selectedSlots.length > 0) && !loading && (
+                                        <div className="fcfs-actions">
+                                            <div className="fcfs-buttons">
+                                                <button onClick={() => setSelectedSlots([])} className="fcfs-cancel-button" disabled={loading || selectedSlots.length === 0}>Anulează Selecția</button>
+                                                <button onClick={handleProceedToPayment} className="fcfs-confirm-button" disabled={selectedSlots.length === 0 || loading}>
+                                                    Continuă la Plată
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     )}
 
-                    {(!selectedCity || !selectedHall) && !loading && (
+                    {(!selectedCity || !selectedHall) && !loading && !fcfsAccess.loading && (
                         <div className="fcfs-empty-state">
                             <p>Selectează orașul și sala de sport pentru a vizualiza programul.</p>
+                        </div>
+                    )}
+
+                    {fcfsAccess.loading && (
+                        <div className="fcfs-loading">
+                            <p>Se verifică accesul...</p>
                         </div>
                     )}
                 </div>

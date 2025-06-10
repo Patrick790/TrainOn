@@ -66,6 +66,207 @@
     100% { opacity: 0; transform: translateY(-10px); }
 }
 
+/* FCFS Control Section */
+.vhsp-fcfs-section {
+    margin-bottom: 2rem;
+}
+
+.vhsp-fcfs-control {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.vhsp-fcfs-control::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%237c3aed' fill-opacity='0.08' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z'%3E%3C/path%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.vhsp-fcfs-control.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+}
+
+.vhsp-fcfs-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.vhsp-fcfs-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.vhsp-fcfs-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vhsp-fcfs-icon.active {
+    color: #10b981;
+}
+
+.vhsp-fcfs-icon.inactive {
+    color: #ef4444;
+}
+
+.vhsp-fcfs-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.vhsp-fcfs-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-top: 0.25rem;
+}
+
+.vhsp-fcfs-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0.75rem;
+}
+
+.vhsp-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.vhsp-status-indicator.active {
+    color: #10b981;
+}
+
+.vhsp-status-indicator.inactive {
+    color: #ef4444;
+}
+
+.vhsp-fcfs-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.vhsp-fcfs-toggle-button.active {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.vhsp-fcfs-toggle-button.inactive {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.vhsp-fcfs-toggle-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.vhsp-fcfs-toggle-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.vhsp-fcfs-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    animation: slideInFromTop 0.4s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.vhsp-fcfs-message.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.vhsp-fcfs-message.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes slideInFromTop {
+    0% { opacity: 0; transform: translateY(-15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Spinner Animations */
+.vhsp-spinner, .vhsp-spinner-small {
+    animation: vhsp-spin 1s linear infinite;
+}
+
+.vhsp-spinner {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.vhsp-spinner-small {
+    color: white;
+}
+
+@keyframes vhsp-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* New filters section for city filtering */
 .vhsp-filters {
     display: flex;
@@ -182,6 +383,18 @@
     flex: 1;
 }
 
+.vhsp-maintenance-changes-pending {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #d97706;
+    background-color: #fef3c7;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #f59e0b;
+    font-weight: 500;
+}
+
 .vhsp-action-buttons {
     display: flex;
     gap: 1rem;
@@ -227,11 +440,6 @@
     animation: vhsp-spin 1s linear infinite;
 }
 
-@keyframes vhsp-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* Responsive styles */
 @media (max-width: 1024px) {
     .vhsp-filters,
@@ -255,6 +463,17 @@
         flex-direction: column;
         gap: 0.75rem;
     }
+
+    .vhsp-fcfs-status {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+
+    .vhsp-fcfs-toggle-button {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 @media (max-width: 768px) {
@@ -272,5 +491,44 @@
 
     .vhsp-maintenance-button {
         width: 100%;
+    }
+
+    .vhsp-fcfs-control {
+        padding: 1.25rem;
+        border-radius: 10px;
+    }
+
+    .vhsp-fcfs-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .vhsp-fcfs-info h4 {
+        font-size: 1rem;
+    }
+
+    .vhsp-fcfs-subtitle {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .vhsp-fcfs-control {
+        padding: 1rem;
+    }
+
+    .vhsp-fcfs-icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+
+    .vhsp-fcfs-status {
+        padding: 0.5rem;
+    }
+
+    .vhsp-fcfs-toggle-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
     }
 }

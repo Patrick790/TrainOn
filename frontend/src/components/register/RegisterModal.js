@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './RegisterModal.css';
 
 const RegisterModal = ({ isOpen, onClose }) => {
@@ -20,6 +20,39 @@ const RegisterModal = ({ isOpen, onClose }) => {
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
 
+    // Ref pentru primul input
+    const firstInputRef = useRef(null);
+
+    // Focus pe primul input când modalul se deschide
+    useEffect(() => {
+        if (isOpen && firstInputRef.current) {
+            setTimeout(() => {
+                firstInputRef.current.focus();
+            }, 100);
+        }
+    }, [isOpen]);
+
+    // Gestionarea tastei Escape pentru închiderea modalului
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!isOpen) return;
+
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const validateEmail = (email) => {
@@ -35,6 +68,14 @@ const RegisterModal = ({ isOpen, onClose }) => {
         }));
         setErrors(prevErrors => ({ ...prevErrors, [name]: false }));
         setErrorMessage('');
+    };
+
+    // Funcție pentru gestionarea tastei Enter
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleRegister();
+        }
     };
 
     const handleFileChange = (e) => {
@@ -79,6 +120,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             if (!errorMessage) setErrorMessage('Toate câmpurile sunt obligatorii!');
+
+            // Focus pe primul câmp cu eroare
+            if (firstInputRef.current) {
+                firstInputRef.current.focus();
+            }
             return;
         }
 
@@ -133,8 +179,14 @@ const RegisterModal = ({ isOpen, onClose }) => {
         setIsAssociation(type === 'association');
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
     return (
-        <div className="register-modal-overlay" onClick={onClose}>
+        <div className="register-modal-overlay" onClick={handleOverlayClick}>
             <div className="register-modal-content" onClick={e => e.stopPropagation()}>
                 <h1 className="register-modal-title">INREGISTRARE</h1>
 
@@ -162,26 +214,32 @@ const RegisterModal = ({ isOpen, onClose }) => {
                         <>
                             <div className={`register-input-container ${errors.associationName ? 'register-input-error' : ''}`}>
                                 <input
+                                    ref={firstInputRef}
                                     type="text"
                                     name="associationName"
                                     value={formData.associationName}
                                     onChange={handleInputChange}
+                                    onKeyPress={handleKeyPress}
                                     placeholder=" "
                                     required
                                     className="register-input"
+                                    autoComplete="organization"
                                 />
                                 <label className="register-floating-label">Numele asociatiei</label>
                             </div>
                             <div className={`register-input-container ${errors.teamType ? 'register-input-error' : ''}`}>
-                                <input
-                                    type="text"
+                                <select
                                     name="teamType"
                                     value={formData.teamType}
                                     onChange={handleInputChange}
-                                    placeholder=" "
+                                    onKeyPress={handleKeyPress}
                                     required
-                                    className="register-input"
-                                />
+                                    className="register-input register-select"
+                                >
+                                    <option value="">Selectează tip echipa</option>
+                                    <option value="Juniori">Juniori</option>
+                                    <option value="Seniori">Seniori</option>
+                                </select>
                                 <label className="register-floating-label">Tip echipa</label>
                             </div>
                             <div className={`register-certificate-upload ${errors.certificate ? 'register-certificate-error' : ''}`}>
@@ -206,13 +264,16 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     ) : (
                         <div className={`register-input-container ${errors.name ? 'register-input-error' : ''}`}>
                             <input
+                                ref={firstInputRef}
                                 type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
+                                onKeyPress={handleKeyPress}
                                 placeholder=" "
                                 required
                                 className="register-input"
+                                autoComplete="name"
                             />
                             <label className="register-floating-label">Nume</label>
                         </div>
@@ -224,9 +285,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="email"
                         />
                         <label className="register-floating-label">Email</label>
                     </div>
@@ -238,9 +301,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                 name="birthDate"
                                 value={formData.birthDate}
                                 onChange={handleInputChange}
+                                onKeyPress={handleKeyPress}
                                 placeholder=" "
                                 required
                                 className="register-input register-date-input"
+                                autoComplete="bday"
                             />
                             <label className="register-floating-label">Data nasterii</label>
                         </div>
@@ -252,9 +317,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="address"
                             value={formData.address}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="street-address"
                         />
                         <label className="register-floating-label">Adresa</label>
                     </div>
@@ -265,9 +332,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="county"
                             value={formData.county}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="address-level1"
                         />
                         <label className="register-floating-label">Judet</label>
                     </div>
@@ -278,9 +347,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="city"
                             value={formData.city}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="address-level2"
                         />
                         <label className="register-floating-label">Localitate</label>
                     </div>
@@ -291,9 +362,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="new-password"
                         />
                         <label className="register-floating-label">Parola</label>
                     </div>
@@ -304,9 +377,11 @@ const RegisterModal = ({ isOpen, onClose }) => {
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
                             placeholder=" "
                             required
                             className="register-input"
+                            autoComplete="new-password"
                         />
                         <label className="register-floating-label">Confirmare parola</label>
                     </div>

@@ -52,6 +52,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
+                        // ADĂUGAT: Endpoint-uri pentru resetarea parolei
+                        .requestMatchers("/forgot-password").permitAll()
+                        .requestMatchers("/reset-password/**").permitAll()
+                        .requestMatchers("/reset-password").permitAll()
+
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
                         .requestMatchers(HttpMethod.GET, "/sportsHalls/cities").permitAll()

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Clock, DollarSign, MapPin, Plus, Edit, Trash, Save } from 'lucide-react';
+import { ArrowLeft, User, Clock, DollarSign, MapPin, Plus, Edit, Trash, Save, CreditCard, Settings, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import CardManagementModal from './CardManagementModal';
 import './ProfileCreationPage.css';
+
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51RUSNJB90iMxhg7K13VbDV4YNESfylJS8mNsenCauFMwbo2t9rDEptGatnEwR2lzQrgb7liaFKyFTjfyMkq2ooT900FSp78Ooy';
 
 const ProfileCreationPage = () => {
     const navigate = useNavigate();
@@ -13,19 +16,27 @@ const ProfileCreationPage = () => {
         timeInterval: '7-14:30',
         weeklyBudget: '',
         city: '',
-        selectedHalls: []
+        selectedHalls: [],
+        autoPaymentEnabled: false,
+        autoPaymentMethod: null,
+        autoPaymentThreshold: '',
+        maxWeeklyAutoPayment: '',
+        defaultCardPaymentMethodId: null
     });
     const [availableHalls, setAvailableHalls] = useState([]);
+    const [userCards, setUserCards] = useState([]);
     const [activeStep, setActiveStep] = useState(1);
     const [isAddingProfile, setIsAddingProfile] = useState(true);
     const [editingProfileId, setEditingProfileId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showCardModal, setShowCardModal] = useState(false);
+    const [stripe, setStripe] = useState(null);
 
     // URL-ul API-ului
     const API_URL = 'http://localhost:8080';
 
-    // Age categories
+    // Constante pentru formulare
     const ageCategories = [
         { value: '0-14', label: '0-14 ani' },
         { value: '15-16', label: '15-16 ani' },
@@ -33,17 +44,20 @@ const ProfileCreationPage = () => {
         { value: 'seniori', label: 'Seniori' }
     ];
 
-    // Time intervals
     const timeIntervals = [
         { value: '7-14:30', label: '7:00 - 14:30' },
         { value: '14:30-23', label: '14:30 - 23:00' },
         { value: 'full-day', label: 'Toată ziua' }
     ];
 
-    // Available cities - hardcodat pentru moment, dar ar putea fi obținut dintr-un endpoint specific
+    const paymentMethods = [
+        { value: 'CARD', label: 'Card de Credit/Debit' },
+        { value: 'CASH', label: 'Plată la Fața Locului' }
+    ];
+
     const availableCities = ['Cluj-Napoca', 'București', 'Timișoara', 'Iași', 'Brașov'];
 
-    // Crearea unei instanțe axios cu headerul de autorizare inclus
+    // Configurare axios cu autentificare
     const api = axios.create();
     api.interceptors.request.use(function (config) {
         const token = localStorage.getItem('jwtToken');
@@ -53,7 +67,28 @@ const ProfileCreationPage = () => {
         return Promise.reject(error);
     });
 
-    // Încarcă profilurile de la server la încărcarea paginii
+    // Încarcă Stripe
+    useEffect(() => {
+        const loadStripe = async () => {
+            if (window.Stripe) {
+                setStripe(window.Stripe(STRIPE_PUBLISHABLE_KEY));
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = 'https://js.stripe.com/v3/';
+            script.onload = () => {
+                if (window.Stripe) {
+                    setStripe(window.Stripe(STRIPE_PUBLISHABLE_KEY));
+                }
+            };
+            document.head.appendChild(script);
+        };
+
+        loadStripe();
+    }, []);
+
+    // Funcții pentru încărcarea datelor
     const fetchProfiles = async () => {
         setLoading(true);
         setError(null);
@@ -68,20 +103,47 @@ const ProfileCreationPage = () => {
         }
     };
 
+    const fetchUserCards = async () => {
+        try {
+            const response = await api.get(`${API_URL}/card-payment-methods`);
+            if (response.data.success) {
+                setUserCards(response.data.cards);
+            }
+        } catch (err) {
+            console.error('Eroare la încărcarea cardurilor:', err);
+        }
+    };
+
     useEffect(() => {
         fetchProfiles();
+        fetchUserCards();
     }, []);
 
-    // Fetch sports halls based on selected city
+    // Listener pentru actualizările de carduri din modal
+    useEffect(() => {
+        const handleCardsUpdated = () => {
+            fetchUserCards();
+            // Dacă editezi un profil, reîncarcă și profilurile pentru a avea datele actualizate
+            if (editingProfileId) {
+                fetchProfiles();
+            }
+        };
+
+        window.addEventListener('cardsUpdated', handleCardsUpdated);
+
+        return () => {
+            window.removeEventListener('cardsUpdated', handleCardsUpdated);
+        };
+    }, [editingProfileId]);
+
+    // Încarcă sălile pe baza orașului selectat
     useEffect(() => {
         if (currentProfile.city) {
             setLoading(true);
             setError(null);
 
-            // Obținem toate sălile și filtrăm după oraș
             api.get(`${API_URL}/sportsHalls`)
                 .then(response => {
-                    // Filtrăm sălile în funcție de orașul selectat
                     const filteredHalls = response.data.filter(hall =>
                         hall.city && hall.city.toLowerCase() === currentProfile.city.toLowerCase()
                     );
@@ -99,11 +161,12 @@ const ProfileCreationPage = () => {
         }
     }, [currentProfile.city]);
 
+    // Event handlers
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setCurrentProfile({
             ...currentProfile,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         });
     };
 
@@ -131,45 +194,75 @@ const ProfileCreationPage = () => {
         setActiveStep(prevStep => prevStep - 1);
     };
 
+    const resetCurrentProfile = () => {
+        setCurrentProfile({
+            name: '',
+            ageCategory: '0-14',
+            timeInterval: '7-14:30',
+            weeklyBudget: '',
+            city: '',
+            selectedHalls: [],
+            autoPaymentEnabled: false,
+            autoPaymentMethod: null,
+            autoPaymentThreshold: '',
+            maxWeeklyAutoPayment: '',
+            defaultCardPaymentMethodId: null
+        });
+    };
+
     const handleAddProfile = async () => {
         if (currentProfile.name && currentProfile.weeklyBudget && currentProfile.city) {
             setLoading(true);
             setError(null);
 
             try {
-                // Pregătim datele pentru trimitere la server
                 const profileData = {
                     name: currentProfile.name,
                     ageCategory: currentProfile.ageCategory,
                     timeInterval: currentProfile.timeInterval,
                     weeklyBudget: currentProfile.weeklyBudget,
                     city: currentProfile.city,
-                    selectedHalls: currentProfile.selectedHalls
+                    selectedHalls: currentProfile.selectedHalls,
+                    autoPaymentEnabled: currentProfile.autoPaymentEnabled,
+                    autoPaymentMethod: currentProfile.autoPaymentEnabled ? currentProfile.autoPaymentMethod : null,
+                    autoPaymentThreshold: currentProfile.autoPaymentThreshold || null,
+                    maxWeeklyAutoPayment: currentProfile.maxWeeklyAutoPayment || null,
+                    defaultCardPaymentMethodId: currentProfile.defaultCardPaymentMethodId || null
                 };
 
                 if (editingProfileId) {
-                    // Actualizare profil existent
+                    // Pentru editare, salvează și apoi reîncarcă datele
                     await api.put(`${API_URL}/reservationProfiles/${editingProfileId}`, profileData);
+
+                    // Reîncarcă profilurile pentru a obține datele actualizate
+                    await fetchProfiles();
+
+                    // Găsește profilul actualizat și setează-l în formular
+                    const updatedProfilesResponse = await api.get(`${API_URL}/reservationProfiles`);
+                    const updatedProfile = updatedProfilesResponse.data.find(p => p.id === editingProfileId);
+
+                    if (updatedProfile) {
+                        const hallIds = updatedProfile.selectedHalls ? updatedProfile.selectedHalls.map(hall => hall.id) : [];
+                        setCurrentProfile({
+                            ...updatedProfile,
+                            selectedHalls: hallIds,
+                            autoPaymentEnabled: updatedProfile.autoPaymentEnabled || false,
+                            autoPaymentMethod: updatedProfile.autoPaymentMethod || null,
+                            autoPaymentThreshold: updatedProfile.autoPaymentThreshold || '',
+                            maxWeeklyAutoPayment: updatedProfile.maxWeeklyAutoPayment || '',
+                            defaultCardPaymentMethodId: updatedProfile.defaultCardPaymentMethod?.id || null
+                        });
+                    }
                 } else {
-                    // Adăugare profil nou
+                    // Pentru profil nou
                     await api.post(`${API_URL}/reservationProfiles`, profileData);
+                    await fetchProfiles();
+                    resetCurrentProfile();
+                    setActiveStep(1);
+                    setIsAddingProfile(true);
+                    setEditingProfileId(null);
                 }
 
-                // Reîncărcăm profilurile pentru a afișa datele actualizate
-                await fetchProfiles();
-
-                // Resetare formular
-                setCurrentProfile({
-                    name: '',
-                    ageCategory: '0-14',
-                    timeInterval: '7-14:30',
-                    weeklyBudget: '',
-                    city: '',
-                    selectedHalls: []
-                });
-                setActiveStep(1);
-                setIsAddingProfile(true);
-                setEditingProfileId(null);
             } catch (err) {
                 console.error('Eroare la salvarea profilului:', err);
                 setError('Nu s-a putut salva profilul. Verificați conexiunea la internet sau autentificarea.');
@@ -186,22 +279,11 @@ const ProfileCreationPage = () => {
             setError(null);
 
             try {
-                // Ștergem profilul de la server
                 await api.delete(`${API_URL}/reservationProfiles/${profileId}`);
-
-                // Reîncărcăm profilurile
                 await fetchProfiles();
 
-                // Dacă profilul care se șterge este cel care se editează, resetăm formularul
                 if (editingProfileId === profileId) {
-                    setCurrentProfile({
-                        name: '',
-                        ageCategory: '0-14',
-                        timeInterval: '7-14:30',
-                        weeklyBudget: '',
-                        city: '',
-                        selectedHalls: []
-                    });
+                    resetCurrentProfile();
                     setEditingProfileId(null);
                     setActiveStep(1);
                     setIsAddingProfile(true);
@@ -216,26 +298,30 @@ const ProfileCreationPage = () => {
     };
 
     const handleEditProfile = (profile) => {
-        // Pregătim profilul pentru editare
-        // Transformăm obiectele sală în id-uri pentru editare
         const hallIds = profile.selectedHalls ? profile.selectedHalls.map(hall => hall.id) : [];
 
         setCurrentProfile({
             ...profile,
-            selectedHalls: hallIds
+            selectedHalls: hallIds,
+            autoPaymentEnabled: profile.autoPaymentEnabled || false,
+            autoPaymentMethod: profile.autoPaymentMethod || null,
+            autoPaymentThreshold: profile.autoPaymentThreshold || '',
+            maxWeeklyAutoPayment: profile.maxWeeklyAutoPayment || '',
+            defaultCardPaymentMethodId: profile.defaultCardPaymentMethod?.id || null
         });
         setEditingProfileId(profile.id);
         setIsAddingProfile(false);
         setActiveStep(1);
+
+        // Refresh cardurile când editezi un profil
+        fetchUserCards();
     };
 
     const handleFinish = () => {
-        // Navigăm înapoi la pagina de detalii sau unde este necesar
         navigate(-1);
     };
 
     const handleCancel = () => {
-        // Verificăm dacă avem modificări nesalvate
         if (currentProfile.name || currentProfile.city || currentProfile.weeklyBudget || currentProfile.selectedHalls.length > 0) {
             const confirmCancel = window.confirm('Ai modificări nesalvate. Ești sigur că vrei să ieși fără a salva?');
             if (confirmCancel) {
@@ -246,10 +332,33 @@ const ProfileCreationPage = () => {
         }
     };
 
-    // Formatare preț
+    const handleNewProfile = () => {
+        resetCurrentProfile();
+        setEditingProfileId(null);
+        setIsAddingProfile(true);
+        setActiveStep(1);
+    };
+
+    // Funcții helper
     const formatPrice = (price) => {
         if (!price) return 'Preț la cerere';
         return `${price} RON/1h30`;
+    };
+
+    const selectedCard = userCards.find(card => card.id === currentProfile.defaultCardPaymentMethodId);
+
+    const isFormValid = () => {
+        if (!currentProfile.city || currentProfile.selectedHalls.length === 0) {
+            return false;
+        }
+
+        if (currentProfile.autoPaymentEnabled &&
+            currentProfile.autoPaymentMethod === 'CARD' &&
+            !currentProfile.defaultCardPaymentMethodId) {
+            return false;
+        }
+
+        return true;
     };
 
     return (
@@ -265,24 +374,13 @@ const ProfileCreationPage = () => {
             </header>
 
             <div className="reserv-profile-page-content">
-                <div className="reserv-profile-page-sidebar">
+                {/* Sidebar cu lista de profiluri */}
+                <aside className="reserv-profile-page-sidebar">
                     <div className="reserv-profile-sidebar-header">
                         <h2>Profiluri create</h2>
                         <button
                             className="reserv-add-profile-button"
-                            onClick={() => {
-                                setCurrentProfile({
-                                    name: '',
-                                    ageCategory: '0-14',
-                                    timeInterval: '7-14:30',
-                                    weeklyBudget: '',
-                                    city: '',
-                                    selectedHalls: []
-                                });
-                                setEditingProfileId(null);
-                                setIsAddingProfile(true);
-                                setActiveStep(1);
-                            }}
+                            onClick={handleNewProfile}
                         >
                             <Plus size={18} />
                             <span>Profil nou</span>
@@ -328,6 +426,12 @@ const ProfileCreationPage = () => {
                                                 <DollarSign size={14} />
                                                 {profile.weeklyBudget} RON/săptămână
                                             </span>
+                                            {profile.autoPaymentEnabled && (
+                                                <span>
+                                                    <CheckCircle size={14} />
+                                                    Plată automată activă
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="reserv-profile-list-actions">
@@ -350,13 +454,15 @@ const ProfileCreationPage = () => {
                             ))
                         )}
                     </div>
-                </div>
+                </aside>
 
-                <div className="reserv-profile-form-container">
+                {/* Formularul principal */}
+                <main className="reserv-profile-form-container">
                     <h2 className="reserv-profile-form-title">
                         {editingProfileId ? 'Editare profil' : 'Creare profil nou'}
                     </h2>
 
+                    {/* Indicator pentru pași */}
                     <div className="reserv-profile-steps-indicator">
                         <div className={`reserv-step ${activeStep >= 1 ? 'active' : ''}`}>
                             <div className="reserv-step-number">1</div>
@@ -367,9 +473,15 @@ const ProfileCreationPage = () => {
                             <div className="reserv-step-number">2</div>
                             <div className="reserv-step-label">Locație și săli</div>
                         </div>
+                        <div className="reserv-step-connector"></div>
+                        <div className={`reserv-step ${activeStep >= 3 ? 'active' : ''}`}>
+                            <div className="reserv-step-number">3</div>
+                            <div className="reserv-step-label">Plăți automate</div>
+                        </div>
                     </div>
 
                     <div className="reserv-profile-form">
+                        {/* Pasul 1: Informații de bază */}
                         {activeStep === 1 && (
                             <div className="reserv-form-step">
                                 <div className="reserv-form-group">
@@ -450,6 +562,7 @@ const ProfileCreationPage = () => {
                             </div>
                         )}
 
+                        {/* Pasul 2: Locație și săli */}
                         {activeStep === 2 && (
                             <div className="reserv-form-step">
                                 <div className="reserv-form-group">
@@ -513,9 +626,154 @@ const ProfileCreationPage = () => {
                                     </button>
                                     <button
                                         type="button"
+                                        className="reserv-form-button-next"
+                                        onClick={handleNextStep}
+                                        disabled={!currentProfile.city || currentProfile.selectedHalls.length === 0}
+                                    >
+                                        Continuare
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pasul 3: Plăți automate */}
+                        {activeStep === 3 && (
+                            <div className="reserv-form-step">
+                                <div className="reserv-form-group">
+                                    <label className="reserv-checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            name="autoPaymentEnabled"
+                                            checked={currentProfile.autoPaymentEnabled}
+                                            onChange={handleChange}
+                                        />
+                                        <span>Activează plăți automate</span>
+                                    </label>
+                                    <small>Permite debitarea automată a cardului pentru rezervări</small>
+                                </div>
+
+                                {currentProfile.autoPaymentEnabled && (
+                                    <>
+                                        <div className="reserv-form-group">
+                                            <label htmlFor="autoPaymentMethod">Metoda de plată automată</label>
+                                            <select
+                                                id="autoPaymentMethod"
+                                                name="autoPaymentMethod"
+                                                value={currentProfile.autoPaymentMethod || ''}
+                                                onChange={handleChange}
+                                                required
+                                            >
+                                                <option value="">Selectează metoda de plată</option>
+                                                {paymentMethods.map(method => (
+                                                    <option key={method.value} value={method.value}>
+                                                        {method.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {currentProfile.autoPaymentMethod === 'CARD' && (
+                                            <div className="reserv-form-group">
+                                                <label>Card de plată</label>
+                                                <div className="reserv-card-selection">
+                                                    {userCards.length === 0 ? (
+                                                        <div className="reserv-no-cards">
+                                                            <p>Nu aveți carduri salvate</p>
+                                                            <button
+                                                                type="button"
+                                                                className="reserv-add-card-button"
+                                                                onClick={() => setShowCardModal(true)}
+                                                            >
+                                                                <CreditCard size={16} />
+                                                                Adaugă un card
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <select
+                                                                name="defaultCardPaymentMethodId"
+                                                                value={currentProfile.defaultCardPaymentMethodId || ''}
+                                                                onChange={handleChange}
+                                                                required
+                                                            >
+                                                                <option value="">Selectează cardul</option>
+                                                                {userCards.map(card => (
+                                                                    <option key={card.id} value={card.id}>
+                                                                        {card.displayName}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            <button
+                                                                type="button"
+                                                                className="reserv-manage-cards-button"
+                                                                onClick={() => setShowCardModal(true)}
+                                                            >
+                                                                <Settings size={16} />
+                                                                Gestionează carduri
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                {selectedCard && (
+                                                    <div className="reserv-selected-card-info">
+                                                        <CreditCard size={16} />
+                                                        <span>{selectedCard.displayName}</span>
+                                                        {selectedCard.isExpired && (
+                                                            <span className="reserv-card-expired">
+                                                                <AlertCircle size={14} />
+                                                                Expirat
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        <div className="reserv-form-group">
+                                            <label htmlFor="autoPaymentThreshold">Prag minim pentru plată automată (RON)</label>
+                                            <input
+                                                type="number"
+                                                id="autoPaymentThreshold"
+                                                name="autoPaymentThreshold"
+                                                value={currentProfile.autoPaymentThreshold}
+                                                onChange={handleChange}
+                                                placeholder="Ex: 10 (opțional)"
+                                                min="0"
+                                                step="0.01"
+                                            />
+                                            <small>Suma minimă pentru care se activează plata automată</small>
+                                        </div>
+
+                                        <div className="reserv-form-group">
+                                            <label htmlFor="maxWeeklyAutoPayment">Limita maximă săptămânală (RON)</label>
+                                            <input
+                                                type="number"
+                                                id="maxWeeklyAutoPayment"
+                                                name="maxWeeklyAutoPayment"
+                                                value={currentProfile.maxWeeklyAutoPayment}
+                                                onChange={handleChange}
+                                                placeholder="Ex: 200 (opțional)"
+                                                min="0"
+                                                step="0.01"
+                                            />
+                                            <small>Suma maximă care poate fi debitată automat într-o săptămână</small>
+                                        </div>
+                                    </>
+                                )}
+
+                                <div className="reserv-form-buttons">
+                                    <button
+                                        type="button"
+                                        className="reserv-form-button-prev"
+                                        onClick={handlePrevStep}
+                                    >
+                                        Înapoi
+                                    </button>
+                                    <button
+                                        type="button"
                                         className="reserv-form-button-save"
                                         onClick={handleAddProfile}
-                                        disabled={!currentProfile.city || currentProfile.selectedHalls.length === 0 || loading}
+                                        disabled={!isFormValid() || loading}
                                     >
                                         <Save size={16} />
                                         {editingProfileId ? 'Actualizează profil' : 'Salvează profil'}
@@ -524,24 +782,35 @@ const ProfileCreationPage = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </main>
             </div>
 
-            {/* Afișează un mesaj de eroare general dacă există */}
+            {/* Modal pentru gestionarea cardurilor */}
+            {showCardModal && (
+                <CardManagementModal
+                    userCards={userCards}
+                    onClose={() => setShowCardModal(false)}
+                    onCardsUpdated={fetchUserCards}
+                />
+            )}
+
+            {/* Mesaje de eroare și încărcare globale */}
             {error && (
                 <div className="reserv-profile-error">
+                    <AlertCircle size={16} />
                     <p>{error}</p>
                 </div>
             )}
 
-            {/* Afișează un indicator de încărcare global */}
             {loading && (
                 <div className="reserv-profile-loading">
+                    <div className="reserv-loading-spinner"></div>
                     <p>Se procesează datele...</p>
                 </div>
             )}
 
-            <div className="reserv-profile-page-actions">
+            {/* Footer cu acțiuni finale */}
+            <footer className="reserv-profile-page-actions">
                 <button
                     type="button"
                     className="reserv-profile-page-button-cancel"
@@ -557,7 +826,7 @@ const ProfileCreationPage = () => {
                 >
                     Finalizează
                 </button>
-            </div>
+            </footer>
         </div>
     );
 };

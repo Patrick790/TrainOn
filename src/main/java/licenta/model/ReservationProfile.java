@@ -2,7 +2,6 @@ package licenta.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -29,6 +28,25 @@ public class ReservationProfile extends BruteEntity<Long> {
     @Column(name = "city", nullable = false)
     private String city;
 
+    // Suport pentru metoda de plată automată
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auto_payment_method")
+    private PaymentMethod autoPaymentMethod;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "default_card_payment_method_id")
+    @JsonIgnoreProperties({"user", "hibernateLazyInitializer", "handler"})
+    private CardPaymentMethod defaultCardPaymentMethod;
+
+    @Column(name = "auto_payment_enabled", nullable = false)
+    private Boolean autoPaymentEnabled;
+
+    @Column(name = "auto_payment_threshold", precision = 10, scale = 2)
+    private BigDecimal autoPaymentThreshold; // Pragul minim pentru plata automată
+
+    @Column(name = "max_weekly_auto_payment", precision = 10, scale = 2)
+    private BigDecimal maxWeeklyAutoPayment; // Limita maximă pentru plăți automate săptămânale
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user-profiles")
@@ -49,13 +67,16 @@ public class ReservationProfile extends BruteEntity<Long> {
     @JsonIgnoreProperties("reservationProfiles")
     private List<SportsHall> selectedHalls = new ArrayList<>();
 
+    // Constructori - eliminăm redundanța
     public ReservationProfile() {
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.autoPaymentEnabled = Boolean.FALSE; // Explicit Boolean.FALSE în loc de false
     }
 
     public ReservationProfile(String name, String ageCategory, String timeInterval, BigDecimal weeklyBudget,
                               String city, User user, List<SportsHall> selectedHalls) {
+        this(); // Apelează constructorul implicit
         this.name = name;
         this.ageCategory = ageCategory;
         this.timeInterval = timeInterval;
@@ -63,93 +84,171 @@ public class ReservationProfile extends BruteEntity<Long> {
         this.city = city;
         this.user = user;
         this.selectedHalls = selectedHalls != null ? selectedHalls : new ArrayList<>();
-        this.createdAt = new Date();
+    }
+
+    // Constructor complet pentru plăți automate
+    public ReservationProfile(String name, String ageCategory, String timeInterval, BigDecimal weeklyBudget,
+                              String city, User user, List<SportsHall> selectedHalls,
+                              Boolean autoPaymentEnabled, PaymentMethod autoPaymentMethod,
+                              CardPaymentMethod defaultCardPaymentMethod, BigDecimal autoPaymentThreshold,
+                              BigDecimal maxWeeklyAutoPayment) {
+        this(name, ageCategory, timeInterval, weeklyBudget, city, user, selectedHalls);
+        this.autoPaymentEnabled = autoPaymentEnabled != null ? autoPaymentEnabled : Boolean.FALSE;
+        this.autoPaymentMethod = autoPaymentMethod;
+        this.defaultCardPaymentMethod = defaultCardPaymentMethod;
+        this.autoPaymentThreshold = autoPaymentThreshold;
+        this.maxWeeklyAutoPayment = maxWeeklyAutoPayment;
+    }
+
+    // Helper methods pentru plata automată
+    public boolean canProcessAutoPayment(BigDecimal amount) {
+        // Verificări de securitate
+        if (autoPaymentEnabled == null || !autoPaymentEnabled) {
+            return false;
+        }
+
+        if (defaultCardPaymentMethod == null ||
+                defaultCardPaymentMethod.getIsActive() == null ||
+                !defaultCardPaymentMethod.getIsActive()) {
+            return false;
+        }
+
+        if (defaultCardPaymentMethod.isExpired()) {
+            return false;
+        }
+
+        // Verifică pragul minim
+        if (autoPaymentThreshold != null && amount.compareTo(autoPaymentThreshold) < 0) {
+            return false;
+        }
+
+        // Verifică limita maximă săptămânală
+        if (maxWeeklyAutoPayment != null && amount.compareTo(maxWeeklyAutoPayment) > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void enableAutoPayment(CardPaymentMethod cardPaymentMethod) {
+        this.autoPaymentEnabled = Boolean.TRUE;
+        this.defaultCardPaymentMethod = cardPaymentMethod;
+        this.autoPaymentMethod = PaymentMethod.CARD;
         this.updatedAt = new Date();
     }
 
+    public void disableAutoPayment() {
+        this.autoPaymentEnabled = Boolean.FALSE;
+        this.defaultCardPaymentMethod = null;
+        this.autoPaymentMethod = null;
+        this.updatedAt = new Date();
+    }
+
+    public void updateAutoPaymentSettings(BigDecimal threshold, BigDecimal maxWeekly) {
+        this.autoPaymentThreshold = threshold;
+        this.maxWeeklyAutoPayment = maxWeekly;
+        this.updatedAt = new Date();
+    }
+
+    // Existing methods
     public void addSportsHall(SportsHall sportsHall) {
-        this.selectedHalls.add(sportsHall);
+        if (sportsHall != null) {
+            this.selectedHalls.add(sportsHall);
+        }
     }
 
     public void removeSportsHall(SportsHall sportsHall) {
-        this.selectedHalls.remove(sportsHall);
+        if (sportsHall != null) {
+            this.selectedHalls.remove(sportsHall);
+        }
     }
 
-    public String getName() {
-        return name;
+    // Metode de validare
+    public boolean isValidForAutoPayment() {
+        return autoPaymentEnabled != null && autoPaymentEnabled &&
+                autoPaymentMethod != null &&
+                defaultCardPaymentMethod != null &&
+                defaultCardPaymentMethod.getIsActive() != null &&
+                defaultCardPaymentMethod.getIsActive() &&
+                !defaultCardPaymentMethod.isExpired();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getAutoPaymentStatusDescription() {
+        if (autoPaymentEnabled == null || !autoPaymentEnabled) {
+            return "Plata automată dezactivată";
+        }
 
-    public String getAgeCategory() {
-        return ageCategory;
-    }
+        if (defaultCardPaymentMethod == null) {
+            return "Nu există card asociat";
+        }
 
-    public void setAgeCategory(String ageCategory) {
-        this.ageCategory = ageCategory;
-    }
+        if (defaultCardPaymentMethod.getIsActive() == null || !defaultCardPaymentMethod.getIsActive()) {
+            return "Cardul este inactiv";
+        }
 
-    public String getTimeInterval() {
-        return timeInterval;
-    }
+        if (defaultCardPaymentMethod.isExpired()) {
+            return "Cardul a expirat";
+        }
 
-    public void setTimeInterval(String timeInterval) {
-        this.timeInterval = timeInterval;
-    }
-
-    public BigDecimal getWeeklyBudget() {
-        return weeklyBudget;
-    }
-
-    public void setWeeklyBudget(BigDecimal weeklyBudget) {
-        this.weeklyBudget = weeklyBudget;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<SportsHall> getSelectedHalls() {
-        return selectedHalls;
-    }
-
-    public void setSelectedHalls(List<SportsHall> selectedHalls) {
-        this.selectedHalls = selectedHalls;
+        return "Plata automată activă";
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = new Date();
+    }
+
+    // Getters și Setters cu validări
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getAgeCategory() { return ageCategory; }
+    public void setAgeCategory(String ageCategory) { this.ageCategory = ageCategory; }
+
+    public String getTimeInterval() { return timeInterval; }
+    public void setTimeInterval(String timeInterval) { this.timeInterval = timeInterval; }
+
+    public BigDecimal getWeeklyBudget() { return weeklyBudget; }
+    public void setWeeklyBudget(BigDecimal weeklyBudget) { this.weeklyBudget = weeklyBudget; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public PaymentMethod getAutoPaymentMethod() { return autoPaymentMethod; }
+    public void setAutoPaymentMethod(PaymentMethod autoPaymentMethod) { this.autoPaymentMethod = autoPaymentMethod; }
+
+    public CardPaymentMethod getDefaultCardPaymentMethod() { return defaultCardPaymentMethod; }
+    public void setDefaultCardPaymentMethod(CardPaymentMethod defaultCardPaymentMethod) {
+        this.defaultCardPaymentMethod = defaultCardPaymentMethod;
+    }
+
+    public Boolean getAutoPaymentEnabled() { return autoPaymentEnabled; }
+    public void setAutoPaymentEnabled(Boolean autoPaymentEnabled) {
+        this.autoPaymentEnabled = autoPaymentEnabled != null ? autoPaymentEnabled : Boolean.FALSE;
+    }
+
+    public BigDecimal getAutoPaymentThreshold() { return autoPaymentThreshold; }
+    public void setAutoPaymentThreshold(BigDecimal autoPaymentThreshold) {
+        this.autoPaymentThreshold = autoPaymentThreshold;
+    }
+
+    public BigDecimal getMaxWeeklyAutoPayment() { return maxWeeklyAutoPayment; }
+    public void setMaxWeeklyAutoPayment(BigDecimal maxWeeklyAutoPayment) {
+        this.maxWeeklyAutoPayment = maxWeeklyAutoPayment;
+    }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<SportsHall> getSelectedHalls() { return selectedHalls; }
+    public void setSelectedHalls(List<SportsHall> selectedHalls) {
+        this.selectedHalls = selectedHalls != null ? selectedHalls : new ArrayList<>();
     }
 
     @Override
@@ -161,9 +260,11 @@ public class ReservationProfile extends BruteEntity<Long> {
                 ", timeInterval='" + timeInterval + '\'' +
                 ", weeklyBudget=" + weeklyBudget +
                 ", city='" + city + '\'' +
+                ", autoPaymentEnabled=" + autoPaymentEnabled +
+                ", autoPaymentMethod=" + autoPaymentMethod +
+                ", hasDefaultCard=" + (defaultCardPaymentMethod != null) +
                 ", user=" + (user != null ? user.getId() : null) +
-                ", selectedHalls=" + selectedHalls.size() +
+                ", selectedHalls=" + (selectedHalls != null ? selectedHalls.size() : 0) +
                 '}';
     }
-
 }

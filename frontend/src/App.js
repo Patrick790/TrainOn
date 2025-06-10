@@ -17,6 +17,7 @@ import PrivacyPolicy from './components/pageComponents/PrivacyPolicy';
 import TermsOfService from './components/pageComponents/TermsOfService';
 import HallReviews from './components/feedback/HallReviews';
 import AppAdminProfilePage from "./components/admin/AdminPages/profile/AppAdminProfilePage";
+import ResetPasswordPage from './components/login/ResetPasswordPage';
 
 function App() {
     return (
@@ -32,6 +33,9 @@ function App() {
                     <Route path="/reservations" element={<ReservationsPage />} />
                     <Route path="/fcfs-reservation" element={<FCFSReservationPage />} />
                     <Route path="/sportsHalls/:hallId/reviews" element={<HallReviews />} />
+
+                    {/* ADĂUGAT: Ruta pentru resetarea parolei */}
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                     {/* Payment Routes */}
                     <Route path="/payment" element={<StripePaymentPage />} />
@@ -49,7 +53,7 @@ function App() {
                     <Route path="/hall-admin-dashboard/reservations" element={<HallAdmin />} />
                     <Route path="/hall-admin-dashboard/reviews" element={<HallAdmin />} />
                     <Route path="/edit-hall/:id" element={<EditHallPage />} />
-                    <Route path="/admin-profile" element={<AdminProfilePage />} /> {/* NOUĂ RUTĂ */}
+                    <Route path="/admin-profile" element={<AdminProfilePage />} />
 
                     {/* Admin Routes */}
                     <Route path="/admin-dashboard" element={<Admin />} />

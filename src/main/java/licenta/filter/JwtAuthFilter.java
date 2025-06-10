@@ -38,6 +38,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
+                // ADĂUGAT: Excludem endpoint-urile pentru resetarea parolei
+                path.equals("/forgot-password") ||
+                path.startsWith("/reset-password") ||
+
                 "OPTIONS".equals(method) ||
                 // Doar GET requests pentru sportsHalls sunt excluse de la filtrare
                 (path.startsWith("/sportsHalls") && "GET".equals(method)) ||

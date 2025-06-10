@@ -1,57 +1,131 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, ChevronDown, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import Header from './Header';
+import SearchBar from './SearchBar'; // Import componenta SearchBar
 import SimpleFeaturedSportsHalls from './FeaturedSportsHalls';
 import Footer from '../pageComponents/Footer';
 import './MainPage.css';
 
 class ReservationOptionsModal extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userType: null,
+            loading: true
+        };
+    }
+
+    componentDidMount() {
+        if (this.props.isOpen) {
+            this.fetchUserInfo();
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.isOpen && !prevProps.isOpen) {
+            this.fetchUserInfo();
+        }
+    }
+
+    fetchUserInfo = async () => {
+        try {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('jwtToken');
+
+            if (!userId || !token) {
+                this.setState({ loading: false });
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                this.setState({
+                    userType: userData.teamType,
+                    loading: false
+                });
+            } else {
+                console.error('Failed to fetch user data:', response.status);
+                this.setState({ loading: false });
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            this.setState({ loading: false });
+        }
+    };
+
     render() {
         const { isOpen, onClose } = this.props;
+        const { userType, loading } = this.state;
+
         if (!isOpen) return null;
+
+        // Verificăm dacă utilizatorul este parte dintr-o echipă (are teamType setat)
+        const isTeamUser = userType && userType.trim() !== '';
 
         return (
             <div className="reservation-modal-backdrop">
                 <div className="reservation-modal-content">
                     <h2 className="reservation-modal-title">Opțiuni de rezervare</h2>
                     <p className="reservation-modal-description">
-                        Alege modul în care dorești să rezervi
+                        {loading
+                            ? 'Se încarcă opțiunile...'
+                            : isTeamUser
+                                ? 'Alege modul în care dorești să rezervi'
+                                : 'Rezervă locurile disponibile în acest moment'
+                        }
                     </p>
 
-                    <div className="reservation-options">
-                        <div
-                            className="reservation-option"
-                            onClick={() => { window.location.href = '/profile-creation'; onClose(); }}
-                        >
-                            <div className="reservation-option-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
-                            <h3>Creează profil rezervări</h3>
-                            <p>Personalizează opțiunile pentru algoritm de prioritizare</p>
-                        </div>
+                    {!loading && (
+                        <div className="reservation-options">
+                            {/* Opțiunea pentru crearea profilului - doar pentru utilizatorii de echipă */}
+                            {isTeamUser && (
+                                <div
+                                    className="reservation-option"
+                                    onClick={() => { window.location.href = '/profile-creation'; onClose(); }}
+                                >
+                                    <div className="reservation-option-icon">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <h3>Creează profil rezervări</h3>
+                                    <p>Personalizează opțiunile pentru algoritm de prioritizare echipe</p>
+                                </div>
+                            )}
 
-                        <div
-                            className="reservation-option"
-                            onClick={() => { window.location.href = '/fcfs-reservation'; onClose(); }}
-                        >
-                            <div className="reservation-option-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
+                            {/* Opțiunea pentru rezervarea locurilor rămase - pentru toți utilizatorii */}
+                            <div
+                                className={`reservation-option ${!isTeamUser ? 'single-option' : ''}`}
+                                onClick={() => { window.location.href = '/fcfs-reservation'; onClose(); }}
+                            >
+                                <div className="reservation-option-icon">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <h3>Rezervă locurile rămase</h3>
+                                <p>
+                                    {isTeamUser
+                                        ? 'Rezervare rapidă pentru locurile disponibile în acest moment'
+                                        : 'Rezervare pentru locurile disponibile în acest moment'
+                                    }
+                                </p>
                             </div>
-                            <h3>Rezervă locurile rămase</h3>
-                            <p>Rezervare rapidă pentru locurile disponibile în acest moment</p>
                         </div>
-                    </div>
+                    )}
 
                     <div className="reservation-modal-footer">
                         <button className="reservation-modal-close-button" onClick={onClose}>
@@ -68,13 +142,7 @@ class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            location: '', // Nu mai presetăm Cluj-Napoca
-            activity: 'Sport',
-            searchQuery: '',
-            cities: [], // Array pentru orașele încărcate din baza de date
-            loadingCities: true, // Loading state pentru orașe
-            isLocationDropdownOpen: false,
-            isActivityDropdownOpen: false,
+            selectedCity: '', // Pentru a păstra orașul selectat din SearchBar
             isLoginModalOpen: false,
             isRegisterModalOpen: false,
             isReservationModalOpen: false,
@@ -84,7 +152,6 @@ class MainPage extends React.Component {
 
     componentDidMount() {
         this.checkLoginStatus();
-        this.fetchCities(); // Încărcăm orașele la mount
         window.addEventListener('storage', this.checkLoginStatus);
     }
 
@@ -92,92 +159,14 @@ class MainPage extends React.Component {
         window.removeEventListener('storage', this.checkLoginStatus);
     }
 
-    // Nouă metodă pentru încărcarea orașelor din baza de date
-    fetchCities = async () => {
-        this.setState({ loadingCities: true });
-        try {
-            const response = await fetch('http://localhost:8080/sportsHalls/cities');
-            if (response.ok) {
-                const citiesData = await response.json();
-                const cities = Array.isArray(citiesData) ? citiesData : [];
-
-                this.setState({
-                    cities,
-                    loadingCities: false,
-                    // Setăm primul oraș ca default dacă există orașe disponibile
-                    location: cities.length > 0 ? cities[0] : ''
-                });
-            } else {
-                console.error('Eroare la încărcarea orașelor:', response.status);
-                this.setState({
-                    cities: [],
-                    loadingCities: false,
-                    location: ''
-                });
-            }
-        } catch (error) {
-            console.error('Eroare la încărcarea orașelor:', error);
-            this.setState({
-                cities: [],
-                loadingCities: false,
-                location: ''
-            });
-        }
-    };
-
     checkLoginStatus = () => {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         this.setState({ isLoggedIn });
     }
 
-    handleLocationChange = (location) => {
-        this.setState({
-            location: location,
-            isLocationDropdownOpen: false
-        });
-    }
-
-    handleActivityChange = (activity) => {
-        this.setState({
-            activity: activity,
-            isActivityDropdownOpen: false
-        });
-    }
-
-    toggleLocationDropdown = () => {
-        this.setState(prevState => ({
-            isLocationDropdownOpen: !prevState.isLocationDropdownOpen,
-            isActivityDropdownOpen: false
-        }));
-    }
-
-    toggleActivityDropdown = () => {
-        this.setState(prevState => ({
-            isActivityDropdownOpen: !prevState.isActivityDropdownOpen,
-            isLocationDropdownOpen: false
-        }));
-    }
-
-    handleSearchChange = (e) => {
-        this.setState({ searchQuery: e.target.value });
-    }
-
-    handleSearch = (e) => {
-        e.preventDefault();
-
-        // Verificăm dacă au fost selectate orașul
-        if (!this.state.location) {
-            alert('Vă rugăm să selectați un oraș pentru căutare.');
-            return;
-        }
-
-        const searchParams = new URLSearchParams();
-        searchParams.append('city', this.state.location);
-        searchParams.append('activity', this.state.activity);
-        if (this.state.searchQuery) {
-            searchParams.append('query', this.state.searchQuery);
-        }
-        window.location.href = `/search?${searchParams.toString()}`;
+    // Callback pentru când se schimbă orașul în SearchBar
+    handleCityChange = (city) => {
+        this.setState({ selectedCity: city });
     }
 
     toggleLoginModal = () => {
@@ -220,14 +209,10 @@ class MainPage extends React.Component {
     }
 
     render() {
-        // Folosim orașele din baza de date în loc de array-ul hardcodat
-        const { cities, loadingCities } = this.state;
-        const activities = ['Sport', 'Fitness', 'Inot', 'Tenis', 'Fotbal', 'Baschet', 'Handbal'];
-        const { isLoggedIn } = this.state;
+        const { isLoggedIn, selectedCity } = this.state;
 
         return (
             <div className="main-container">
-                {/* Use the new Header component */}
                 <Header
                     isLoggedIn={isLoggedIn}
                     onLoginClick={this.toggleLoginModal}
@@ -236,100 +221,16 @@ class MainPage extends React.Component {
                 />
 
                 <main className="main-content">
-                    <div className="search-container">
-                        <form onSubmit={this.handleSearch} className="search-bar">
-                            <div className="input-group">
-                                <MapPin className="icon" />
-                                <div className="custom-select">
-                                    <div
-                                        className="selected-option"
-                                        onClick={this.toggleLocationDropdown}
-                                    >
-                                        {loadingCities
-                                            ? 'Se încarcă orașele...'
-                                            : this.state.location || 'Selectează orașul'
-                                        }
-                                        <ChevronDown className="icon-small" />
-                                    </div>
-                                    {this.state.isLocationDropdownOpen && !loadingCities && (
-                                        <div className="options-list">
-                                            {cities.length > 0 ? (
-                                                cities.map((city) => (
-                                                    <div
-                                                        key={city}
-                                                        className="option"
-                                                        onClick={() => this.handleLocationChange(city)}
-                                                    >
-                                                        {city}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="option disabled">
-                                                    Nu există orașe disponibile
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="input-group">
-                                <div className="custom-select">
-                                    <div
-                                        className="selected-option"
-                                        onClick={this.toggleActivityDropdown}
-                                    >
-                                        {this.state.activity}
-                                        <ChevronDown className="icon-small" />
-                                    </div>
-                                    {this.state.isActivityDropdownOpen && (
-                                        <div className="options-list">
-                                            {activities.map((activity) => (
-                                                <div
-                                                    key={activity}
-                                                    className="option"
-                                                    onClick={() => this.handleActivityChange(activity)}
-                                                >
-                                                    {activity}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <input
-                                type="text"
-                                value={this.state.searchQuery}
-                                onChange={this.handleSearchChange}
-                                placeholder="Denumire sala de sport"
-                                className="search-input"
-                            />
-
-                            <button
-                                type="submit"
-                                className="search-button"
-                                disabled={loadingCities || !this.state.location}
-                            >
-                                CAUTĂ
-                            </button>
-                        </form>
-                    </div>
+                    {/* Folosim componenta SearchBar separată */}
+                    <SearchBar onCityChange={this.handleCityChange} />
                 </main>
 
-                {/* Transmitem orașul selectat la componenta SimpleFeaturedSportsHalls doar dacă nu se încarcă */}
-                {!loadingCities && this.state.location && (
-                    <SimpleFeaturedSportsHalls selectedCity={this.state.location} />
+                {/* Afișăm sălile recomandate doar dacă avem un oraș selectat */}
+                {selectedCity && (
+                    <SimpleFeaturedSportsHalls selectedCity={selectedCity} />
                 )}
 
-                {/* Afișăm un mesaj de loading pentru sălile recomandate dacă se încarcă orașele */}
-                {loadingCities && (
-                    <div className="loading-featured-halls">
-                        <p>Se încarcă sălile recomandate...</p>
-                    </div>
-                )}
-
-                {/* Adăugăm div pentru butonul de rezervare */}
+                {/* Secțiunea de rezervare */}
                 <div className="reservation-cta">
                     <p className="reservation-text">
                         Dorești să efectuezi o rezervare rapidă? Folosește sistemul nostru inteligent
@@ -341,13 +242,13 @@ class MainPage extends React.Component {
                     </button>
                 </div>
 
-                {/* Adăugăm modalul */}
+                {/* Modalul pentru opțiuni de rezervare */}
                 <ReservationOptionsModal
                     isOpen={this.state.isReservationModalOpen}
                     onClose={this.closeReservationModal}
                 />
 
-                {/* Only render modals when not logged in */}
+                {/* Modalurile pentru login/register - doar dacă nu este logat */}
                 {!isLoggedIn && (
                     <>
                         <LoginModal

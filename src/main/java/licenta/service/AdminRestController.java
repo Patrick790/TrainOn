@@ -115,6 +115,188 @@ public class AdminRestController {
         return ResponseEntity.notFound().build();
     }
 
+    // FCFS: Get FCFS status - verifică primul utilizator normal
+    @GetMapping("/fcfs-status")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<Map<String, Object>> getFcfsStatus() {
+        // Verificăm statusul FCFS prin primul utilizator normal găsit
+        Optional<User> normalUser = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                .filter(user -> "user".equals(user.getUserType()))
+                .findFirst();
+
+        if (normalUser.isPresent()) {
+            boolean fcfsEnabled = normalUser.get().isFcfsEnabled();
+
+            // Contorizăm câți utilizatori au FCFS activat/dezactivat
+            long totalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                    .filter(user -> "user".equals(user.getUserType()))
+                    .count();
+
+            long enabledUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                    .filter(user -> "user".equals(user.getUserType()) && user.isFcfsEnabled())
+                    .count();
+
+            return ResponseEntity.ok(Map.of(
+                    "fcfsEnabled", fcfsEnabled,
+                    "message", fcfsEnabled ?
+                            "FCFS este activat pentru utilizatori" :
+                            "FCFS este dezactivat pentru utilizatori",
+                    "totalUsers", totalUsers,
+                    "enabledUsers", enabledUsers,
+                    "disabledUsers", totalUsers - enabledUsers
+            ));
+        }
+
+        // Dacă nu avem utilizatori normali, returnăm statusul default
+        return ResponseEntity.ok(Map.of(
+                "fcfsEnabled", true,
+                "message", "Nu există utilizatori normali în sistem",
+                "totalUsers", 0,
+                "enabledUsers", 0,
+                "disabledUsers", 0
+        ));
+    }
+
+    // FCFS: Toggle FCFS pentru TOȚI utilizatorii normali
+    @PostMapping("/fcfs-toggle")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<Map<String, Object>> toggleFcfsVisibility() {
+        try {
+            // Găsim toți utilizatorii cu userType = "user"
+            List<User> normalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                    .filter(user -> "user".equals(user.getUserType()))
+                    .collect(Collectors.toList());
+
+            if (normalUsers.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "Nu există utilizatori normali în sistem pentru a gestiona FCFS"
+                ));
+            }
+
+            // Determinăm statusul curent (din primul utilizator)
+            boolean currentStatus = normalUsers.get(0).isFcfsEnabled();
+            boolean newStatus = !currentStatus;
+
+            // Actualizăm TOȚI utilizatorii normali cu noul status
+            normalUsers.forEach(user -> user.setFcfsEnabled(newStatus));
+            userSpringRepository.saveAll(normalUsers);
+
+            String message = newStatus ?
+                    "FCFS (Rezervarea locurilor rămase) a fost ACTIVAT pentru toți utilizatorii" :
+                    "FCFS (Rezervarea locurilor rămase) a fost DEZACTIVAT pentru toți utilizatorii";
+
+            return ResponseEntity.ok(Map.of(
+                    "fcfsEnabled", newStatus,
+                    "message", message,
+                    "previousStatus", currentStatus,
+                    "updatedUsers", normalUsers.size(),
+                    "affectedUserIds", normalUsers.stream().map(User::getId).collect(Collectors.toList())
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Eroare la actualizarea statusului FCFS: " + e.getMessage()
+                    ));
+        }
+    }
+
+    // FCFS: Set FCFS status explicit pentru TOȚI utilizatorii normali
+    @PostMapping("/fcfs-status")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<Map<String, Object>> setFcfsStatus(@RequestBody Map<String, Boolean> payload) {
+        try {
+            Boolean enabled = payload.get("enabled");
+            if (enabled == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "Parametrul 'enabled' este obligatoriu"
+                ));
+            }
+
+            // Găsim toți utilizatorii cu userType = "user"
+            List<User> normalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                    .filter(user -> "user".equals(user.getUserType()))
+                    .collect(Collectors.toList());
+
+            if (normalUsers.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "Nu există utilizatori normali în sistem pentru a gestiona FCFS"
+                ));
+            }
+
+            // Determinăm statusul curent
+            boolean previousStatus = normalUsers.get(0).isFcfsEnabled();
+
+            // Actualizăm TOȚI utilizatorii normali cu statusul specificat
+            normalUsers.forEach(user -> user.setFcfsEnabled(enabled));
+            userSpringRepository.saveAll(normalUsers);
+
+            String message = enabled ?
+                    "FCFS (Rezervarea locurilor rămase) a fost ACTIVAT pentru toți utilizatorii" :
+                    "FCFS (Rezervarea locurilor rămase) a fost DEZACTIVAT pentru toți utilizatorii";
+
+            // Calculăm dacă s-a schimbat ceva
+            boolean changed = previousStatus != enabled;
+
+            return ResponseEntity.ok(Map.of(
+                    "fcfsEnabled", enabled,
+                    "message", message,
+                    "previousStatus", previousStatus,
+                    "changed", changed,
+                    "updatedUsers", normalUsers.size(),
+                    "affectedUserIds", normalUsers.stream().map(User::getId).collect(Collectors.toList())
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Eroare la setarea statusului FCFS: " + e.getMessage()
+                    ));
+        }
+    }
+
+    // FCFS: Endpoint pentru a obține statistici detaliate
+    @GetMapping("/fcfs-statistics")
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<Map<String, Object>> getFcfsStatistics() {
+        try {
+            List<User> allUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
+                    .collect(Collectors.toList());
+
+            List<User> normalUsers = allUsers.stream()
+                    .filter(user -> "user".equals(user.getUserType()))
+                    .collect(Collectors.toList());
+
+            List<User> adminUsers = allUsers.stream()
+                    .filter(user -> "admin".equals(user.getUserType()))
+                    .collect(Collectors.toList());
+
+            List<User> enabledNormalUsers = normalUsers.stream()
+                    .filter(User::isFcfsEnabled)
+                    .collect(Collectors.toList());
+
+            List<User> disabledNormalUsers = normalUsers.stream()
+                    .filter(user -> !user.isFcfsEnabled())
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(Map.of(
+                    "totalUsers", allUsers.size(),
+                    "normalUsers", normalUsers.size(),
+                    "adminUsers", adminUsers.size(),
+                    "enabledNormalUsers", enabledNormalUsers.size(),
+                    "disabledNormalUsers", disabledNormalUsers.size(),
+                    "fcfsGlobalStatus", normalUsers.isEmpty() ? true : normalUsers.get(0).isFcfsEnabled(),
+                    "lastUpdated", System.currentTimeMillis()
+            ));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Eroare la obținerea statisticilor FCFS: " + e.getMessage()
+                    ));
+        }
+    }
+
     // Endpoint pentru a servi certificatul ca imagine
     @GetMapping("/team-registrations/{id}/certificate")
     public ResponseEntity<byte[]> getTeamCertificate(
@@ -142,11 +324,11 @@ public class AdminRestController {
         String contentType = detectContentType(certificateData);
         headers.setContentType(MediaType.parseMediaType(contentType));
         headers.setCacheControl("max-age=3600");
-        // Nu adăuga manual Access-Control-Allow-Origin
 
         System.out.println("Serving certificate for team " + id + ", type: " + contentType);
         return new ResponseEntity<>(certificateData, headers, HttpStatus.OK);
     }
+
     // Metodă pentru a detecta tipul de conținut
     private String detectContentType(byte[] data) {
         if (data.length > 4) {

@@ -54,6 +54,10 @@ public class User extends BruteEntity<Long> {
     @Column(name = "created_at")
     private Date createdAt;
 
+    // NOUVEAU: Control pentru vizibilitatea FCFS (First Come First Served)
+    @Column(name = "fcfs_enabled", nullable = false)
+    private Boolean fcfsEnabled = true; // Default: activat
+
     // Adăugare relație One-to-Many către ReservationProfile
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-profiles")
@@ -72,6 +76,7 @@ public class User extends BruteEntity<Long> {
         this.city = city;
         this.birthDate = birthDate;
         this.createdAt = new Date();
+        this.fcfsEnabled = true; // Default: activat
     }
 
     public User(String name, String email, String password, String userType, String address, String county, String city, String teamType, byte[] certificate) {
@@ -85,8 +90,10 @@ public class User extends BruteEntity<Long> {
         this.teamType = teamType;
         this.certificate = certificate;
         this.createdAt = new Date();
+        this.fcfsEnabled = true; // Default: activat
     }
 
+    // Getters și Setters existente
     public String getName() {
         return name;
     }
@@ -191,6 +198,20 @@ public class User extends BruteEntity<Long> {
         this.createdAt = createdAt;
     }
 
+    // NOUVEAU: Getters și Setters pentru FCFS
+    public Boolean getFcfsEnabled() {
+        return fcfsEnabled;
+    }
+
+    public void setFcfsEnabled(Boolean fcfsEnabled) {
+        this.fcfsEnabled = fcfsEnabled;
+    }
+
+    // Metoda helper pentru a verifica dacă FCFS este activat
+    public boolean isFcfsEnabled() {
+        return fcfsEnabled != null && fcfsEnabled;
+    }
+
     // Getteri și setteri pentru reservationProfiles
     public List<ReservationProfile> getReservationProfiles() {
         return reservationProfiles;
@@ -220,6 +241,7 @@ public class User extends BruteEntity<Long> {
                 ", password='" + password + '\'' +
                 ", userType='" + userType + '\'' +
                 ", accountStatus='" + accountStatus + '\'' +
+                ", fcfsEnabled=" + fcfsEnabled +
                 '}';
     }
 }

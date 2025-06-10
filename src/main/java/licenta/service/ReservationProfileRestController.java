@@ -3,9 +3,12 @@ package licenta.service;
 import licenta.model.ReservationProfile;
 import licenta.model.SportsHall;
 import licenta.model.User;
+import licenta.model.PaymentMethod;
+import licenta.model.CardPaymentMethod;
 import licenta.persistence.IReservationProfileRepository;
 import licenta.persistence.ISportsHallSpringRepository;
 import licenta.persistence.IUserSpringRepository;
+import licenta.persistence.ICardPaymentMethodSpringRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +28,19 @@ public class ReservationProfileRestController {
     private final IReservationProfileRepository reservationProfileRepository;
     private final IUserSpringRepository userSpringRepository;
     private final ISportsHallSpringRepository sportsHallSpringRepository;
+    private final ICardPaymentMethodSpringRepository cardPaymentMethodRepository;
     private static final Logger logger = LoggerFactory.getLogger(ReservationProfileRestController.class);
 
     @Autowired
     public ReservationProfileRestController(
             IReservationProfileRepository reservationProfileRepository,
             IUserSpringRepository userSpringRepository,
-            ISportsHallSpringRepository sportsHallSpringRepository) {
+            ISportsHallSpringRepository sportsHallSpringRepository,
+            ICardPaymentMethodSpringRepository cardPaymentMethodRepository) {
         this.reservationProfileRepository = reservationProfileRepository;
         this.userSpringRepository = userSpringRepository;
         this.sportsHallSpringRepository = sportsHallSpringRepository;
+        this.cardPaymentMethodRepository = cardPaymentMethodRepository;
     }
 
     @GetMapping
@@ -78,7 +84,6 @@ public class ReservationProfileRestController {
         }
     }
 
-    // ENDPOINT PĂSTRAT PENTRU COMPATIBILITATE - pentru admin să obțină profilurile unui utilizator specific
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getProfilesByUserId(@PathVariable Long userId) {
         try {
@@ -132,6 +137,8 @@ public class ReservationProfileRestController {
     @PostMapping
     public ResponseEntity<?> createProfile(@RequestBody Map<String, Object> profileData) {
         try {
+            logger.info("Creating profile with data: {}", profileData);
+
             // Obținem utilizatorul curent
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
@@ -168,8 +175,12 @@ public class ReservationProfileRestController {
                     }
                 }
 
+                // ADAUGĂ: Procesăm setările pentru plăți automate
+                processAutoPaymentSettings(profile, profileData, user);
+
                 // Salvăm profilul
                 ReservationProfile savedProfile = reservationProfileRepository.save(profile);
+                logger.info("Profile created successfully with id: {}", savedProfile.getId());
                 return ResponseEntity.ok(savedProfile);
             } else {
                 return ResponseEntity.status(404).body("Utilizator negăsit");
@@ -261,6 +272,9 @@ public class ReservationProfileRestController {
                 }
             }
 
+            // ADAUGĂ: Procesăm setările pentru plăți automate la update
+            processAutoPaymentSettings(profile, profileData, currentUser);
+
             // Salvăm profilul actualizat
             ReservationProfile updatedProfile = reservationProfileRepository.save(profile);
             logger.info("Profile {} updated successfully", id);
@@ -269,6 +283,116 @@ public class ReservationProfileRestController {
         } catch (Exception e) {
             logger.error("Error updating profile " + id, e);
             return ResponseEntity.internalServerError().body("Eroare la actualizarea profilului: " + e.getMessage());
+        }
+    }
+
+    // METODĂ NOUĂ: Procesează setările pentru plăți automate
+    private void processAutoPaymentSettings(ReservationProfile profile, Map<String, Object> profileData, User user) {
+        try {
+            // Procesăm autoPaymentEnabled
+            if (profileData.containsKey("autoPaymentEnabled")) {
+                Object autoPaymentEnabledObj = profileData.get("autoPaymentEnabled");
+                boolean autoPaymentEnabled = false;
+
+                if (autoPaymentEnabledObj instanceof Boolean) {
+                    autoPaymentEnabled = (Boolean) autoPaymentEnabledObj;
+                } else if (autoPaymentEnabledObj instanceof String) {
+                    autoPaymentEnabled = Boolean.parseBoolean((String) autoPaymentEnabledObj);
+                }
+
+                profile.setAutoPaymentEnabled(autoPaymentEnabled);
+                logger.info("Set autoPaymentEnabled to: {}", autoPaymentEnabled);
+
+                if (autoPaymentEnabled) {
+                    // Procesăm autoPaymentMethod
+                    if (profileData.containsKey("autoPaymentMethod")) {
+                        String paymentMethodStr = (String) profileData.get("autoPaymentMethod");
+                        if ("CARD".equals(paymentMethodStr)) {
+                            profile.setAutoPaymentMethod(PaymentMethod.CARD);
+                        } else if ("CASH".equals(paymentMethodStr)) {
+                            profile.setAutoPaymentMethod(PaymentMethod.CASH);
+                        }
+                        logger.info("Set autoPaymentMethod to: {}", paymentMethodStr);
+                    }
+
+                    // Procesăm defaultCardPaymentMethodId
+                    if (profileData.containsKey("defaultCardPaymentMethodId")) {
+                        Object cardIdObj = profileData.get("defaultCardPaymentMethodId");
+                        if (cardIdObj != null && !cardIdObj.toString().isEmpty()) {
+                            try {
+                                Long cardId;
+                                if (cardIdObj instanceof Integer) {
+                                    cardId = ((Integer) cardIdObj).longValue();
+                                } else if (cardIdObj instanceof Long) {
+                                    cardId = (Long) cardIdObj;
+                                } else {
+                                    cardId = Long.parseLong(cardIdObj.toString());
+                                }
+
+                                Optional<CardPaymentMethod> cardOpt = cardPaymentMethodRepository.findById(cardId);
+                                if (cardOpt.isPresent()) {
+                                    CardPaymentMethod card = cardOpt.get();
+                                    // Verifică că cardul aparține utilizatorului
+                                    if (card.getUser().getId().equals(user.getId())) {
+                                        profile.setDefaultCardPaymentMethod(card);
+                                        logger.info("Set defaultCardPaymentMethod to: {}", cardId);
+                                    } else {
+                                        logger.warn("Card {} does not belong to user {}", cardId, user.getId());
+                                    }
+                                } else {
+                                    logger.warn("Card with id {} not found", cardId);
+                                }
+                            } catch (NumberFormatException e) {
+                                logger.warn("Invalid card ID format: {}", cardIdObj);
+                            }
+                        } else {
+                            profile.setDefaultCardPaymentMethod(null);
+                        }
+                    }
+
+                    // Procesăm autoPaymentThreshold
+                    if (profileData.containsKey("autoPaymentThreshold")) {
+                        Object thresholdObj = profileData.get("autoPaymentThreshold");
+                        if (thresholdObj != null && !thresholdObj.toString().isEmpty()) {
+                            try {
+                                BigDecimal threshold = new BigDecimal(thresholdObj.toString());
+                                profile.setAutoPaymentThreshold(threshold);
+                                logger.info("Set autoPaymentThreshold to: {}", threshold);
+                            } catch (NumberFormatException e) {
+                                logger.warn("Invalid autoPaymentThreshold format: {}", thresholdObj);
+                            }
+                        } else {
+                            profile.setAutoPaymentThreshold(null);
+                        }
+                    }
+
+                    // Procesăm maxWeeklyAutoPayment
+                    if (profileData.containsKey("maxWeeklyAutoPayment")) {
+                        Object maxWeeklyObj = profileData.get("maxWeeklyAutoPayment");
+                        if (maxWeeklyObj != null && !maxWeeklyObj.toString().isEmpty()) {
+                            try {
+                                BigDecimal maxWeekly = new BigDecimal(maxWeeklyObj.toString());
+                                profile.setMaxWeeklyAutoPayment(maxWeekly);
+                                logger.info("Set maxWeeklyAutoPayment to: {}", maxWeekly);
+                            } catch (NumberFormatException e) {
+                                logger.warn("Invalid maxWeeklyAutoPayment format: {}", maxWeeklyObj);
+                            }
+                        } else {
+                            profile.setMaxWeeklyAutoPayment(null);
+                        }
+                    }
+                } else {
+                    // Dacă plata automată este dezactivată, resetează toate setările
+                    profile.setAutoPaymentMethod(null);
+                    profile.setDefaultCardPaymentMethod(null);
+                    profile.setAutoPaymentThreshold(null);
+                    profile.setMaxWeeklyAutoPayment(null);
+                    logger.info("Auto payment disabled, reset all auto payment settings");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error processing auto payment settings", e);
+            // Nu aruncăm excepția pentru a nu bloca salvarea profilului
         }
     }
 

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +44,9 @@ public class StripePaymentController {
     @Value("${stripe.webhook.secret}")
     private String stripeWebhookSecret;
 
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+
     @Autowired
     private IPaymentSpringRepository paymentRepository;
 
@@ -56,13 +60,213 @@ public class StripePaymentController {
     private ISportsHallSpringRepository sportsHallRepository;
 
     @Autowired
+    private ICardPaymentMethodSpringRepository cardPaymentMethodRepository;
+
+    @Autowired
+    private IReservationProfileRepository reservationProfileRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @PostConstruct
     public void init() {
         Stripe.apiKey = stripeSecretKey;
     }
 
+    // Metodă pentru plata automată folosind cardul salvat
+    @PostMapping("/auto-payment/process")
+    public ResponseEntity<?> processAutoPayment(@RequestBody AutoPaymentRequest request) {
+        try {
+            Long userId = getCurrentUserId();
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Utilizator neautentificat"));
+            }
+
+            // Verifică profilul de rezervare
+            ReservationProfile profile = reservationProfileRepository.findById(request.getProfileId())
+                    .orElseThrow(() -> new RuntimeException("Profil de rezervare negăsit"));
+
+            if (!profile.getUser().getId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nu aveți permisiunea să folosiți acest profil"));
+            }
+
+            // Verifică dacă plata automată este activă
+            if (!profile.getAutoPaymentEnabled() || profile.getDefaultCardPaymentMethod() == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Plata automată nu este configurată pentru acest profil"));
+            }
+
+            CardPaymentMethod card = profile.getDefaultCardPaymentMethod();
+            if (!card.getIsActive() || card.isExpired()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Cardul de plată nu este valid sau a expirat"));
+            }
+
+            BigDecimal totalAmount = BigDecimal.valueOf(request.getTotalAmount());
+
+            // Verifică limitele de plată
+            if (!profile.canProcessAutoPayment(totalAmount)) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Suma depășește limitele configurate pentru plata automată"));
+            }
+
+            // Creează Payment în BD
+            Payment payment = new Payment();
+            payment.setUserId(userId);
+            payment.setTotalAmount(totalAmount);
+            payment.setPaymentMethod(licenta.model.PaymentMethod.CARD);
+            payment.setStatus(PaymentStatus.PROCESSING);
+            payment.setCurrency("RON");
+            payment.setDescription("Plată automată - profil: " + profile.getName() + " (" + request.getReservations().size() + " intervale)");
+            Payment savedPayment = paymentRepository.save(payment);
+
+            // Creează PaymentIntent cu cardul salvat
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount((long) (request.getTotalAmount() * 100)) // convertește în cenți
+                    .setCurrency("RON")
+                    .setPaymentMethod(card.getStripePaymentMethodId())
+                    .setConfirm(true) // Confirmă imediat
+                    .setReturnUrl("https://your-website.com/return") // URL-ul de return (obligatoriu pentru unele carduri)
+                    .putMetadata("payment_db_id", savedPayment.getId().toString())
+                    .putMetadata("user_id", userId.toString())
+                    .putMetadata("profile_id", profile.getId().toString())
+                    .putMetadata("auto_payment", "true")
+                    .build();
+
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+
+            savedPayment.setStripePaymentIntentId(paymentIntent.getId());
+            paymentRepository.save(savedPayment);
+
+            // Verifică statusul și procesează rezervările dacă este succedat
+            if ("succeeded".equals(paymentIntent.getStatus())) {
+                // Marchează plata ca reușită
+                savedPayment.setStatus(PaymentStatus.SUCCEEDED);
+                savedPayment.setPaymentDate(LocalDateTime.now());
+                if (paymentIntent.getLatestCharge() != null) {
+                    savedPayment.setStripeChargeId(paymentIntent.getLatestCharge());
+                }
+
+                // Creează rezervările
+                List<Long> reservationIds = createReservationsFromData(request.getReservations(), savedPayment, userId);
+
+                paymentRepository.save(savedPayment);
+
+                // ADĂUGAT: Trimite email de confirmare
+                sendConfirmationEmailForPayment(savedPayment, userId);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("paymentId", savedPayment.getId());
+                response.put("reservationIds", reservationIds);
+                response.put("message", "Plata automată a fost procesată cu succes");
+                response.put("paymentIntentId", paymentIntent.getId());
+
+                logger.info("Plată automată reușită pentru profilul {} (Payment ID: {})", profile.getId(), savedPayment.getId());
+                return ResponseEntity.ok(response);
+
+            } else if ("requires_action".equals(paymentIntent.getStatus())) {
+                // Cardul necesită autentificare suplimentară (3D Secure)
+                Map<String, Object> response = new HashMap<>();
+                response.put("requiresAction", true);
+                response.put("paymentIntentId", paymentIntent.getId());
+                response.put("clientSecret", paymentIntent.getClientSecret());
+                response.put("paymentId", savedPayment.getId());
+
+                logger.info("Plata automată necesită acțiune suplimentară: {}", paymentIntent.getId());
+                return ResponseEntity.ok(response);
+
+            } else {
+                // Plata a eșuat
+                savedPayment.setStatus(PaymentStatus.FAILED);
+                if (paymentIntent.getLastPaymentError() != null) {
+                    savedPayment.setFailureReason(paymentIntent.getLastPaymentError().getMessage());
+                }
+                paymentRepository.save(savedPayment);
+
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Plata automată a eșuat: " + paymentIntent.getStatus()));
+            }
+
+        } catch (StripeException e) {
+            logger.error("Eroare Stripe la plata automată: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Eroare Stripe: " + e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Eroare generală la plata automată: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Eroare server: " + e.getMessage()));
+        }
+    }
+
+    // Metodă pentru finalizarea plății automate care necesită acțiune
+    @PostMapping("/auto-payment/finalize")
+    public ResponseEntity<?> finalizeAutoPayment(@RequestBody FinalizeAutoPaymentRequest request) {
+        try {
+            Optional<Payment> paymentOpt = paymentRepository.findByStripePaymentIntentId(request.getPaymentIntentId());
+            if (paymentOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Plata negăsită"));
+            }
+
+            Payment payment = paymentOpt.get();
+
+            // Verifică statusul PaymentIntent la Stripe
+            PaymentIntent stripePI = PaymentIntent.retrieve(request.getPaymentIntentId());
+
+            if ("succeeded".equals(stripePI.getStatus())) {
+                // Marchează plata ca reușită
+                payment.setStatus(PaymentStatus.SUCCEEDED);
+                payment.setPaymentDate(LocalDateTime.now());
+                if (stripePI.getLatestCharge() != null) {
+                    payment.setStripeChargeId(stripePI.getLatestCharge());
+                }
+
+                // Creează rezervările dacă nu au fost create deja
+                if (payment.getPaymentReservations().isEmpty()) {
+                    List<Long> reservationIds = createReservationsFromData(request.getReservations(), payment, payment.getUserId());
+
+                    // ADĂUGAT: Trimite email de confirmare
+                    sendConfirmationEmailForPayment(payment, payment.getUserId());
+                }
+
+                paymentRepository.save(payment);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("paymentId", payment.getId());
+                response.put("reservationIds", payment.getPaymentReservations().stream()
+                        .map(pr -> pr.getReservation().getId()).toList());
+                response.put("message", "Plata automată finalizată cu succes");
+
+                logger.info("Plată automată finalizată: {}", payment.getId());
+                return ResponseEntity.ok(response);
+
+            } else {
+                // Plata a eșuat
+                payment.setStatus(PaymentStatus.FAILED);
+                if (stripePI.getLastPaymentError() != null) {
+                    payment.setFailureReason(stripePI.getLastPaymentError().getMessage());
+                }
+                paymentRepository.save(payment);
+
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Plata automată a eșuat: " + stripePI.getStatus()));
+            }
+
+        } catch (Exception e) {
+            logger.error("Eroare la finalizarea plății automate: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Eroare server: " + e.getMessage()));
+        }
+    }
+
+    // Metoda existentă pentru crearea PaymentIntent manual
     @PostMapping("/stripe/create-payment-intent")
     public ResponseEntity<?> createStripePaymentIntent(@RequestBody StripePaymentIntentRequest request) {
         try {
@@ -82,7 +286,7 @@ public class StripePaymentController {
             Payment payment = new Payment();
             payment.setUserId(userId);
             payment.setTotalAmount(BigDecimal.valueOf(request.getAmount() / 100.0));
-            payment.setPaymentMethod(licenta.model.PaymentMethod.CARD); // Folosește fully qualified name
+            payment.setPaymentMethod(licenta.model.PaymentMethod.CARD);
             payment.setStatus(PaymentStatus.PENDING);
             payment.setCurrency("RON");
             payment.setDescription("Rezervare sala de sport - " + request.getReservations().size() + " intervale");
@@ -130,7 +334,6 @@ public class StripePaymentController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Client secret și detaliile cardului sunt obligatorii."));
             }
 
-            // Creează PaymentMethod pe server (mai sigur) - folosește fully qualified name pentru Stripe PaymentMethod
             PaymentMethodCreateParams pmParams = PaymentMethodCreateParams.builder()
                     .setType(PaymentMethodCreateParams.Type.CARD)
                     .setCard(PaymentMethodCreateParams.CardDetails.builder()
@@ -146,7 +349,6 @@ public class StripePaymentController {
 
             com.stripe.model.PaymentMethod stripePaymentMethod = com.stripe.model.PaymentMethod.create(pmParams);
 
-            // Confirmă PaymentIntent cu PaymentMethod
             PaymentIntent paymentIntent = PaymentIntent.retrieve(extractPaymentIntentId(request.getClientSecret()));
 
             PaymentIntentConfirmParams confirmParams = PaymentIntentConfirmParams.builder()
@@ -283,7 +485,6 @@ public class StripePaymentController {
 
             Payment payment = paymentOpt.get();
 
-            // Verifică statusul PaymentIntent direct la Stripe pentru siguranță
             PaymentIntent stripePI = PaymentIntent.retrieve(request.getStripePaymentIntentId());
 
             if (!"succeeded".equals(stripePI.getStatus())) {
@@ -322,29 +523,12 @@ public class StripePaymentController {
                 return ResponseEntity.ok(response);
             }
 
-            // Creează rezervările și le asociază cu plata
-            List<Long> reservationIds = new ArrayList<>();
-            User user = userRepository.findById(payment.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Utilizatorul plății nu a fost găsit: " + payment.getUserId()));
-
-            for (ReservationData reservationData : request.getReservations()) {
-                SportsHall hall = sportsHallRepository.findById(reservationData.getHallId())
-                        .orElseThrow(() -> new RuntimeException("Sala de sport nu a fost găsită: " + reservationData.getHallId()));
-
-                LocalDate localDate = LocalDate.parse(reservationData.getDate());
-                Date utilDate = java.sql.Date.valueOf(localDate);
-
-                Reservation reservation = new Reservation(hall, user, utilDate,
-                        reservationData.getTimeSlot(), 50.0f, "reservation");
-
-                Reservation savedReservation = reservationRepository.save(reservation);
-                reservationIds.add(savedReservation.getId());
-
-                PaymentReservation paymentReservation = new PaymentReservation(payment, savedReservation);
-                payment.getPaymentReservations().add(paymentReservation);
-            }
+            List<Long> reservationIds = createReservationsFromData(request.getReservations(), payment, payment.getUserId());
 
             paymentRepository.save(payment);
+
+            // ADĂUGAT: Trimite email de confirmare
+            sendConfirmationEmailForPayment(payment, payment.getUserId());
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -360,7 +544,8 @@ public class StripePaymentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Eroare Stripe: " + e.getMessage()));
         } catch (Exception e) {
             logger.error("Eroare generală la finalizarea plății Stripe: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Eroare server: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Eroare server: " + e.getMessage()));
         }
     }
 
@@ -371,7 +556,6 @@ public class StripePaymentController {
             if (userId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Utilizator neautentificat."));
             }
-            List<Long> reservationIds = new ArrayList<>();
 
             Payment payment = new Payment();
             payment.setUserId(userId);
@@ -383,26 +567,12 @@ public class StripePaymentController {
             payment.setDescription("Rezervare sala de sport - plată cash (" + request.getReservations().size() + " intervale)");
             Payment savedPayment = paymentRepository.save(payment);
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit: " + userId));
+            List<Long> reservationIds = createReservationsFromData(request.getReservations(), savedPayment, userId);
 
-            for (ReservationData reservationData : request.getReservations()) {
-                SportsHall hall = sportsHallRepository.findById(reservationData.getHallId())
-                        .orElseThrow(() -> new RuntimeException("Sala de sport nu a fost găsită: " + reservationData.getHallId()));
-
-                LocalDate localDate = LocalDate.parse(reservationData.getDate());
-                Date utilDate = java.sql.Date.valueOf(localDate);
-
-                Reservation reservation = new Reservation(hall, user, utilDate,
-                        reservationData.getTimeSlot(), 50.0f, "reservation");
-
-                Reservation savedReservation = reservationRepository.save(reservation);
-                reservationIds.add(savedReservation.getId());
-
-                PaymentReservation paymentReservation = new PaymentReservation(savedPayment, savedReservation);
-                savedPayment.getPaymentReservations().add(paymentReservation);
-            }
             paymentRepository.save(savedPayment);
+
+            // ADĂUGAT: Trimite email de confirmare
+            sendConfirmationEmailForPayment(savedPayment, userId);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -417,6 +587,45 @@ public class StripePaymentController {
             logger.error("Eroare la confirmarea rezervărilor cash", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Eroare la crearea rezervărilor cash: " + e.getMessage()));
+        }
+    }
+
+    // Helper methods
+    private List<Long> createReservationsFromData(List<ReservationData> reservationsData, Payment payment, Long userId) {
+        List<Long> reservationIds = new ArrayList<>();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit: " + userId));
+
+        for (ReservationData reservationData : reservationsData) {
+            SportsHall hall = sportsHallRepository.findById(reservationData.getHallId())
+                    .orElseThrow(() -> new RuntimeException("Sala de sport nu a fost găsită: " + reservationData.getHallId()));
+
+            Date utilDate = parseReservationDate(reservationData.getDate());
+
+            Reservation reservation = new Reservation(hall, user, utilDate,
+                    reservationData.getTimeSlot(), hall.getTariff(), "reservation");
+
+            Reservation savedReservation = reservationRepository.save(reservation);
+            reservationIds.add(savedReservation.getId());
+
+            PaymentReservation paymentReservation = new PaymentReservation(payment, savedReservation);
+            payment.getPaymentReservations().add(paymentReservation);
+        }
+
+        return reservationIds;
+    }
+
+    private Date parseReservationDate(String dateString) {
+        try {
+            LocalDate localDate = LocalDate.parse(dateString);
+            java.time.ZoneId romaniaZone = java.time.ZoneId.of("Europe/Bucharest");
+            java.time.LocalDateTime localDateTime = localDate.atStartOfDay();
+            java.time.ZonedDateTime zonedDateTime = localDateTime.atZone(romaniaZone);
+            return Date.from(zonedDateTime.toInstant());
+        } catch (Exception e) {
+            logger.error("Eroare la parsarea datei rezervării: " + dateString, e);
+            LocalDate localDate = LocalDate.parse(dateString);
+            return java.sql.Date.valueOf(localDate);
         }
     }
 
@@ -440,7 +649,69 @@ public class StripePaymentController {
         return null;
     }
 
-    // DTO Classes
+    // METODĂ NOUĂ: Trimite email de confirmare pentru o plată
+    private void sendConfirmationEmailForPayment(Payment payment, Long userId) {
+        try {
+            // Obține utilizatorul
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isEmpty()) {
+                logger.warn("Utilizatorul cu ID {} nu a fost găsit pentru trimiterea email-ului", userId);
+                return;
+            }
+
+            User user = userOpt.get();
+
+            // Obține rezervările asociate cu plata
+            List<Reservation> reservations = new ArrayList<>();
+            for (PaymentReservation paymentReservation : payment.getPaymentReservations()) {
+                reservations.add(paymentReservation.getReservation());
+            }
+
+            if (reservations.isEmpty()) {
+                logger.warn("Nu există rezervări pentru plata cu ID {}", payment.getId());
+                return;
+            }
+
+            // Trimite email-ul folosind serviciul
+            ReservationEmailService.sendReservationConfirmationEmail(
+                    mailSender,
+                    senderEmail,
+                    user,
+                    reservations,
+                    payment
+            );
+
+        } catch (Exception e) {
+            logger.error("Eroare la trimiterea email-ului de confirmare pentru plata {}: {}",
+                    payment.getId(), e.getMessage(), e);
+        }
+    }
+
+    // DTO Classes pentru plăți automate
+    public static class AutoPaymentRequest {
+        private Long profileId;
+        private Double totalAmount;
+        private List<ReservationData> reservations;
+
+        public Long getProfileId() { return profileId; }
+        public void setProfileId(Long profileId) { this.profileId = profileId; }
+        public Double getTotalAmount() { return totalAmount; }
+        public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
+        public List<ReservationData> getReservations() { return reservations; }
+        public void setReservations(List<ReservationData> reservations) { this.reservations = reservations; }
+    }
+
+    public static class FinalizeAutoPaymentRequest {
+        private String paymentIntentId;
+        private List<ReservationData> reservations;
+
+        public String getPaymentIntentId() { return paymentIntentId; }
+        public void setPaymentIntentId(String paymentIntentId) { this.paymentIntentId = paymentIntentId; }
+        public List<ReservationData> getReservations() { return reservations; }
+        public void setReservations(List<ReservationData> reservations) { this.reservations = reservations; }
+    }
+
+    // DTO Classes existente
     public static class StripePaymentIntentRequest {
         private Long amount;
         private List<ReservationData> reservations;

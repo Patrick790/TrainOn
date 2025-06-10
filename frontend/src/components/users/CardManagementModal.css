@@ -1,0 +1,640 @@
+/* CardManagementModal.css - Stiluri pentru modalul de gestionare carduri */
+
+:root {
+    --card-modal-primary: #6d28d9;
+    --card-modal-primary-dark: #5b21b6;
+    --card-modal-secondary: #10b981;
+    --card-modal-secondary-dark: #059669;
+    --card-modal-error: #ef4444;
+    --card-modal-text-dark: #1a1a1a;
+    --card-modal-text-medium: #4b5563;
+    --card-modal-text-light: #6b7280;
+    --card-modal-border: #e5e7eb;
+    --card-modal-bg-light: #f9fafb;
+    --card-modal-bg-medium: #f3f4f6;
+    --card-modal-white: #ffffff;
+    --card-modal-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --card-modal-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-modal-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --card-modal-radius-sm: 0.25rem;
+    --card-modal-radius-md: 0.5rem;
+    --card-modal-radius-lg: 0.75rem;
+}
+
+/* Modal Overlay */
+.card-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+
+/* Modal Content */
+.card-modal-content {
+    background-color: var(--card-modal-white);
+    border-radius: var(--card-modal-radius-lg);
+    box-shadow: var(--card-modal-shadow-lg);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: cardModalFadeIn 0.3s ease-out;
+}
+
+@keyframes cardModalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Modal Header */
+.card-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--card-modal-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-modal-bg-light);
+    border-radius: var(--card-modal-radius-lg) var(--card-modal-radius-lg) 0 0;
+}
+
+.card-modal-header h3 {
+    margin: 0;
+    font-size: 1.375rem;
+    color: var(--card-modal-text-dark);
+    font-weight: 700;
+}
+
+.card-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--card-modal-text-medium);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--card-modal-radius-md);
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.card-modal-close:hover {
+    background-color: var(--card-modal-bg-medium);
+    color: var(--card-modal-text-dark);
+    transform: scale(1.1);
+}
+
+/* Modal Body */
+.card-modal-body {
+    padding: 2rem;
+    position: relative;
+}
+
+/* Error Message */
+.card-error-message {
+    padding: 1rem 1.25rem;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: var(--card-modal-radius-md);
+    color: var(--card-modal-error);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    border-left: 4px solid var(--card-modal-error);
+}
+
+/* Cards List */
+.cards-list {
+    margin-bottom: 2rem;
+}
+
+/* No Cards Message */
+.no-cards-message {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--card-modal-text-light);
+    background-color: var(--card-modal-bg-light);
+    border-radius: var(--card-modal-radius-lg);
+    border: 2px dashed var(--card-modal-border);
+}
+
+.no-cards-message svg {
+    color: var(--card-modal-text-light);
+    margin-bottom: 1rem;
+}
+
+.no-cards-message p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.no-cards-message p:first-of-type {
+    font-weight: 600;
+    color: var(--card-modal-text-medium);
+}
+
+/* Card Item */
+.card-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    border: 1px solid var(--card-modal-border);
+    border-radius: var(--card-modal-radius-md);
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    background-color: var(--card-modal-white);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.card-item:hover {
+    box-shadow: var(--card-modal-shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-item:hover::before {
+    background-color: var(--card-modal-primary);
+}
+
+/* Card Info */
+.card-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.card-info svg {
+    color: var(--card-modal-primary);
+    flex-shrink: 0;
+}
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-name {
+    font-weight: 600;
+    color: var(--card-modal-text-dark);
+    font-size: 1rem;
+}
+
+.card-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.card-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--card-modal-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.card-badge-default {
+    background-color: var(--card-modal-secondary);
+    color: white;
+}
+
+.card-badge-expired {
+    background-color: var(--card-modal-error);
+    color: white;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.card-action-button {
+    background-color: var(--card-modal-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--card-modal-radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.card-action-button:hover:not(:disabled) {
+    background-color: var(--card-modal-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--card-modal-shadow-sm);
+}
+
+.card-action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.card-remove-button {
+    background: none;
+    border: none;
+    color: var(--card-modal-error);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--card-modal-radius-md);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-remove-button:hover:not(:disabled) {
+    background-color: #fee2e2;
+    transform: scale(1.1);
+}
+
+.card-remove-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Add Card Button */
+.add-card-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--card-modal-secondary);
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: var(--card-modal-radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-shadow: var(--card-modal-shadow-sm);
+}
+
+.add-card-button:hover:not(:disabled) {
+    background-color: var(--card-modal-secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--card-modal-shadow-md);
+}
+
+.add-card-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Add Card Form */
+.add-card-form {
+    border-top: 1px solid var(--card-modal-border);
+    padding-top: 2rem;
+    margin-top: 2rem;
+}
+
+.add-card-form h4 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.125rem;
+    color: var(--card-modal-text-dark);
+    font-weight: 600;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--card-modal-text-dark);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--card-modal-border);
+    border-radius: var(--card-modal-radius-md);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: var(--card-modal-white);
+    color: var(--card-modal-text-dark);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--card-modal-primary);
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+}
+
+.form-group input:disabled {
+    background-color: var(--card-modal-bg-light);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.form-group input::placeholder {
+    color: var(--card-modal-text-light);
+}
+
+.form-group small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--card-modal-text-light);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Form Row */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Checkbox Label */
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500 !important;
+    color: var(--card-modal-text-dark) !important;
+    margin-bottom: 0 !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto !important;
+    height: 1rem;
+    accent-color: var(--card-modal-primary);
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-label span {
+    font-weight: 500;
+    color: var(--card-modal-text-dark);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+}
+
+.cancel-button {
+    background-color: var(--card-modal-white);
+    color: var(--card-modal-text-medium);
+    border: 2px solid var(--card-modal-border);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--card-modal-radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: var(--card-modal-bg-light);
+    color: var(--card-modal-text-dark);
+    border-color: var(--card-modal-text-medium);
+}
+
+.cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.submit-button {
+    background-color: var(--card-modal-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--card-modal-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--card-modal-shadow-sm);
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: var(--card-modal-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--card-modal-shadow-md);
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--card-modal-bg-medium);
+    border-top-color: var(--card-modal-primary);
+    border-radius: 50%;
+    animation: cardModalSpin 1s linear infinite;
+}
+
+@keyframes cardModalSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--card-modal-text-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .card-modal-content {
+        max-height: 95vh;
+    }
+
+    .card-modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .card-modal-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .card-modal-body {
+        padding: 1.5rem;
+    }
+
+    .card-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .card-info {
+        width: 100%;
+    }
+
+    .card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .cancel-button,
+    .submit-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .no-cards-message {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-modal-header {
+        padding: 1rem;
+    }
+
+    .card-modal-body {
+        padding: 1rem;
+    }
+
+    .add-card-form {
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .card-action-button {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* Focus States for Accessibility */
+.card-modal-close:focus,
+.card-action-button:focus,
+.card-remove-button:focus,
+.add-card-button:focus,
+.cancel-button:focus,
+.submit-button:focus,
+.form-group input:focus,
+.checkbox-label input:focus {
+    outline: 2px solid var(--card-modal-primary);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .card-item {
+        border-width: 2px;
+    }
+
+    .card-badge {
+        border: 1px solid currentColor;
+    }
+
+    .form-group input {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .card-modal-content,
+    .card-item,
+    .card-action-button,
+    .card-remove-button,
+    .add-card-button,
+    .cancel-button,
+    .submit-button,
+    .form-group input,
+    .card-modal-close {
+        animation: none;
+        transition: none;
+    }
+
+    .loading-spinner {
+        animation: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .card-modal-overlay {
+        display: none;
+    }
+}

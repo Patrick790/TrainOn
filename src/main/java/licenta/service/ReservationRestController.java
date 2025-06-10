@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class ReservationRestController {
         return reservationSpringRepository.findById(id).orElse(null);
     }
 
-    // ENDPOINT NOU - pentru a obține rezervările unui utilizator
+    // ENDPOINT pentru a obține rezervările unui utilizator
     @GetMapping("/user/{userId}")
     public List<Reservation> getReservationsByUser(@PathVariable Long userId) {
         return StreamSupport.stream(reservationSpringRepository.findAll().spliterator(), false)
@@ -65,7 +66,7 @@ public class ReservationRestController {
                 .collect(Collectors.toList());
     }
 
-    // ENDPOINT NOU - pentru anularea unei rezervări
+    // ENDPOINT pentru anularea unei rezervări
     @PutMapping("/{id}/cancel")
     public ResponseEntity<Reservation> cancelReservation(@PathVariable Long id) {
         try {
@@ -90,20 +91,11 @@ public class ReservationRestController {
             return false;
         }
 
-        // Comparăm doar anul, luna și ziua
-        java.util.Calendar cal1 = java.util.Calendar.getInstance();
-        cal1.setTime(date1);
-        int year1 = cal1.get(java.util.Calendar.YEAR);
-        int month1 = cal1.get(java.util.Calendar.MONTH);
-        int day1 = cal1.get(java.util.Calendar.DAY_OF_MONTH);
+        // Convertim la LocalDate pentru comparare exactă fără timp
+        LocalDate localDate1 = new java.sql.Date(date1.getTime()).toLocalDate();
+        LocalDate localDate2 = new java.sql.Date(date2.getTime()).toLocalDate();
 
-        java.util.Calendar cal2 = java.util.Calendar.getInstance();
-        cal2.setTime(date2);
-        int year2 = cal2.get(java.util.Calendar.YEAR);
-        int month2 = cal2.get(java.util.Calendar.MONTH);
-        int day2 = cal2.get(java.util.Calendar.DAY_OF_MONTH);
-
-        return year1 == year2 && month1 == month2 && day1 == day2;
+        return localDate1.equals(localDate2);
     }
 
     @PostMapping
@@ -121,7 +113,8 @@ public class ReservationRestController {
                     .anyMatch(r -> r.getHall() != null &&
                             r.getHall().getId().equals(reservation.getHall().getId()) &&
                             dateEquals(r.getDate(), reservation.getDate()) &&
-                            r.getTimeSlot().equals(reservation.getTimeSlot()));
+                            r.getTimeSlot().equals(reservation.getTimeSlot()) &&
+                            !"CANCELLED".equals(r.getStatus())); // Nu luăm în considerare rezervările anulate
 
             if (slotExists) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);

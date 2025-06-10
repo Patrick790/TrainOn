@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sportsHalls")
@@ -523,5 +524,132 @@ public class SportsHallRestController {
             logger.error("Error fetching active sports halls", e);
             return ResponseEntity.internalServerError().body("Eroare la obținerea sălilor active: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/names/suggestions")
+    public ResponseEntity<?> getHallNamesSuggestions(@RequestParam String query) {
+        try {
+            if (query == null || query.trim().length() < 2) {
+                // Returnează listă goală dacă query-ul este prea scurt
+                return ResponseEntity.ok(List.of());
+            }
+
+            String cleanQuery = query.trim();
+            List<String> suggestions = sportsHallSpringRepository.findHallNamesSuggestionsLimited(cleanQuery);
+
+            logger.info("Found {} hall name suggestions for query: '{}'", suggestions.size(), cleanQuery);
+            return ResponseEntity.ok(suggestions);
+
+        } catch (Exception e) {
+            logger.error("Error fetching hall name suggestions for query: '{}'", query, e);
+            return ResponseEntity.ok(List.of()); // Returnează listă goală în caz de eroare
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchSportsHalls(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String sport,
+            @RequestParam(required = false) String query) {
+
+        try {
+            List<SportsHall> results = new ArrayList<>();
+
+            logger.info("Search request - City: '{}', Sport: '{}', Query: '{}'", city, sport, query);
+
+            // Logica de căutare în ordine de prioritate
+            if (query != null && !query.trim().isEmpty()) {
+                // Prioritate 1: Căutare după nume (cu sau fără oraș și sport)
+                String searchQuery = query.trim();
+
+                if (city != null && !city.trim().isEmpty() && sport != null && !sport.trim().isEmpty()) {
+                    // Căutare completă: nume + oraș + sport
+                    if ("inot".equalsIgnoreCase(sport.trim())) {
+                        // Pentru înot, căutăm doar săli specifice de înot
+                        results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim())
+                                .stream()
+                                .filter(hall -> isSwimmingHall(hall.getType()))
+                                .collect(Collectors.toList());
+                    } else {
+                        // Pentru alte sporturi, folosim logica normală cu polivalente
+                        results = sportsHallSpringRepository.findByCityAndSportAndNameIncludingMultipurpose(
+                                city.trim(), sport.trim(), searchQuery);
+                    }
+                    logger.info("Search by name + city + sport found {} results", results.size());
+
+                    // Dacă nu găsim rezultate cu toate criteriile, încearcă doar cu numele și orașul
+                    if (results.isEmpty()) {
+                        results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim());
+                        logger.info("Fallback search by name + city found {} results", results.size());
+                    }
+                } else if (city != null && !city.trim().isEmpty()) {
+                    // Căutare după nume + oraș
+                    results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim());
+                    logger.info("Search by name + city found {} results", results.size());
+                } else {
+                    // Căutare doar după nume (în toate orașele)
+                    results = sportsHallSpringRepository.findByNameContainingIgnoreCase(searchQuery);
+                    logger.info("Search by name only found {} results", results.size());
+                }
+
+            } else if (city != null && !city.trim().isEmpty() && sport != null && !sport.trim().isEmpty()) {
+                // Prioritate 2: Căutare după oraș și sport
+                if ("inot".equalsIgnoreCase(sport.trim())) {
+                    // Pentru înot, căutăm doar săli specifice de înot în orașul respectiv
+                    results = sportsHallSpringRepository.findSwimmingHallsByCity(city.trim());
+                } else {
+                    // Pentru alte sporturi, include polivalente
+                    results = sportsHallSpringRepository.findByCityAndSportIncludingMultipurpose(
+                            city.trim(), sport.trim());
+                }
+                logger.info("Search by city + sport found {} results", results.size());
+
+            } else if (city != null && !city.trim().isEmpty()) {
+                // Prioritate 3: Căutare doar după oraș
+                results = sportsHallSpringRepository.findByCityAndStatusOrderByName(city.trim(), SportsHall.HallStatus.ACTIVE);
+                logger.info("Search by city only found {} results", results.size());
+
+            } else if (sport != null && !sport.trim().isEmpty()) {
+                // Prioritate 4: Căutare doar după sport (în toate orașele)
+                if ("inot".equalsIgnoreCase(sport.trim())) {
+                    // Pentru înot, căutăm doar săli specifice de înot
+                    results = sportsHallSpringRepository.findSwimmingHalls();
+                } else {
+                    // Pentru alte sporturi, include polivalente
+                    results = sportsHallSpringRepository.findBySportIncludingMultipurpose(sport.trim());
+                }
+                logger.info("Search by sport only found {} results", results.size());
+
+            } else {
+                // Fallback: Returnează toate sălile active
+                results = sportsHallSpringRepository.findByStatusOrderByName(SportsHall.HallStatus.ACTIVE);
+                logger.info("Search with no criteria, returning all active halls: {} results", results.size());
+            }
+
+            // Log pentru debugging
+            if (!results.isEmpty()) {
+                logger.info("First result example: Hall '{}' in '{}' for type '{}'",
+                        results.get(0).getName(),
+                        results.get(0).getCity(),
+                        results.get(0).getType());
+            }
+
+            return ResponseEntity.ok(results);
+
+        } catch (Exception e) {
+            logger.error("Error during sports halls search", e);
+            return ResponseEntity.internalServerError()
+                    .body("Eroare la căutarea sălilor de sport: " + e.getMessage());
+        }
+    }
+
+    // Metodă helper pentru a verifica dacă o sală este dedicată înot-ului
+    private boolean isSwimmingHall(String type) {
+        if (type == null) return false;
+        String lowerType = type.toLowerCase();
+        return lowerType.equals("inot") ||
+                lowerType.contains("piscina") ||
+                lowerType.contains("swimming") ||
+                lowerType.contains("inot");
     }
 }

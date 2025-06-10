@@ -16,7 +16,7 @@
     align-items: flex-end;
     justify-content: center;
     padding-bottom: 40px;
-    z-index: 1; /* Setăm z-index mic pentru conținutul principal */
+    z-index: 1;
 }
 
 .main-content::before {
@@ -27,118 +27,7 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.3);
-    z-index: 1; /* Overlay-ul are z-index mic */
-}
-
-/* Search Bar Styles */
-.search-container {
-    position: relative;
-    width: 100%;
-    max-width: 64rem;
-    padding: 0 1rem;
-    z-index: 10; /* Search container are z-index mai mare decât main-content */
-    transform: translateY(-100px);
-}
-
-.search-bar {
-    display: flex;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 0.5rem;
-    overflow: visible;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 60px;
-    backdrop-filter: blur(5px);
-    position: relative;
-    z-index: 10;
-}
-
-.input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0 1rem;
-    min-width: 180px;
-}
-
-/* Custom Select Styles */
-.custom-select {
-    position: relative;
-    width: 100%;
-    cursor: pointer;
-}
-
-.selected-option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 0.5rem;
-    font-size: 1.1rem;
-    background: transparent;
-    color: #000;
-    border-right: 1px solid #e5e7eb;
-}
-
-.options-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 4px;
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    z-index: 1000; /* Dropdown-urile din search au z-index mare */
-}
-
-.option {
-    padding: 0.75rem 1rem;
-    font-size: 1.1rem;
-    transition: background-color 0.2s;
-}
-
-.option:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-}
-
-.icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: #4a4a4a;
-    opacity: 0.9;
-}
-
-.icon-small {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: #4a4a4a;
-    opacity: 0.9;
-}
-
-.activity-input,
-.search-input {
-    padding: 0.75rem 0.5rem;
-    border: none;
-    outline: none;
-    font-size: 1.1rem;
-    width: 100%;
-    background: transparent;
-}
-
-.search-button {
-    padding: 0 2.5rem;
-    background-color: rgba(109, 40, 217, 0.6);
-    color: white;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.2s;
-}
-
-.search-button:hover {
-    background-color: rgba(91, 33, 182, 0.8);
+    z-index: 1;
 }
 
 .user-welcome {
@@ -237,7 +126,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* Modalul are z-index foarte mare */
+    z-index: 10000;
     backdrop-filter: blur(3px);
 }
 
@@ -367,6 +256,14 @@
     color: #374151;
 }
 
+/* Loading state pentru sălile recomandate */
+.loading-featured-halls {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+}
+
 /* Responsive pentru modal pe dispozitive mobile */
 @media (max-width: 640px) {
     .reservation-cta {
@@ -399,37 +296,4 @@
         font-size: 1rem;
         max-width: 100%;
     }
-}
-
-/* Adaugă aceste stiluri în MainPage.css */
-
-/* Loading state pentru sălile recomandate */
-.loading-featured-halls {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-    font-style: italic;
-}
-
-/* Stiluri pentru opțiunile disabled din dropdown */
-.option.disabled {
-    color: #999;
-    cursor: not-allowed;
-    font-style: italic;
-}
-
-.option.disabled:hover {
-    background-color: transparent;
-}
-
-/* Stiluri pentru butonul de căutare disabled */
-.search-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.search-button:disabled:hover {
-    background-color: #ccc;
-    transform: none;
 }

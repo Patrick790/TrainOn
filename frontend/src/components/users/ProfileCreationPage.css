@@ -1,4 +1,4 @@
-/* ProfileCreationPage.css - Versiune îmbunătățită cu nume de clase unice */
+/* ProfileCreationPage.css - Versiune completă cu plăți automate */
 
 :root {
     --reserv-primary-color: #6d28d9;
@@ -336,7 +336,7 @@
     border-radius: 3px;
 }
 
-/* Steps Indicator îmbunătățit */
+/* Steps Indicator îmbunătățit pentru 3 pași */
 .reserv-profile-steps-indicator {
     display: flex;
     align-items: center;
@@ -407,12 +407,15 @@
     border-radius: 3px;
 }
 
-.reserv-step:first-child.active ~ .reserv-step-connector::before {
-    width: 0%;
-}
-
+/* Connector animation pentru pasul 2 activ */
 .reserv-step:nth-child(3).active ~ .reserv-step-connector::before,
 .reserv-step:nth-child(3).active .reserv-step-connector::before {
+    width: 100%;
+}
+
+/* Connector animation pentru pasul 3 activ */
+.reserv-step:nth-child(5).active ~ .reserv-step-connector::before,
+.reserv-step:nth-child(5).active .reserv-step-connector::before {
     width: 100%;
 }
 
@@ -477,6 +480,119 @@
     background-position: right 1rem center;
     background-size: 1rem;
     padding-right: 2.5rem;
+}
+
+.reserv-form-group small {
+    font-size: 0.85rem;
+    color: var(--reserv-text-light);
+    margin-top: 0.25rem;
+}
+
+/* Stiluri pentru checkbox-uri în profil */
+.reserv-checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 600 !important;
+    color: var(--reserv-text-dark) !important;
+    margin-bottom: 0 !important;
+}
+
+.reserv-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--reserv-primary-color);
+    cursor: pointer;
+}
+
+.reserv-checkbox-label span {
+    font-weight: 600;
+    color: var(--reserv-text-dark);
+}
+
+/* Selecție de carduri */
+.reserv-card-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reserv-card-selection select {
+    flex: 1;
+}
+
+.reserv-no-cards {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--reserv-background-light);
+    border-radius: var(--reserv-radius-md);
+    border: 2px dashed var(--reserv-border-color);
+}
+
+.reserv-no-cards p {
+    margin: 0 0 1rem 0;
+    color: var(--reserv-text-medium);
+    font-style: italic;
+}
+
+.reserv-manage-cards-button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: var(--reserv-background-medium);
+    color: var(--reserv-text-medium);
+    border: 1px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-md);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.reserv-manage-cards-button:hover {
+    background-color: var(--reserv-border-color);
+    color: var(--reserv-text-dark);
+    transform: translateY(-1px);
+}
+
+/* Informații despre cardul selectat */
+.reserv-selected-card-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background-color: var(--reserv-background-light);
+    border-radius: var(--reserv-radius-md);
+    margin-top: 0.5rem;
+    border: 1px solid var(--reserv-border-color);
+}
+
+.reserv-selected-card-info svg {
+    color: var(--reserv-primary-color);
+}
+
+.reserv-selected-card-info span {
+    font-weight: 600;
+    color: var(--reserv-text-dark);
+}
+
+.reserv-card-expired {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--reserv-error-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--reserv-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.reserv-card-expired svg {
+    color: white !important;
 }
 
 /* Selector pentru săli */
@@ -806,6 +922,222 @@
     box-shadow: none !important;
 }
 
+/* Modal pentru gestionarea cardurilor */
+.reserv-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.reserv-modal-content {
+    background-color: var(--reserv-white);
+    border-radius: var(--reserv-radius-lg);
+    box-shadow: var(--reserv-shadow-lg);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: reservModalFadeIn 0.3s ease-out;
+}
+
+@keyframes reservModalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.reserv-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--reserv-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--reserv-background-light);
+    border-radius: var(--reserv-radius-lg) var(--reserv-radius-lg) 0 0;
+}
+
+.reserv-modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--reserv-text-dark);
+    font-weight: 700;
+}
+
+.reserv-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--reserv-text-medium);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--reserv-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.reserv-modal-close:hover {
+    background-color: var(--reserv-background-medium);
+    color: var(--reserv-text-dark);
+}
+
+.reserv-modal-body {
+    padding: 2rem;
+}
+
+/* Lista de carduri */
+.reserv-cards-list {
+    margin-bottom: 1.5rem;
+}
+
+.reserv-card-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--reserv-border-color);
+    border-radius: var(--reserv-radius-md);
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.reserv-card-item:hover {
+    box-shadow: var(--reserv-shadow-sm);
+    transform: translateY(-1px);
+}
+
+.reserv-card-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.reserv-card-info svg {
+    color: var(--reserv-primary-color);
+}
+
+.reserv-card-name {
+    font-weight: 600;
+    color: var(--reserv-text-dark);
+    margin-right: 0.5rem;
+}
+
+.reserv-card-default {
+    background-color: var(--reserv-secondary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--reserv-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.reserv-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.reserv-card-action-button {
+    background-color: var(--reserv-primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--reserv-radius-sm);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reserv-card-action-button:hover {
+    background-color: var(--reserv-primary-dark);
+    transform: translateY(-1px);
+}
+
+.reserv-card-remove-button {
+    background: none;
+    border: none;
+    color: var(--reserv-error-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--reserv-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.reserv-card-remove-button:hover {
+    background-color: #fee2e2;
+    transform: scale(1.1);
+}
+
+/* Buton pentru adăugarea cardurilor */
+.reserv-add-card-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--reserv-secondary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: var(--reserv-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.reserv-add-card-button:hover {
+    background-color: var(--reserv-secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--reserv-shadow-sm);
+}
+
+/* Formular pentru adăugarea cardurilor */
+.reserv-add-card-form {
+    border-top: 1px solid var(--reserv-border-color);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.reserv-add-card-form .reserv-form-group {
+    margin-bottom: 1rem;
+}
+
+.reserv-add-card-form .reserv-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.reserv-add-card-submit {
+    background-color: var(--reserv-primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--reserv-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.reserv-add-card-submit:hover:not(:disabled) {
+    background-color: var(--reserv-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--reserv-shadow-sm);
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
     .reserv-profile-page-content {
@@ -815,6 +1147,38 @@
 
     .reserv-profile-page-sidebar {
         width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .reserv-modal-content {
+        width: 95%;
+        margin: 1rem;
+        max-height: 90vh;
+    }
+
+    .reserv-modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .reserv-modal-body {
+        padding: 1.5rem;
+    }
+
+    .reserv-card-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .reserv-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .reserv-add-card-form .reserv-form-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 }
 
