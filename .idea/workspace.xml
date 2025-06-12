@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="Dockerfile update">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="application.propertis update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
@@ -366,7 +366,7 @@
       <workItem from="1749370892688" duration="11655000" />
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
-      <workItem from="1749719443674" duration="13395000" />
+      <workItem from="1749719443674" duration="15524000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -552,7 +552,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749743036574</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="application.propertis update">
+      <option name="closed" value="true" />
+      <created>1749743775844</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1749743775844</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -603,7 +611,8 @@
     <MESSAGE value="project prepared for Render" />
     <MESSAGE value="Dockerfile" />
     <MESSAGE value="Dockerfile update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dockerfile update" />
+    <MESSAGE value="application.propertis update" />
+    <option name="LAST_COMMIT_MESSAGE" value="application.propertis update" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -43,7 +43,7 @@ RUN gradle build -x test -x buildReact -x copyReact --no-daemon
 FROM eclipse-temurin:17-jre-jammy
 
 # Expunem portul
-EXPOSE 10000
+EXPOSE ${PORT}
 
 # Copiem doar fișierul .jar final din faza de build a backend-ului
 COPY --from=backend_build /home/gradle/src/build/libs/*.jar app.jar
