@@ -19,10 +19,14 @@ public class LicenseApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*") // Pentru Render, permite toate originile
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "https://trainon.onrender.com",  // Adaugă URL-ul Render
+                                "https://*.onrender.com"         // Pentru orice subdomain Render
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(false); // Setează pe false pentru origini wildcard
+                        .allowCredentials(true);
             }
         };
     }
