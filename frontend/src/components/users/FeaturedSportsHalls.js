@@ -14,20 +14,22 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
 
     const API_URL = 'http://localhost:8080';
 
-    // State pentru toate sălile de sport
+    // State pentru toate sălile de sport ACTIVE
     const [allSportsHalls, setAllSportsHalls] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
 
-    // Primul effect pentru încărcarea tuturor sălilor
+    // Primul effect pentru încărcarea tuturor sălilor ACTIVE
     useEffect(() => {
         const fetchAllSportsHalls = async () => {
             try {
-                const response = await axios.get(`${API_URL}/sportsHalls`);
+                // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active în loc de cel general
+                const response = await axios.get(`${API_URL}/sportsHalls/active`);
+                console.log(`Loaded ${response.data.length} active sports halls for featured section`);
                 setAllSportsHalls(response.data);
                 setLoading(false);
                 setInitialLoading(false);
             } catch (err) {
-                console.error('Eroare la încărcarea sălilor:', err);
+                console.error('Eroare la încărcarea sălilor active:', err);
                 setError('Nu s-au putut încărca sălile de sport.');
                 setLoading(false);
                 setInitialLoading(false);
@@ -46,10 +48,13 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
             // Folosim un timeout scurt pentru a permite animației să înceapă
             const timeoutId = setTimeout(() => {
                 // Filtrăm sălile din orașul selectat și luăm primele 6
+                // PLUS: verificăm dublu că sala este activă (chiar dacă endpoint-ul /active ar trebui să returneze doar active)
                 const filteredHalls = allSportsHalls
                     .filter(hall => hall.city === selectedCity)
+                    .filter(hall => !hall.status || hall.status === 'ACTIVE') // Filtrare suplimentară pentru siguranță
                     .slice(0, 6);
 
+                console.log(`Filtered ${filteredHalls.length} active halls for city: ${selectedCity}`);
                 setSportsHalls(filteredHalls);
 
                 // Dezactivăm starea de tranziție după un mic delay
@@ -175,7 +180,7 @@ const FeaturedSportsHalls = ({ selectedCity }) => {
                         );
                     })
                 ) : (
-                    <p className="sports-halls-empty">Nu există săli disponibile în {selectedCity}.</p>
+                    <p className="sports-halls-empty">Nu există săli active disponibile în {selectedCity}.</p>
                 )}
             </div>
         </div>

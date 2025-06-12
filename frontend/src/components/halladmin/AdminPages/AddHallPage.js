@@ -16,25 +16,25 @@ const IMAGE_TYPES = [
     {
         type: 'cover',
         label: 'Imagine Copertă',
-        description: 'Selectează imaginea principală a sălii',
+        description: 'Selectează imaginea principală a sălii (max. 10MB)',
         max: 1
     },
     {
         type: 'exterior',
         label: 'Imagine Exterior',
-        description: 'Încarcă o imagine cu fațada sălii',
+        description: 'Încarcă o imagine cu fațada sălii (max. 10MB)',
         max: 1
     },
     {
         type: 'interior',
         label: 'Imagini Interior',
-        description: 'Maxim 4 imagini din interiorul sălii',
+        description: 'Maxim 4 imagini din interiorul sălii (max. 10MB/imagine)',
         max: 4
     },
     {
         type: 'locker',
         label: 'Imagini Vestiare',
-        description: 'Maxim 2 imagini cu vestiare',
+        description: 'Maxim 2 imagini cu vestiare (max. 10MB/imagine)',
         max: 2
     }
 ];
@@ -52,7 +52,8 @@ class AddHallPage extends Component {
                 type: '',
                 tariff: '',
                 description: '',
-                facilities: ''
+                facilities: '',
+                phoneNumber: '' // Adăugat câmpul pentru numărul de telefon
             },
             images: {
                 cover: [],
@@ -120,6 +121,14 @@ class AddHallPage extends Component {
         this.setState({ previewImage: null });
     }
 
+    // Funcție pentru validarea numărului de telefon
+    isValidPhoneNumber = (phoneNumber) => {
+        // Regex pentru numerele de telefon românești
+        // Acceptă formate: +40..., 07..., 02..., 03... (10 cifre)
+        const phoneRegex = /^(\+4|4|0)?(7[0-9]{8}|[23][0-9]{8})$/;
+        return phoneRegex.test(phoneNumber.replace(/[\s\-\(\)]/g, ''));
+    }
+
     prepareFormData = () => {
         const { hallData, images } = this.state;
 
@@ -166,8 +175,17 @@ class AddHallPage extends Component {
 
         // Verificăm dacă toate câmpurile obligatorii sunt completate
         if (!hallData.name || !hallData.county || !hallData.city ||
-            !hallData.address || !hallData.capacity || !hallData.type || !hallData.tariff) {
+            !hallData.address || !hallData.capacity || !hallData.type ||
+            !hallData.tariff || !hallData.phoneNumber) {
             this.setState({ submitError: 'Toate câmpurile marcate cu * sunt obligatorii' });
+            return false;
+        }
+
+        // Validăm numărul de telefon
+        if (!this.isValidPhoneNumber(hallData.phoneNumber)) {
+            this.setState({
+                submitError: 'Numărul de telefon nu este valid. Folosiți format românesc (ex: 0722123456, +40722123456)'
+            });
             return false;
         }
 
@@ -259,7 +277,8 @@ class AddHallPage extends Component {
                         type: '',
                         tariff: '',
                         description: '',
-                        facilities: ''
+                        facilities: '',
+                        phoneNumber: ''
                     },
                     images: {
                         cover: [],
@@ -434,6 +453,19 @@ class AddHallPage extends Component {
                                 value={hallData.address}
                                 onChange={this.handleInputChange}
                                 placeholder="Adresa completă"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="phoneNumber">Număr de telefon *</label>
+                            <input
+                                type="tel"
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                value={hallData.phoneNumber}
+                                onChange={this.handleInputChange}
+                                placeholder="0722123456 sau +40722123456"
                                 required
                             />
                         </div>

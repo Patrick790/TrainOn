@@ -159,6 +159,7 @@ public class ReservationProfileRestController {
                 }
 
                 profile.setCity((String) profileData.get("city"));
+                profile.setSport((String) profileData.get("sport")); // ADĂUGAT: procesarea sportului
                 profile.setUser(user);
 
                 // Procesăm sălile selectate dacă există
@@ -175,7 +176,7 @@ public class ReservationProfileRestController {
                     }
                 }
 
-                // ADAUGĂ: Procesăm setările pentru plăți automate
+                // Procesăm setările pentru plăți automate
                 processAutoPaymentSettings(profile, profileData, user);
 
                 // Salvăm profilul
@@ -253,6 +254,11 @@ public class ReservationProfileRestController {
                 profile.setCity((String) profileData.get("city"));
             }
 
+            // ADĂUGAT: Actualizarea sportului
+            if (profileData.containsKey("sport")) {
+                profile.setSport((String) profileData.get("sport"));
+            }
+
             // Actualizăm sălile selectate dacă există
             if (profileData.containsKey("selectedHalls")) {
                 Object hallsData = profileData.get("selectedHalls");
@@ -272,7 +278,7 @@ public class ReservationProfileRestController {
                 }
             }
 
-            // ADAUGĂ: Procesăm setările pentru plăți automate la update
+            // Procesăm setările pentru plăți automate la update
             processAutoPaymentSettings(profile, profileData, currentUser);
 
             // Salvăm profilul actualizat

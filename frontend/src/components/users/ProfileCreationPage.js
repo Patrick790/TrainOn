@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Clock, DollarSign, MapPin, Plus, Edit, Trash, Save, CreditCard, Settings, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, User, Clock, DollarSign, MapPin, Plus, Edit, Trash, Save, CreditCard, Settings, AlertCircle, CheckCircle, Trophy } from 'lucide-react';
 import axios from 'axios';
 import CardManagementModal from './CardManagementModal';
 import './ProfileCreationPage.css';
@@ -16,6 +16,7 @@ const ProfileCreationPage = () => {
         timeInterval: '7-14:30',
         weeklyBudget: '',
         city: '',
+        sport: 'fotbal', // ADĂUGAT: câmpul sport cu valoare default
         selectedHalls: [],
         autoPaymentEnabled: false,
         autoPaymentMethod: null,
@@ -55,7 +56,82 @@ const ProfileCreationPage = () => {
         { value: 'CASH', label: 'Plată la Fața Locului' }
     ];
 
-    const availableCities = ['Cluj-Napoca', 'București', 'Timișoara', 'Iași', 'Brașov'];
+    // ADĂUGAT: Lista extinsă de sporturi disponibile
+    const availableSports = [
+        // Sporturi de echipă
+        { value: 'fotbal', label: 'Fotbal' },
+        { value: 'fotbal-sala', label: 'Fotbal în Sală (Futsal)' },
+        { value: 'baschet', label: 'Baschet' },
+        { value: 'volei', label: 'Volei' },
+        { value: 'handbal', label: 'Handbal' },
+        { value: 'rugby', label: 'Rugby' },
+        { value: 'hochei', label: 'Hochei pe Gheață' },
+        { value: 'polo-apa', label: 'Polo pe Apă' },
+
+        // Sporturi cu rachetă
+        { value: 'tenis', label: 'Tenis' },
+        { value: 'tenis-masa', label: 'Tenis de Masă' },
+        { value: 'badminton', label: 'Badminton' },
+        { value: 'squash', label: 'Squash' },
+        { value: 'padel', label: 'Padel' },
+
+        // Sporturi de luptă
+        { value: 'box', label: 'Box' },
+        { value: 'kickbox', label: 'Kickbox' },
+        { value: 'karate', label: 'Karate' },
+        { value: 'judo', label: 'Judo' },
+        { value: 'taekwondo', label: 'Taekwondo' },
+        { value: 'mma', label: 'MMA (Arte Marțiale Mixte)' },
+        { value: 'wrestling', label: 'Wrestling' },
+        { value: 'aikido', label: 'Aikido' },
+        { value: 'brazilian-jiu-jitsu', label: 'Brazilian Jiu-Jitsu' },
+
+        // Înot și sporturi acvatice
+        { value: 'inot', label: 'Înot' },
+        { value: 'aqua-aerobic', label: 'Aqua Aerobic' },
+        { value: 'sincron', label: 'Înot Sincron' },
+        { value: 'sarituri-apa', label: 'Sărituri în Apă' },
+        { value: 'waterpolo', label: 'Waterpolo' },
+
+        // Gimnastică și fitness
+        { value: 'gimnastica', label: 'Gimnastică Artistică' },
+        { value: 'gimnastica-ritmica', label: 'Gimnastică Ritmică' },
+        { value: 'aerobic', label: 'Aerobic Sportiv' },
+        { value: 'fitness', label: 'Fitness / Culturism' },
+        { value: 'crossfit', label: 'CrossFit' },
+        { value: 'pilates', label: 'Pilates' },
+        { value: 'yoga', label: 'Yoga' },
+        { value: 'zumba', label: 'Zumba' },
+        { value: 'spinning', label: 'Spinning / Ciclism Indoor' },
+
+        // Sporturi individuale
+        { value: 'atletism', label: 'Atletism' },
+        { value: 'haltere', label: 'Haltere' },
+        { value: 'escalada', label: 'Escaladă' },
+        { value: 'dans-sportiv', label: 'Dans Sportiv' },
+        { value: 'scrima', label: 'Scrimă' },
+        { value: 'tir-cu-arcul', label: 'Tir cu Arcul' },
+
+        // Sporturi cu mingea
+        { value: 'bowling', label: 'Bowling' },
+        { value: 'biliard', label: 'Biliard' },
+
+        // Sporturi pentru copii
+        { value: 'sport-copii', label: 'Sport pentru Copii (Multisport)' },
+        { value: 'baby-swimming', label: 'Înot pentru Bebeluși' },
+
+        // Activități de grup
+        { value: 'aqua-fitness', label: 'Aqua Fitness' },
+        { value: 'step-aerobic', label: 'Step Aerobic' },
+        { value: 'body-pump', label: 'Body Pump' },
+        { value: 'tabata', label: 'Tabata' },
+        { value: 'hiit', label: 'HIIT (High Intensity Interval Training)' },
+
+        // Opțiune generală
+        { value: 'multipla', label: 'Sală Multiplă (Toate Sporturile)' }
+    ];
+
+    const [availableCities, setAvailableCities] = useState([]);
 
     // Configurare axios cu autentificare
     const api = axios.create();
@@ -114,9 +190,28 @@ const ProfileCreationPage = () => {
         }
     };
 
+    const fetchCities = async () => {
+        try {
+            const response = await fetch(`${API_URL}/sportsHalls/cities`);
+            if (response.ok) {
+                const citiesData = await response.json();
+                const cities = Array.isArray(citiesData) ? citiesData : [];
+                console.log(`Loaded ${cities.length} cities for profile creation`);
+                setAvailableCities(cities);
+            } else {
+                console.error('Eroare la încărcarea orașelor:', response.status);
+                setAvailableCities([]);
+            }
+        } catch (error) {
+            console.error('Eroare la încărcarea orașelor:', error);
+            setAvailableCities([]);
+        }
+    };
+
     useEffect(() => {
         fetchProfiles();
         fetchUserCards();
+        fetchCities();
     }, []);
 
     // Listener pentru actualizările de carduri din modal
@@ -136,23 +231,29 @@ const ProfileCreationPage = () => {
         };
     }, [editingProfileId]);
 
-    // Încarcă sălile pe baza orașului selectat
+    // Încarcă sălile pe baza orașului selectat (fără filtrare pe sport)
+    // Înlocuiește useEffect-ul pentru încărcarea sălilor (în jurul liniei 180-200) cu acest cod:
+
+// Încarcă sălile pe baza orașului selectat (doar sălile ACTIVE)
     useEffect(() => {
         if (currentProfile.city) {
             setLoading(true);
             setError(null);
 
-            api.get(`${API_URL}/sportsHalls`)
+            // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active în loc de cel general
+            api.get(`${API_URL}/sportsHalls/active`)
                 .then(response => {
+                    // Filtrăm sălile ACTIVE din orașul selectat
                     const filteredHalls = response.data.filter(hall =>
                         hall.city && hall.city.toLowerCase() === currentProfile.city.toLowerCase()
                     );
+                    console.log(`Loaded ${filteredHalls.length} active sports halls for city: ${currentProfile.city}`);
                     setAvailableHalls(filteredHalls);
                     setLoading(false);
                 })
                 .catch(err => {
-                    console.error(`Eroare la obținerea sălilor din ${currentProfile.city}:`, err);
-                    setError(`Nu s-au putut încărca sălile din ${currentProfile.city}. Verificați conexiunea la internet.`);
+                    console.error(`Eroare la obținerea sălilor active din ${currentProfile.city}:`, err);
+                    setError(`Nu s-au putut încărca sălile active din ${currentProfile.city}. Verificați conexiunea la internet.`);
                     setLoading(false);
                     setAvailableHalls([]);
                 });
@@ -201,6 +302,7 @@ const ProfileCreationPage = () => {
             timeInterval: '7-14:30',
             weeklyBudget: '',
             city: '',
+            sport: 'fotbal', // ADĂUGAT: resetare sport
             selectedHalls: [],
             autoPaymentEnabled: false,
             autoPaymentMethod: null,
@@ -211,7 +313,7 @@ const ProfileCreationPage = () => {
     };
 
     const handleAddProfile = async () => {
-        if (currentProfile.name && currentProfile.weeklyBudget && currentProfile.city) {
+        if (currentProfile.name && currentProfile.weeklyBudget && currentProfile.city && currentProfile.sport) {
             setLoading(true);
             setError(null);
 
@@ -222,6 +324,7 @@ const ProfileCreationPage = () => {
                     timeInterval: currentProfile.timeInterval,
                     weeklyBudget: currentProfile.weeklyBudget,
                     city: currentProfile.city,
+                    sport: currentProfile.sport, // ADĂUGAT: includere sport în datele trimise
                     selectedHalls: currentProfile.selectedHalls,
                     autoPaymentEnabled: currentProfile.autoPaymentEnabled,
                     autoPaymentMethod: currentProfile.autoPaymentEnabled ? currentProfile.autoPaymentMethod : null,
@@ -245,6 +348,7 @@ const ProfileCreationPage = () => {
                         const hallIds = updatedProfile.selectedHalls ? updatedProfile.selectedHalls.map(hall => hall.id) : [];
                         setCurrentProfile({
                             ...updatedProfile,
+                            sport: updatedProfile.sport || 'fotbal', // FIXAT: asigură-te că sportul are o valoare default
                             selectedHalls: hallIds,
                             autoPaymentEnabled: updatedProfile.autoPaymentEnabled || false,
                             autoPaymentMethod: updatedProfile.autoPaymentMethod || null,
@@ -302,6 +406,7 @@ const ProfileCreationPage = () => {
 
         setCurrentProfile({
             ...profile,
+            sport: profile.sport || 'fotbal', // FIXAT: asigură-te că sportul are o valoare default
             selectedHalls: hallIds,
             autoPaymentEnabled: profile.autoPaymentEnabled || false,
             autoPaymentMethod: profile.autoPaymentMethod || null,
@@ -423,6 +528,10 @@ const ProfileCreationPage = () => {
                                                 {profile.city}
                                             </span>
                                             <span>
+                                                <Trophy size={14} />
+                                                {availableSports.find(s => s.value === profile.sport)?.label}
+                                            </span>
+                                            <span>
                                                 <DollarSign size={14} />
                                                 {profile.weeklyBudget} RON/săptămână
                                             </span>
@@ -514,6 +623,23 @@ const ProfileCreationPage = () => {
                                 </div>
 
                                 <div className="reserv-form-group">
+                                    <label htmlFor="sport">Sport</label>
+                                    <select
+                                        id="sport"
+                                        name="sport"
+                                        value={currentProfile.sport}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        {availableSports.map(sport => (
+                                            <option key={sport.value} value={sport.value}>
+                                                {sport.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="reserv-form-group">
                                     <label htmlFor="timeInterval">Interval orar</label>
                                     <select
                                         id="timeInterval"
@@ -554,7 +680,7 @@ const ProfileCreationPage = () => {
                                         type="button"
                                         className="reserv-form-button-next"
                                         onClick={handleNextStep}
-                                        disabled={!currentProfile.name || !currentProfile.weeklyBudget}
+                                        disabled={!currentProfile.name || !currentProfile.weeklyBudget || !currentProfile.sport}
                                     >
                                         Continuare
                                     </button>
@@ -605,8 +731,9 @@ const ProfileCreationPage = () => {
                                                                 {currentProfile.selectedHalls.includes(hall.id) && <span>✓</span>}
                                                             </div>
                                                             <div className="reserv-hall-info">
-                                                                <span className="reserv-hall-name">{hall.name}</span>
-                                                                <span className="reserv-hall-price">{formatPrice(hall.tariff)}</span>
+                                                                <div className="reserv-hall-name">{hall.name}</div>
+                                                                <div className="reserv-hall-price">{formatPrice(hall.tariff)}</div>
+                                                                <div className="reserv-hall-type">Tip: {hall.type}</div>
                                                             </div>
                                                         </div>
                                                     ))

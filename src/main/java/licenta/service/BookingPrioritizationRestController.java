@@ -434,7 +434,7 @@ public class BookingPrioritizationRestController {
 
         // Determină intervalul de ore preferat
         TimeInterval preferredInterval = getPreferredTimeInterval(profile.getTimeInterval());
-        boolean isSenior = "senior".equals(profile.getAgeCategory());
+        boolean isSenior = "senior".equals(profile.getAgeCategory()) || "seniori".equals(profile.getAgeCategory());
 
         // Generează toate combinațiile posibile
         for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
@@ -687,10 +687,15 @@ public class BookingPrioritizationRestController {
                     String age1 = p1.getAgeCategory();
                     String age2 = p2.getAgeCategory();
 
-                    if (age1.equals("senior") && !age2.equals("senior")) return -1;
-                    if (!age1.equals("senior") && age2.equals("senior")) return 1;
+                    // Verifică pentru seniori (atât "senior" cât și "seniori")
+                    boolean isSenior1 = "senior".equals(age1) || "seniori".equals(age1);
+                    boolean isSenior2 = "senior".equals(age2) || "seniori".equals(age2);
 
-                    if (!age1.equals("senior") && !age2.equals("senior")) {
+                    if (isSenior1 && !isSenior2) return -1;
+                    if (!isSenior1 && isSenior2) return 1;
+
+                    // Pentru categoriile de juniori (nu-seniori)
+                    if (!isSenior1 && !isSenior2) {
                         if (age1.equals("17-18") && !age2.equals("17-18")) return -1;
                         if (!age1.equals("17-18") && age2.equals("17-18")) return 1;
                         if (age1.equals("15-16") && !age2.equals("15-16")) return -1;
@@ -703,8 +708,10 @@ public class BookingPrioritizationRestController {
     }
 
     private int getMaxBookingsPerWeek(ReservationProfile profile) {
-        switch (profile.getAgeCategory()) {
-            case "senior": return 6;
+        String ageCategory = profile.getAgeCategory();
+        switch (ageCategory) {
+            case "senior":
+            case "seniori": return 6;
             case "17-18": return 5;
             case "15-16": return 4;
             case "0-14": return 3;

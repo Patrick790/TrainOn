@@ -99,7 +99,10 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
             const [month, year] = newCard.expiry.split('/');
             const cardNumber = newCard.number.replace(/\s/g, '');
 
-            // Salvează cardul direct prin backend - backend-ul va gestiona crearea PaymentMethod
+            // Log pentru debugging
+            console.log('Token din localStorage:', localStorage.getItem('jwtToken'));
+            console.log('Card number being sent:', cardNumber);
+
             const response = await fetch('http://localhost:8080/card-payment-methods/save-card', {
                 method: 'POST',
                 headers: getAuthHeaders(),
@@ -114,6 +117,15 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
                     setAsDefault: newCard.setAsDefault
                 })
             });
+
+            console.log('Response status:', response.status);
+
+            // Pentru 403, să nu redirectăm automat
+            if (response.status === 403) {
+                console.error('403 Forbidden - posibil cardul este deja salvat');
+                setError('Nu aveți permisiunea să adăugați acest card. Posibil să fie deja salvat.');
+                return;
+            }
 
             const result = await response.json();
 

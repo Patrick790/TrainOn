@@ -17,25 +17,25 @@ const IMAGE_TYPES = [
     {
         type: 'cover',
         label: 'Imagine Copertă',
-        description: 'Imagine principală a sălii',
+        description: 'Imagine principală a sălii (max. 10MB)',
         max: 1
     },
     {
         type: 'exterior',
         label: 'Imagine Exterior',
-        description: 'Imagine cu fațada sălii',
+        description: 'Imagine cu fațada sălii (max. 10MB)',
         max: 1
     },
     {
         type: 'interior',
         label: 'Imagini Interior',
-        description: 'Imagini din interiorul sălii',
+        description: 'Imagini din interiorul sălii (max. 10MB/imagine)',
         max: 4
     },
     {
         type: 'locker',
         label: 'Imagini Vestiare',
-        description: 'Imagini cu vestiare',
+        description: 'Imagini cu vestiare (max. 10MB/imagine)',
         max: 2
     }
 ];

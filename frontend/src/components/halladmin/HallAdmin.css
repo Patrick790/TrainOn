@@ -112,10 +112,12 @@
             0 2px 4px -1px rgba(0, 0, 0, 0.03);
     transition:
             transform 0.3s ease,
-            box-shadow 0.3s ease;
+            box-shadow 0.3s ease,
+            background-color 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    border: 1px solid transparent;
 }
 
 .admin-button-card::before {
@@ -125,7 +127,7 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(to right, #6d28d9, #8b5cf6);
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -133,8 +135,9 @@
 .admin-button-card:hover {
     transform: translateY(-5px);
     box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            0 10px 15px -3px rgba(124, 58, 237, 0.1),
+            0 4px 6px -2px rgba(124, 58, 237, 0.05);
+    border-color: rgba(124, 58, 237, 0.2);
 }
 
 .admin-button-card:hover::before,
@@ -144,53 +147,86 @@
 
 .admin-button-card.active {
     box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    background-color: #f9f7ff;
+            0 10px 15px -3px rgba(124, 58, 237, 0.15),
+            0 4px 6px -2px rgba(124, 58, 237, 0.1);
+    background-color: rgba(124, 58, 237, 0.02);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 .admin-button-icon {
-    width: 50px;
-    height: 50px;
-    background-color: #f3f4f6;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
+    border: 2px solid rgba(124, 58, 237, 0.2);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-/* Icon placeholders - replace with actual icons or images */
-.my-halls-icon::after {
-    content: '🏢';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.admin-button-card:hover .admin-button-icon {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(168, 85, 247, 0.15));
+    border-color: rgba(124, 58, 237, 0.4);
+    transform: scale(1.05);
 }
 
-.add-icon::after {
-    content: '+';
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #6d28d9;
+.admin-button-card.active .admin-button-icon {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.2));
+    border-color: rgba(124, 58, 237, 0.5);
 }
 
-.schedule-icon::after {
-    content: '⏰';
-    font-size: 1.5rem;
-    color: #6d28d9;
+/* Custom SVG Icons for HallAdmin */
+.my-halls-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3c7.2 0 9 1.8 9 9s-1.8 9-9 9-9-1.8-9-9 1.8-9 9-9'/%3E%3Cpath d='M8 14v.5c0 .276.224.5.5.5h7c.276 0 .5-.224.5-.5V14'/%3E%3Cpath d='M8 14h8'/%3E%3Cpath d='M8 11h8'/%3E%3Cpath d='M8 8h8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
-.reservations-icon::after {
-    content: '📅';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.add-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cline x1='12' x2='12' y1='8' y2='16'/%3E%3Cline x1='8' x2='16' y1='12' y2='12'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
-.reviews-icon::after {
-    content: '★';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.schedule-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpolyline points='12,6 12,12 16,14'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.reservations-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='4' rx='2' ry='2'/%3E%3Cline x1='16' x2='16' y1='2' y2='6'/%3E%3Cline x1='8' x2='8' y1='2' y2='6'/%3E%3Cline x1='3' x2='21' y1='10' y2='10'/%3E%3Cpath d='m9 16 2 2 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.reviews-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 .admin-button-title {
@@ -198,6 +234,12 @@
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.admin-button-card:hover .admin-button-title,
+.admin-button-card.active .admin-button-title {
+    color: #7c3aed;
 }
 
 .admin-button-description {
@@ -205,6 +247,11 @@
     font-size: 0.85rem;
     line-height: 1.4;
     margin: 0;
+    transition: color 0.3s ease;
+}
+
+.admin-button-card:hover .admin-button-description {
+    color: #4b5563;
 }
 
 /* Admin Content */
@@ -299,12 +346,12 @@
 }
 
 .hall-action-button.edit {
-    background-color: #6d28d9;
+    background-color: #7c3aed;
     color: white;
 }
 
 .hall-action-button.edit:hover {
-    background-color: #5b21b6;
+    background-color: #6d28d9;
 }
 
 .empty-state {
@@ -345,10 +392,32 @@
         width: 100%;
         justify-content: flex-end;
     }
+
+    .admin-button-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .admin-button-title {
+        font-size: 1rem;
+    }
+
+    .admin-button-description {
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {
     .admin-buttons-container {
         grid-template-columns: 1fr;
+    }
+
+    .admin-button-card {
+        padding: 1rem;
+    }
+
+    .admin-button-icon {
+        width: 45px;
+        height: 45px;
     }
 }

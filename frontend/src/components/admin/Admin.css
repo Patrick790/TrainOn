@@ -32,10 +32,12 @@
             0 2px 4px -1px rgba(0, 0, 0, 0.03);
     transition:
             transform 0.3s ease,
-            box-shadow 0.3s ease;
+            box-shadow 0.3s ease,
+            background-color 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    border: 1px solid transparent;
 }
 
 .global-admin-button-card::before {
@@ -45,7 +47,7 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(to right, #6d28d9, #8b5cf6);
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -53,8 +55,9 @@
 .global-admin-button-card:hover {
     transform: translateY(-5px);
     box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            0 10px 15px -3px rgba(124, 58, 237, 0.1),
+            0 4px 6px -2px rgba(124, 58, 237, 0.05);
+    border-color: rgba(124, 58, 237, 0.2);
 }
 
 .global-admin-button-card:hover::before,
@@ -64,53 +67,86 @@
 
 .global-admin-button-card.active {
     box-shadow:
-            0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    background-color: #f9f7ff;
+            0 10px 15px -3px rgba(124, 58, 237, 0.15),
+            0 4px 6px -2px rgba(124, 58, 237, 0.1);
+    background-color: rgba(124, 58, 237, 0.02);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 .global-admin-button-icon {
-    width: 50px;
-    height: 50px;
-    background-color: #f3f4f6;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
+    border: 2px solid rgba(124, 58, 237, 0.2);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-/* Icoane unice pentru Admin */
-.view-halls-icon::after {
-    content: '🏢';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.global-admin-button-card:hover .global-admin-button-icon {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(168, 85, 247, 0.15));
+    border-color: rgba(124, 58, 237, 0.4);
+    transform: scale(1.05);
 }
 
-.approve-reg-icon::after {
-    content: '✓';
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #6d28d9;
+.global-admin-button-card.active .global-admin-button-icon {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.2));
+    border-color: rgba(124, 58, 237, 0.5);
 }
 
-.schedule-view-icon::after {
-    content: '📆';
-    font-size: 1.5rem;
-    color: #6d28d9;
+/* Custom SVG Icons */
+.view-halls-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3c7.2 0 9 1.8 9 9s-1.8 9-9 9-9-1.8-9-9 1.8-9 9-9'/%3E%3Cpath d='M8 14v.5c0 .276.224.5.5.5h7c.276 0 .5-.224.5-.5V14'/%3E%3Cpath d='M8 14h8'/%3E%3Cpath d='M8 11h8'/%3E%3Cpath d='M8 8h8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
-.users-icon::after {
-    content: '👥';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.approve-reg-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
-.emails-icon::after {
-    content: '✉️';
-    font-size: 1.5rem;
-    color: #6d28d9;
+.schedule-view-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='4' rx='2' ry='2'/%3E%3Cline x1='16' x2='16' y1='2' y2='6'/%3E%3Cline x1='8' x2='8' y1='2' y2='6'/%3E%3Cline x1='3' x2='21' y1='10' y2='10'/%3E%3Cpath d='M8 14h.01'/%3E%3Cpath d='M12 14h.01'/%3E%3Cpath d='M16 14h.01'/%3E%3Cpath d='M8 18h.01'/%3E%3Cpath d='M12 18h.01'/%3E%3Cpath d='M16 18h.01'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.users-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='m22 21-3.2-3.2'/%3E%3Ccircle cx='17' cy='12' r='3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.emails-icon::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'/%3E%3Cpolyline points='22,6 12,13 2,6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 .global-admin-button-title {
@@ -118,6 +154,12 @@
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.global-admin-button-card:hover .global-admin-button-title,
+.global-admin-button-card.active .global-admin-button-title {
+    color: #7c3aed;
 }
 
 .global-admin-button-description {
@@ -125,6 +167,11 @@
     font-size: 0.85rem;
     line-height: 1.4;
     margin: 0;
+    transition: color 0.3s ease;
+}
+
+.global-admin-button-card:hover .global-admin-button-description {
+    color: #4b5563;
 }
 
 /* Admin Content */
@@ -220,12 +267,12 @@
 }
 
 .global-admin-action-button.primary {
-    background-color: #6d28d9;
+    background-color: #7c3aed;
     color: white;
 }
 
 .global-admin-action-button.primary:hover {
-    background-color: #5b21b6;
+    background-color: #6d28d9;
 }
 
 .global-admin-empty-state {
@@ -262,10 +309,32 @@
         width: 100%;
         justify-content: flex-end;
     }
+
+    .global-admin-button-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .global-admin-button-title {
+        font-size: 1rem;
+    }
+
+    .global-admin-button-description {
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 480px) {
     .global-admin-buttons-container {
         grid-template-columns: 1fr;
+    }
+
+    .global-admin-button-card {
+        padding: 1rem;
+    }
+
+    .global-admin-button-icon {
+        width: 45px;
+        height: 45px;
     }
 }

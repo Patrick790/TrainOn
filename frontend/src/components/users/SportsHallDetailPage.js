@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, Users, DollarSign, Compass, Info } from 'lucide-react';
+import { ArrowLeft, Star, Users, DollarSign, Compass, Info, Phone } from 'lucide-react';
 import axios from 'axios';
 import Header from './Header';
 import LoginModal from '../login/LoginModal';
@@ -260,6 +260,11 @@ const SportsHallDetailPage = () => {
         return `${price} RON/1h30`;
     };
 
+    const formatPhoneNumber = (phoneNumber) => {
+        if (!phoneNumber) return 'Nu este disponibil';
+        return phoneNumber;
+    };
+
     const processFacilities = (facilitiesString) => {
         if (!facilitiesString) return [];
         return facilitiesString.split(',').map(facility => facility.trim());
@@ -270,6 +275,13 @@ const SportsHallDetailPage = () => {
         // În pagina de detalii nu avem nevoie să facem nimic special
         // SearchBar-ul se va ocupa de logica proprie
         console.log('City changed to:', city);
+    };
+
+    // Handler pentru apelarea numărului de telefon
+    const handlePhoneCall = (phoneNumber) => {
+        if (phoneNumber && phoneNumber !== 'Nu este disponibil') {
+            window.location.href = `tel:${phoneNumber.replace(/\s/g, '')}`;
+        }
     };
 
     if (loading) {
@@ -412,6 +424,17 @@ const SportsHallDetailPage = () => {
                                             <div className="detail-info-text">
                                                 <h3>Tip sală</h3>
                                                 <p>{sportsHall.type || 'Multifuncțională'}</p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={`detail-info-item ${sportsHall.phoneNumber && sportsHall.phoneNumber !== 'Nu este disponibil' ? 'detail-phone-clickable' : ''}`}
+                                            onClick={() => handlePhoneCall(sportsHall.phoneNumber)}
+                                            title={sportsHall.phoneNumber && sportsHall.phoneNumber !== 'Nu este disponibil' ? 'Click pentru a apela' : ''}
+                                        >
+                                            <Phone size={20} />
+                                            <div className="detail-info-text">
+                                                <h3>Telefon</h3>
+                                                <p>{formatPhoneNumber(sportsHall.phoneNumber)}</p>
                                             </div>
                                         </div>
                                     </div>

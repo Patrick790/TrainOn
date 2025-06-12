@@ -42,13 +42,15 @@
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 2rem; /* Mărită gap-ul pentru mai mult spațiu */
+    max-width: 900px; /* Limitează lățimea maximă a grid-ului */
+    margin: 0 auto; /* Centrează grid-ul */
 }
 
 .location-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 2rem; /* Mărită gap-ul și aici */
     grid-column: 1 / -1;
 }
 
@@ -56,6 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    min-width: 0; /* Asigură că elementele nu depășesc container-ul */
 }
 
 .form-group.full-width {
@@ -67,6 +70,7 @@
     font-weight: 600;
     color: #1a1a1a;
     transition: color 0.2s ease;
+    margin-bottom: 0.5rem; /* Adaugă spațiu explicit sub label */
 }
 
 .add-hall-form input,
@@ -76,6 +80,8 @@
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     font-size: 0.95rem;
+    width: 100%; /* Asigură că ocupa tot spațiul disponibil */
+    box-sizing: border-box; /* Include padding și border în lățime */
     transition:
             border-color 0.2s ease,
             box-shadow 0.2s ease;
@@ -89,12 +95,28 @@
     box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
 }
 
+/* Stiluri specifice pentru câmpurile din două coloane */
+.form-grid > .form-group:not(.full-width) {
+    max-width: 400px; /* Limitează lățimea câmpurilor individuale */
+}
+
+/* Stiluri specifice pentru location-row */
+.location-row .form-group {
+    max-width: 400px; /* Limitează lățimea câmpurilor din location-row */
+}
+
+/* Stiluri pentru câmpurile pe toată lățimea */
+.form-group.full-width input,
+.form-group.full-width textarea {
+    max-width: 100%; /* Păstrează lățimea completă pentru acestea */
+}
+
 .image-upload-section {
     background-color: #f9fafb;
     border-radius: 16px;
     padding: 1.5rem;
     border: 1px solid #e9ecef;
-    margin-top: 1.5rem;
+    margin-top: 2rem; /* Mărește marginea de sus */
 }
 
 .form-section-header {
@@ -207,7 +229,7 @@
 .form-actions {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 2.5rem; /* Mărește marginea de sus */
 }
 
 .hall-action-button.edit {
@@ -280,15 +302,46 @@
     cursor: pointer;
 }
 
+/* Adaugă stiluri pentru mesajele de success și eroare */
+.success-message {
+    background-color: #10b981;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.error-message {
+    background-color: #ef4444;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .form-grid,
     .location-row {
         grid-template-columns: 1fr;
+        gap: 1.5rem; /* Gap mai mic pe mobile */
+    }
+
+    .form-grid {
+        max-width: 100%; /* Folosește toată lățimea pe mobile */
+    }
+
+    .form-grid > .form-group:not(.full-width),
+    .location-row .form-group {
+        max-width: 100%; /* Folosește toată lățimea pe mobile */
     }
 
     .location-row {
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
     .add-hall-form {

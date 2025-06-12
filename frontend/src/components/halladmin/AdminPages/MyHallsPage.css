@@ -59,6 +59,24 @@
             0 0 0 1px rgba(124, 58, 237, 0.1);
 }
 
+/* STILURI PENTRU SĂLI INACTIVE */
+.hall-card.inactive {
+    opacity: 0.7;
+    border: 2px solid #f87171;
+}
+
+.hall-card.inactive .hall-image {
+    filter: grayscale(50%);
+}
+
+.hall-card.inactive .hall-placeholder {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.hall-card.inactive .hall-name {
+    color: #6b7280;
+}
+
 .hall-image-container {
     position: relative;
     height: 240px;
@@ -132,13 +150,15 @@
 }
 
 .hall-status-indicator.active {
-    background-color: #10b981;
-    color: white;
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #34d399;
 }
 
-.hall-status-indicator.maintenance {
-    background-color: #f59e0b;
-    color: white;
+.hall-status-indicator.inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
 }
 
 .hall-content {
@@ -225,6 +245,23 @@
     font-weight: 500;
 }
 
+/* NOTIFICARE PENTRU SĂLI INACTIVE */
+.hall-inactive-notice {
+    background-color: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.hall-inactive-notice p {
+    color: #92400e;
+    font-size: 0.85rem;
+    margin: 0;
+    font-weight: 500;
+    text-align: center;
+}
+
 .hall-actions {
     display: flex;
     justify-content: center;
@@ -274,6 +311,23 @@
 
 .hall-action-button.edit:hover {
     background-color: #6d28d9;
+}
+
+/* STILURI PENTRU BUTONUL DEZACTIVAT */
+.hall-action-button:disabled {
+    background-color: #9ca3af;
+    color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.hall-action-button:disabled::before {
+    display: none;
+}
+
+.hall-action-button:disabled:hover {
+    background-color: #9ca3af;
+    transform: none;
 }
 
 .empty-state {

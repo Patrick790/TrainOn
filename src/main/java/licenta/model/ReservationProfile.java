@@ -28,6 +28,9 @@ public class ReservationProfile extends BruteEntity<Long> {
     @Column(name = "city", nullable = false)
     private String city;
 
+    @Column(name = "sport", nullable = false)
+    private String sport;
+
     // Suport pentru metoda de plată automată
     @Enumerated(EnumType.STRING)
     @Column(name = "auto_payment_method")
@@ -67,32 +70,33 @@ public class ReservationProfile extends BruteEntity<Long> {
     @JsonIgnoreProperties("reservationProfiles")
     private List<SportsHall> selectedHalls = new ArrayList<>();
 
-    // Constructori - eliminăm redundanța
+    // Constructori
     public ReservationProfile() {
         this.createdAt = new Date();
         this.updatedAt = new Date();
-        this.autoPaymentEnabled = Boolean.FALSE; // Explicit Boolean.FALSE în loc de false
+        this.autoPaymentEnabled = Boolean.FALSE;
     }
 
     public ReservationProfile(String name, String ageCategory, String timeInterval, BigDecimal weeklyBudget,
-                              String city, User user, List<SportsHall> selectedHalls) {
+                              String city, String sport, User user, List<SportsHall> selectedHalls) {
         this(); // Apelează constructorul implicit
         this.name = name;
         this.ageCategory = ageCategory;
         this.timeInterval = timeInterval;
         this.weeklyBudget = weeklyBudget;
         this.city = city;
+        this.sport = sport;
         this.user = user;
         this.selectedHalls = selectedHalls != null ? selectedHalls : new ArrayList<>();
     }
 
     // Constructor complet pentru plăți automate
     public ReservationProfile(String name, String ageCategory, String timeInterval, BigDecimal weeklyBudget,
-                              String city, User user, List<SportsHall> selectedHalls,
+                              String city, String sport, User user, List<SportsHall> selectedHalls,
                               Boolean autoPaymentEnabled, PaymentMethod autoPaymentMethod,
                               CardPaymentMethod defaultCardPaymentMethod, BigDecimal autoPaymentThreshold,
                               BigDecimal maxWeeklyAutoPayment) {
-        this(name, ageCategory, timeInterval, weeklyBudget, city, user, selectedHalls);
+        this(name, ageCategory, timeInterval, weeklyBudget, city, sport, user, selectedHalls);
         this.autoPaymentEnabled = autoPaymentEnabled != null ? autoPaymentEnabled : Boolean.FALSE;
         this.autoPaymentMethod = autoPaymentMethod;
         this.defaultCardPaymentMethod = defaultCardPaymentMethod;
@@ -214,6 +218,9 @@ public class ReservationProfile extends BruteEntity<Long> {
     public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
 
+    public String getSport() { return sport; }
+    public void setSport(String sport) { this.sport = sport; }
+
     public PaymentMethod getAutoPaymentMethod() { return autoPaymentMethod; }
     public void setAutoPaymentMethod(PaymentMethod autoPaymentMethod) { this.autoPaymentMethod = autoPaymentMethod; }
 
@@ -260,6 +267,7 @@ public class ReservationProfile extends BruteEntity<Long> {
                 ", timeInterval='" + timeInterval + '\'' +
                 ", weeklyBudget=" + weeklyBudget +
                 ", city='" + city + '\'' +
+                ", sport='" + sport + '\'' +
                 ", autoPaymentEnabled=" + autoPaymentEnabled +
                 ", autoPaymentMethod=" + autoPaymentMethod +
                 ", hasDefaultCard=" + (defaultCardPaymentMethod != null) +

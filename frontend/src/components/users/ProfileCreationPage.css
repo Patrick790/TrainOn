@@ -1,4 +1,4 @@
-/* ProfileCreationPage.css - Versiune completă cu plăți automate */
+/* ProfileCreationPage.css - Versiune completă cu plăți automate și stiluri fixate pentru săli */
 
 :root {
     --reserv-primary-color: #6d28d9;
@@ -632,11 +632,12 @@
     box-shadow: var(--reserv-shadow-sm);
 }
 
+/* STILURI ÎMBUNĂTĂȚITE PENTRU AFIȘAREA SĂLILOR - VERSIUNEA FIXATĂ */
 .reserv-hall-option {
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    align-items: flex-start !important;
     gap: 1rem;
-    padding: 0.9rem 1rem;
+    padding: 1rem;
     border: 2px solid var(--reserv-border-color);
     border-radius: var(--reserv-radius-md);
     cursor: pointer;
@@ -644,6 +645,7 @@
     background-color: var(--reserv-white);
     position: relative;
     overflow: hidden;
+    min-height: 85px; /* Asigură înălțime suficientă pentru 3 linii de text */
 }
 
 .reserv-hall-option::before {
@@ -688,6 +690,7 @@
     justify-content: center;
     background-color: var(--reserv-white);
     transition: all 0.2s ease;
+    margin-top: 2px; /* Aliniază cu prima linie de text */
 }
 
 .reserv-hall-option:hover .reserv-hall-checkbox {
@@ -701,39 +704,73 @@
 }
 
 .reserv-hall-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
     font-size: 0.95rem;
     flex: 1;
+    min-width: 0; /* Previne overflow-ul */
 }
 
 .reserv-hall-name {
-    font-weight: 600;
-    color: var(--reserv-text-dark);
+    font-weight: 600 !important;
+    color: var(--reserv-text-dark) !important;
     transition: color 0.2s ease;
+    font-size: 1rem !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
 }
 
 .reserv-hall-option:hover .reserv-hall-name {
-    color: var(--reserv-primary-dark);
+    color: var(--reserv-primary-dark) !important;
 }
 
 .reserv-hall-price {
-    color: var(--reserv-secondary-color);
-    font-weight: 700;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    color: var(--reserv-secondary-color) !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .reserv-hall-price::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background-color: var(--reserv-secondary-color);
-    border-radius: 50%;
+    content: '' !important;
+    display: inline-block !important;
+    width: 6px !important;
+    height: 6px !important;
+    background-color: var(--reserv-secondary-color) !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+}
+
+.reserv-hall-type {
+    color: var(--reserv-text-medium) !important;
+    font-size: 0.85rem !important;
+    font-style: italic !important;
+    opacity: 0.9 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
+    display: block !important;
+}
+
+/* Stiluri pentru starea selectată */
+.reserv-hall-option.selected .reserv-hall-name {
+    color: var(--reserv-secondary-dark) !important;
+}
+
+.reserv-hall-option.selected .reserv-hall-price {
+    color: var(--reserv-secondary-dark) !important;
+}
+
+.reserv-hall-option.selected .reserv-hall-type {
+    color: var(--reserv-text-dark) !important;
+    opacity: 1 !important;
 }
 
 .reserv-loading-message {
@@ -829,12 +866,6 @@
     color: white;
     border: none;
     box-shadow: var(--reserv-shadow-sm);
-}
-
-.reserv-form-button-save:hover:not(:disabled) {
-    background-color: var(--reserv-secondary-dark);
-    transform: translateY(-3px);
-    box-shadow: var(--reserv-shadow-md);
 }
 
 .reserv-form-button-save:active:not(:disabled) {
@@ -1180,6 +1211,29 @@
         grid-template-columns: 1fr;
         gap: 0.75rem;
     }
+
+    .reserv-hall-option {
+        padding: 0.8rem;
+        min-height: 75px;
+    }
+
+    .reserv-hall-checkbox {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+    }
+
+    .reserv-hall-name {
+        font-size: 0.95rem !important;
+    }
+
+    .reserv-hall-price {
+        font-size: 0.85rem !important;
+    }
+
+    .reserv-hall-type {
+        font-size: 0.8rem !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1235,5 +1289,15 @@
     .reserv-form-button-cancel {
         width: 100%;
         justify-content: center;
+    }
+
+    .reserv-hall-option {
+        padding: 0.7rem;
+        min-height: 70px;
+        gap: 0.8rem;
+    }
+
+    .reserv-hall-info {
+        gap: 4px !important;
     }
 }

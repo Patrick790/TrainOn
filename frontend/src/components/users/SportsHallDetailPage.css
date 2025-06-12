@@ -199,12 +199,52 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Stiluri pentru numărul de telefon clickable */
+.detail-phone-clickable {
+    cursor: pointer;
+    position: relative;
+}
+
+.detail-phone-clickable:hover {
+    background-color: #f3f4f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-phone-clickable:hover svg {
+    color: #10b981;
+}
+
+.detail-phone-clickable:hover .detail-info-text p {
+    color: #10b981;
+    text-decoration: underline;
+}
+
+/* Indicator pentru telefon clickable */
+.detail-phone-clickable::after {
+    content: '📞';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.detail-phone-clickable:hover::after {
+    opacity: 1;
 }
 
 .detail-info-item svg {
     color: #6d28d9;
     flex-shrink: 0;
     margin-top: 3px;
+    transition: color 0.2s ease;
 }
 
 .detail-info-text h3 {
@@ -219,6 +259,7 @@
     font-weight: 600;
     color: #1a1a1a;
     font-size: 1.1rem;
+    transition: all 0.2s ease;
 }
 
 /* Descriere */
@@ -395,6 +436,10 @@
     .detail-page-columns {
         grid-template-columns: 1fr;
     }
+
+    .detail-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -417,6 +462,13 @@
     .detail-main-image-container {
         height: 350px;
     }
+
+    /* Ajustări pentru telefon pe mobile */
+    .detail-phone-clickable::after {
+        opacity: 1;
+        position: static;
+        margin-left: auto;
+    }
 }
 
 @media (max-width: 576px) {
@@ -434,5 +486,9 @@
     .detail-thumbnail {
         width: 80px;
         height: 60px;
+    }
+
+    .detail-info-grid {
+        gap: 15px;
     }
 }

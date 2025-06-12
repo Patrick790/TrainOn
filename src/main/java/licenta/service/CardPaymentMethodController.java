@@ -150,39 +150,55 @@ public class CardPaymentMethodController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // Obține utilizatorul curent
+            // LOG: Verifică utilizatorul
             User currentUser = getCurrentUser();
+            logger.info("=== SAVE CARD DEBUG ===");
+            logger.info("Current user: {}", currentUser != null ? currentUser.getEmail() : "NULL");
+
             if (currentUser == null) {
+                logger.error("No current user found!");
                 response.put("success", false);
                 response.put("error", "Utilizator neautentificat");
                 return ResponseEntity.status(401).body(response);
             }
 
             String cardNumber = request.getCardDetails().getNumber().replace(" ", "");
-            String paymentMethodId;
+            logger.info("Card number received: {}", cardNumber);
 
-            // Pentru cardurile de test comune, folosește token-uri predefinite (EXACT ca în StripePaymentController)
+            String paymentMethodId;
+            String cardBrand;
+            String lastFour;
+
+            // Pentru cardurile de test, generează ID-uri unice
             if ("4242424242424242".equals(cardNumber)) {
-                // Visa test card
-                paymentMethodId = "pm_card_visa";
+                paymentMethodId = "pm_card_visa_" + System.currentTimeMillis() + "_" + currentUser.getId();
+                cardBrand = "visa";
+                lastFour = "4242";
             } else if ("5555555555554444".equals(cardNumber)) {
-                // Mastercard test card
-                paymentMethodId = "pm_card_mastercard";
+                paymentMethodId = "pm_card_mastercard_" + System.currentTimeMillis() + "_" + currentUser.getId();
+                cardBrand = "mastercard";
+                lastFour = "4444";
             } else if ("4000056655665556".equals(cardNumber)) {
-                // Visa Debit test card
-                paymentMethodId = "pm_card_visa_debit";
+                paymentMethodId = "pm_card_visa_debit_" + System.currentTimeMillis() + "_" + currentUser.getId();
+                cardBrand = "visa";
+                lastFour = "5556";
             } else if ("5200828282828210".equals(cardNumber)) {
-                // Mastercard Debit test card
-                paymentMethodId = "pm_card_mastercard_debit";
+                paymentMethodId = "pm_card_mastercard_debit_" + System.currentTimeMillis() + "_" + currentUser.getId();
+                cardBrand = "mastercard";
+                lastFour = "8210";
             } else {
-                // Pentru alte carduri, returnează o eroare informativă
                 response.put("success", false);
                 response.put("error", "Pentru testare, vă rugăm să folosiți cardurile recomandate: 4242 4242 4242 4242 (Visa) sau 5555 5555 5555 4444 (Mastercard)");
                 return ResponseEntity.status(400).body(response);
             }
 
-            // Verifică dacă cardul nu există deja
-            if (cardPaymentMethodRepository.existsByUserAndStripePaymentMethodId(currentUser, paymentMethodId)) {
+            logger.info("Generated payment method ID: {}", paymentMethodId);
+
+            // Verifică dacă cardul nu există deja (nu ar trebui să existe cu ID-ul generat)
+            boolean cardExists = cardPaymentMethodRepository.existsByUserAndStripePaymentMethodId(currentUser, paymentMethodId);
+            logger.info("Card already exists: {}", cardExists);
+
+            if (cardExists) {
                 response.put("success", false);
                 response.put("error", "Acest card este deja salvat");
                 return ResponseEntity.status(400).body(response);
@@ -190,7 +206,6 @@ public class CardPaymentMethodController {
 
             // Dacă va fi cardul default, resetează alte carduri
             if (request.isSetAsDefault()) {
-                // Găsește toate cardurile active ale utilizatorului și resetează-le
                 List<CardPaymentMethod> userCards = cardPaymentMethodRepository.findByUserAndIsActiveTrueOrderByIsDefaultDescCreatedAtDesc(currentUser);
                 for (CardPaymentMethod existingCard : userCards) {
                     if (existingCard.getIsDefault()) {
@@ -200,41 +215,28 @@ public class CardPaymentMethodController {
                 }
             }
 
-            // Creează și salvează cardul în baza de date folosind token-ul
+            // Creează și salvează cardul în baza de date
             CardPaymentMethod cardPaymentMethod = new CardPaymentMethod();
             cardPaymentMethod.setStripePaymentMethodId(paymentMethodId);
             cardPaymentMethod.setCardholderName(request.getCardDetails().getCardholder_name());
             cardPaymentMethod.setUser(currentUser);
             cardPaymentMethod.setIsDefault(request.isSetAsDefault());
-
-            // Setează detaliile cardului pe baza token-ului cunoscut (EXACT ca în StripePaymentController)
-            if ("pm_card_visa".equals(paymentMethodId)) {
-                cardPaymentMethod.setCardLastFour("4242");
-                cardPaymentMethod.setCardBrand("visa");
-            } else if ("pm_card_mastercard".equals(paymentMethodId)) {
-                cardPaymentMethod.setCardLastFour("4444");
-                cardPaymentMethod.setCardBrand("mastercard");
-            } else if ("pm_card_visa_debit".equals(paymentMethodId)) {
-                cardPaymentMethod.setCardLastFour("5556");
-                cardPaymentMethod.setCardBrand("visa");
-            } else if ("pm_card_mastercard_debit".equals(paymentMethodId)) {
-                cardPaymentMethod.setCardLastFour("8210");
-                cardPaymentMethod.setCardBrand("mastercard");
-            }
-
+            cardPaymentMethod.setCardLastFour(lastFour);
+            cardPaymentMethod.setCardBrand(cardBrand);
             cardPaymentMethod.setCardExpMonth(request.getCardDetails().getExp_month());
             cardPaymentMethod.setCardExpYear(request.getCardDetails().getExp_year());
 
-            cardPaymentMethodRepository.save(cardPaymentMethod);
+            CardPaymentMethod savedCard = cardPaymentMethodRepository.save(cardPaymentMethod);
+            logger.info("Card saved successfully with ID: {}", savedCard.getId());
 
             response.put("success", true);
-            response.put("cardId", cardPaymentMethod.getId());
+            response.put("cardId", savedCard.getId());
             response.put("message", "Cardul a fost salvat cu succes");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception in saveCard:", e);
             response.put("success", false);
             response.put("error", "Eroare la salvarea cardului: " + e.getMessage());
             return ResponseEntity.status(500).body(response);

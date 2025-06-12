@@ -220,10 +220,11 @@ class MyHallsPage extends Component {
                             const ratingData = hallRatings[hall.id] || { averageRating: 0, totalReviews: 0 };
 
                             return (
-                                <div key={hall.id} className="hall-card">
+                                <div key={hall.id} className={`hall-card ${hall.status?.toLowerCase()}`}>
                                     <div className="hall-image-container">
-                                        <div className="hall-status-indicator active">
-                                            Activ
+                                        {/* SCHIMBAREA PRINCIPALĂ: Afișarea statusului real */}
+                                        <div className={`hall-status-indicator ${hall.status?.toLowerCase()}`}>
+                                            {hall.status === 'ACTIVE' ? 'Activ' : 'Inactiv'}
                                         </div>
 
                                         {coverImageUrl ? (
@@ -254,6 +255,13 @@ class MyHallsPage extends Component {
                                                 }
                                             </span>
                                         </div>
+
+                                        {/* Afișăm un mesaj pentru sălile inactive */}
+                                        {hall.status === 'INACTIVE' && (
+                                            <div className="hall-inactive-notice">
+                                                <p>⚠️ Această sală a fost dezactivată de administratorii aplicației</p>
+                                            </div>
+                                        )}
 
                                         <div className="hall-actions">
                                             <button

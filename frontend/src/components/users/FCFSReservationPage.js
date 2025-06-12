@@ -217,11 +217,25 @@ const FCFSReservationPage = () => {
     const fetchSportsHalls = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/sportsHalls?city=${encodeURIComponent(selectedCity)}`);
-            const halls = response.ok ? await response.json() : [];
-            setSportsHalls(Array.isArray(halls) ? halls : []);
+            // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active și filtrăm pe oraș
+            const response = await fetch('http://localhost:8080/sportsHalls/active');
+
+            if (response.ok) {
+                const allActiveHalls = await response.json();
+
+                // Filtrăm sălile ACTIVE pentru orașul selectat
+                const hallsForCity = allActiveHalls.filter(hall =>
+                    hall.city && hall.city.toLowerCase() === selectedCity.toLowerCase()
+                );
+
+                console.log(`Loaded ${hallsForCity.length} active sports halls for city: ${selectedCity}`);
+                setSportsHalls(Array.isArray(hallsForCity) ? hallsForCity : []);
+            } else {
+                console.error('Eroare la încărcarea sălilor active');
+                setSportsHalls([]);
+            }
         } catch (error) {
-            console.error('Eroare la încărcarea sălilor:', error);
+            console.error('Eroare la încărcarea sălilor active:', error);
             setSportsHalls([]);
         } finally {
             setLoading(false);
