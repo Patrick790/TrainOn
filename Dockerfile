@@ -39,12 +39,29 @@ RUN gradle build -x test -x buildReact -x copyReact --no-daemon
 # Folosim o imagine mică, doar cu Java, pentru a rula aplicația
 FROM eclipse-temurin:17-jre-jammy
 
-# Expunem portul pe care Render se așteaptă să ruleze serviciul.
-# Aceasta este mai mult o documentație; setarea reală este în application.properties.
-EXPOSE 10000
+# Creăm un user non-root pentru securitate
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 --gid 1001 appuser
+
+# Expunem portul pe care Render se așteaptă să ruleze serviciul
+# Render utilizează variabila de mediu PORT (de obicei 8080)
+EXPOSE $PORT
 
 # Copiem doar fișierul .jar final din faza de build a backend-ului
 COPY --from=backend_build /home/gradle/src/build/libs/*.jar app.jar
 
-# Comanda de pornire
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Schimbăm ownership-ul fișierului
+RUN chown appuser:appgroup app.jar
+
+# Comutăm la user-ul non-root
+USER appuser
+
+# Comanda de pornire cu configurările necesare pentru Render
+ENTRYPOINT ["java", \
+    "-server", \
+    "-Djava.security.egd=file:/dev/./urandom", \
+    "-Dserver.port=${PORT:-8080}", \
+    "-Dserver.address=0.0.0.0", \
+    "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-production}", \
+    "-jar", \
+    "app.jar"]

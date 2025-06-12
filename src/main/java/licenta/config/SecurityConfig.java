@@ -98,6 +98,8 @@ public class SecurityConfig {
 
                         // ADĂUGAT: Endpoint pentru generarea automată de rezervări (doar pentru admini)
                         .requestMatchers("/booking-prioritization/**").hasAuthority("admin")
+                        ///////
+                        .requestMatchers("/health", "/").permitAll()
 
                         .anyRequest().authenticated()
                 )
