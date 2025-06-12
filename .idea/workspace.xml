@@ -4,32 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="10.06.2025">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="12.06.2025">
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/FeedbackRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/ReservationProfileRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/ScheduleRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/SportsHallImageRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/SportsHallRestControllerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/UserRestControllerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Admin.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/AddHallPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/EditHallPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/EditHallPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/AdminPages/MyHallsPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/halladmin/HallAdmin.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/CardManagementModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/CardManagementModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/FCFSReservationPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/FCFSReservationPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/FeaturedSportsHalls.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/ProfileCreationPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/SportsHallDetailPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/ReservationProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/model/ReservationProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/model/Team.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/persistence/ITeamSpringRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/CardPaymentMethodController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/CardPaymentMethodController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationProfileRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/ReservationProfileRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/TeamRestController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/licenta/service/LoginRestControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/licenta/service/LoginRestControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,8 +118,8 @@
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.LicenseApplication">
-    <configuration name="JwtServiceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Gradle.FcfsStatusControllerTest">
+    <configuration name="FcfsStatusControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -148,7 +132,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.jwtservice.JwtServiceTest&quot;" />
+            <option value="&quot;licenta.service.FcfsStatusControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -159,7 +143,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="LoginIntegrationTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="ScheduleRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -172,7 +156,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.integration.LoginIntegrationTest&quot;" />
+            <option value="&quot;licenta.service.ScheduleRestControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -183,7 +167,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="RegisterIntegrationTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="SportsHallImageRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -196,7 +180,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.integration.RegisterIntegrationTest&quot;" />
+            <option value="&quot;licenta.service.SportsHallImageRestControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -207,7 +191,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="RegisterRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="SportsHallRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -220,7 +204,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.service.RegisterRestControllerTest&quot;" />
+            <option value="&quot;licenta.service.SportsHallRestControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -231,7 +215,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -244,7 +228,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.service.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult&quot;" />
+            <option value="&quot;licenta.service.SportsHallRestControllerTest$UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -276,22 +260,22 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Gradle.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" />
-      <item itemvalue="Gradle.JwtServiceTest" />
-      <item itemvalue="Gradle.LoginIntegrationTest" />
-      <item itemvalue="Gradle.RegisterIntegrationTest" />
-      <item itemvalue="Gradle.RegisterRestControllerTest" />
+      <item itemvalue="Gradle.FcfsStatusControllerTest" />
+      <item itemvalue="Gradle.ScheduleRestControllerTest" />
+      <item itemvalue="Gradle.SportsHallImageRestControllerTest" />
+      <item itemvalue="Gradle.SportsHallRestControllerTest" />
+      <item itemvalue="Gradle.UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed" />
       <item itemvalue="JavaScript Debug.Debug Application" />
       <item itemvalue="npm.StartApp" />
       <item itemvalue="Spring Boot.LicenseApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.RegisterRestControllerTest.addNewUser_ShouldCallServiceAndReturnResult" />
-        <item itemvalue="Gradle.RegisterIntegrationTest" />
-        <item itemvalue="Gradle.RegisterRestControllerTest" />
-        <item itemvalue="Gradle.LoginIntegrationTest" />
-        <item itemvalue="Gradle.JwtServiceTest" />
+        <item itemvalue="Gradle.FcfsStatusControllerTest" />
+        <item itemvalue="Gradle.ScheduleRestControllerTest" />
+        <item itemvalue="Gradle.SportsHallRestControllerTest" />
+        <item itemvalue="Gradle.SportsHallImageRestControllerTest" />
+        <item itemvalue="Gradle.UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed" />
       </list>
     </recent_temporary>
   </component>
@@ -389,7 +373,7 @@
       <workItem from="1749370892688" duration="11655000" />
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
-      <workItem from="1749719443674" duration="667000" />
+      <workItem from="1749719443674" duration="7061000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -519,7 +503,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749549347372</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="12.06.2025">
+      <option name="closed" value="true" />
+      <created>1749720275637</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1749720275637</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -565,7 +557,8 @@
     <MESSAGE value="idk" />
     <MESSAGE value="almost finished" />
     <MESSAGE value="10.06.2025" />
-    <option name="LAST_COMMIT_MESSAGE" value="10.06.2025" />
+    <MESSAGE value="12.06.2025" />
+    <option name="LAST_COMMIT_MESSAGE" value="12.06.2025" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

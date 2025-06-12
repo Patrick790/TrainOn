@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,21 +43,25 @@ public class LoginRestControllerTest {
     private AuthenticationManager authenticationManager;
 
     @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
     private Authentication authentication;
 
     private LoginRestController loginRestController;
 
     private UserCredentials validCredentials;
     private UserCredentials invalidCredentials;
-    private User testUser;
+    private User activeUser;
+    private User pendingUser;
+    private User rejectedUser;
 
     @BeforeEach
     void setUp() {
-        // Inițializăm manual controller-ul pentru a injecta mock-urile corect
+        // Inițializăm manual controller-ul
         loginRestController = new LoginRestController(userSpringRepository);
 
-        // Setăm manual dependențele pentru a rezolva problema cu @Autowired
-        // Folosim reflexia pentru a seta câmpurile
+        // Setăm manual dependențele folosind reflexia
         try {
             java.lang.reflect.Field authManagerField = LoginRestController.class.getDeclaredField("authenticationManager");
             authManagerField.setAccessible(true);
@@ -66,6 +74,10 @@ public class LoginRestControllerTest {
             java.lang.reflect.Field userInfoServiceField = LoginRestController.class.getDeclaredField("service");
             userInfoServiceField.setAccessible(true);
             userInfoServiceField.set(loginRestController, userInfoService);
+
+            java.lang.reflect.Field passwordEncoderField = LoginRestController.class.getDeclaredField("passwordEncoder");
+            passwordEncoderField.setAccessible(true);
+            passwordEncoderField.set(loginRestController, passwordEncoder);
         } catch (Exception e) {
             throw new RuntimeException("Failed to set mock fields via reflection", e);
         }
@@ -79,28 +91,61 @@ public class LoginRestControllerTest {
         invalidCredentials.setEmail("invalid@example.com");
         invalidCredentials.setPassword("wrongpassword");
 
-        testUser = new User();
-        testUser.setId(1L);
-        testUser.setEmail("test@example.com");
-        testUser.setPassword("encoded_password");
-        testUser.setUserType("user");
+        // User activ
+        activeUser = new User();
+        activeUser.setId(1L);
+        activeUser.setEmail("test@example.com");
+        activeUser.setName("Test User");
+        activeUser.setPassword("encoded_password");
+        activeUser.setUserType("user");
+        activeUser.setAccountStatus("active");
+        activeUser.setTeamType("team1");
+
+        // User în așteptare
+        pendingUser = new User();
+        pendingUser.setId(2L);
+        pendingUser.setEmail("pending@example.com");
+        pendingUser.setPassword("encoded_password");
+        pendingUser.setAccountStatus("pending");
+
+        // User respins
+        rejectedUser = new User();
+        rejectedUser.setId(3L);
+        rejectedUser.setEmail("rejected@example.com");
+        rejectedUser.setPassword("encoded_password");
+        rejectedUser.setAccountStatus("rejected");
     }
 
     @Test
-    void login_WithValidCredentials_ShouldReturnOkWithUser() {
+    void login_WithValidCredentialsAndActiveUser_ShouldReturnSuccessResponse() {
         // Arrange
-        when(userSpringRepository.findByEmail(validCredentials.getEmail())).thenReturn(Optional.of(testUser));
+        when(userSpringRepository.findByEmail(validCredentials.getEmail())).thenReturn(Optional.of(activeUser));
+        when(passwordEncoder.matches(validCredentials.getPassword(), activeUser.getPassword())).thenReturn(true);
 
-        // Act
-        ResponseEntity<?> response = loginRestController.login(validCredentials);
+        try (MockedStatic<UserCredentials> mockedStatic = mockStatic(UserCredentials.class)) {
+            UserCredentials mockInstance = mock(UserCredentials.class);
+            mockedStatic.when(UserCredentials::getInstance).thenReturn(mockInstance);
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(testUser, response.getBody());
+            // Act
+            ResponseEntity<?> response = loginRestController.login(validCredentials);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+            assertTrue((Boolean) responseBody.get("success"));
+            assertEquals(activeUser.getId(), responseBody.get("id"));
+            assertEquals(activeUser.getName(), responseBody.get("name"));
+            assertEquals(activeUser.getEmail(), responseBody.get("email"));
+            assertEquals(activeUser.getUserType(), responseBody.get("userType"));
+            assertEquals(activeUser.getAccountStatus(), responseBody.get("accountStatus"));
+            assertEquals(activeUser.getTeamType(), responseBody.get("teamType"));
+
+            verify(mockInstance).setLoggedInUser(activeUser);
+        }
     }
 
     @Test
-    void login_WithInvalidEmail_ShouldReturnNotFound() {
+    void login_WithInvalidEmail_ShouldReturnUnauthorized() {
         // Arrange
         when(userSpringRepository.findByEmail(invalidCredentials.getEmail())).thenReturn(Optional.empty());
 
@@ -108,8 +153,66 @@ public class LoginRestControllerTest {
         ResponseEntity<?> response = loginRestController.login(invalidCredentials);
 
         // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found", response.getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertEquals("Email sau parola incorectă", responseBody.get("message"));
+    }
+
+    @Test
+    void login_WithInvalidPassword_ShouldReturnUnauthorized() {
+        // Arrange
+        when(userSpringRepository.findByEmail(validCredentials.getEmail())).thenReturn(Optional.of(activeUser));
+        when(passwordEncoder.matches(validCredentials.getPassword(), activeUser.getPassword())).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = loginRestController.login(validCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertEquals("Email sau parola incorectă", responseBody.get("message"));
+    }
+
+    @Test
+    void login_WithPendingUser_ShouldReturnForbidden() {
+        // Arrange
+        UserCredentials pendingCredentials = new UserCredentials();
+        pendingCredentials.setEmail("pending@example.com");
+        pendingCredentials.setPassword("password123");
+
+        when(userSpringRepository.findByEmail(pendingCredentials.getEmail())).thenReturn(Optional.of(pendingUser));
+        when(passwordEncoder.matches(pendingCredentials.getPassword(), pendingUser.getPassword())).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = loginRestController.login(pendingCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertEquals("Contul dumneavoastră este în așteptarea aprobării administratorului.", responseBody.get("message"));
+    }
+
+    @Test
+    void login_WithRejectedUser_ShouldReturnForbidden() {
+        // Arrange
+        UserCredentials rejectedCredentials = new UserCredentials();
+        rejectedCredentials.setEmail("rejected@example.com");
+        rejectedCredentials.setPassword("password123");
+
+        when(userSpringRepository.findByEmail(rejectedCredentials.getEmail())).thenReturn(Optional.of(rejectedUser));
+        when(passwordEncoder.matches(rejectedCredentials.getPassword(), rejectedUser.getPassword())).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = loginRestController.login(rejectedCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertEquals("Contul dumneavoastră a fost respins. Vă rugăm să contactați administratorul.", responseBody.get("message"));
     }
 
     @Test
@@ -122,7 +225,9 @@ public class LoginRestControllerTest {
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("Error during login"));
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertTrue(responseBody.get("message").toString().contains("Eroare în timpul autentificării"));
     }
 
     @Test
@@ -133,39 +238,99 @@ public class LoginRestControllerTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
+        when(userSpringRepository.findByEmail(validCredentials.getEmail())).thenReturn(Optional.of(activeUser));
         when(jwtService.generateToken(validCredentials.getEmail())).thenReturn(expectedToken);
 
         // Act
-        String token = String.valueOf(loginRestController.authenticateAndGenerateToken(validCredentials));
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(validCredentials);
 
         // Assert
-        assertEquals(expectedToken, token);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedToken, response.getBody());
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService).generateToken(validCredentials.getEmail());
     }
 
     @Test
-    void authenticateAndGenerateToken_WithInvalidCredentials_ShouldThrowBadCredentialsException() {
+    void authenticateAndGenerateToken_WithInvalidCredentials_ShouldReturnUnauthorized() {
         // Arrange
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
 
-        // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> {
-            loginRestController.authenticateAndGenerateToken(invalidCredentials);
-        });
+        // Act
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(invalidCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Email sau parola incorectă", response.getBody());
     }
 
     @Test
-    void authenticateAndGenerateToken_WithAuthenticationFailure_ShouldThrowBadCredentialsException() {
+    void authenticateAndGenerateToken_WithPendingUser_ShouldReturnForbidden() {
+        // Arrange
+        UserCredentials pendingCredentials = new UserCredentials();
+        pendingCredentials.setEmail("pending@example.com");
+        pendingCredentials.setPassword("password123");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(userSpringRepository.findByEmail(pendingCredentials.getEmail())).thenReturn(Optional.of(pendingUser));
+
+        // Act
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(pendingCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Contul este în așteptarea aprobării", response.getBody());
+    }
+
+    @Test
+    void authenticateAndGenerateToken_WithRejectedUser_ShouldReturnForbidden() {
+        // Arrange
+        UserCredentials rejectedCredentials = new UserCredentials();
+        rejectedCredentials.setEmail("rejected@example.com");
+        rejectedCredentials.setPassword("password123");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(userSpringRepository.findByEmail(rejectedCredentials.getEmail())).thenReturn(Optional.of(rejectedUser));
+
+        // Act
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(rejectedCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Contul a fost respins", response.getBody());
+    }
+
+    @Test
+    void authenticateAndGenerateToken_WithAuthenticationFailure_ShouldReturnUnauthorized() {
         // Arrange
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(false);
 
-        // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> {
-            loginRestController.authenticateAndGenerateToken(validCredentials);
-        });
+        // Act
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(validCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Autentificare eșuată", response.getBody());
+    }
+
+    @Test
+    void authenticateAndGenerateToken_WithException_ShouldReturnInternalServerError() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<?> response = loginRestController.authenticateAndGenerateToken(validCredentials);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertTrue(response.getBody().toString().contains("Eroare în timpul generării token-ului"));
     }
 }
