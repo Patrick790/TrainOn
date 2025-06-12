@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5'
@@ -32,7 +34,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.1'
 
     // Database
-    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
+//    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
+    implementation 'org.postgresql:postgresql'
     implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.1.Final'
 
     // Security
@@ -57,17 +60,29 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // Mockito dependencies - THESE ARE THE MISSING ONES
+    // Mockito dependencies
     testImplementation 'org.mockito:mockito-core:5.+'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.+'
     testImplementation 'org.mockito:mockito-inline:5.+'
-
-    // Remove duplicate JUnit dependencies (cleaned up)
-    // Removed: implementation 'junit:junit:4.13.1' - not needed for JUnit 5
-    // Removed: testImplementation 'junit:junit:4.13.1' - duplicate
-    // Removed: testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1' - duplicates
 }
 
 test {
     useJUnitPlatform()
 }
+
+// Task care rulează 'npm install' și 'npm run build' în folderul /frontend
+task buildReact(type: Exec) {
+    workingDir 'frontend'
+    // Comanda este unificată pentru a rula într-un shell, compatibil cu Windows/Mac/Linux
+    commandLine = Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c', 'npm install && npm run build'] : ['sh', '-c', 'npm install && npm run build']
+}
+
+// Task care copiază fișierele rezultate în resursele Spring Boot
+task copyReact(type: Copy) {
+    dependsOn buildReact
+    from "frontend/build"
+    into "src/main/resources/static"
+}
+
+// Forțează rularea task-ului de copiere înainte ca proiectul Java să fie împachetat
+processResources.dependsOn copyReact
