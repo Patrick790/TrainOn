@@ -31,11 +31,12 @@ COPY --chown=gradle:gradle . .
 # în locația unde se așteaptă Spring Boot să-l găsească
 COPY --from=frontend_build /app/frontend/build ./src/main/resources/static/
 
-# Rulăm comanda de build pentru Gradle.
-# Acum task-ul :buildReact va reuși pentru că fișierele sunt deja la locul lor.
-# Totuși, putem să-l și dezactivăm pentru a accelera build-ul.
-# Dar pentru simplitate, lăsăm comanda originală.
-RUN gradle build -x test --no-daemon
+# ==============================================================================
+# LINIA CORECTATĂ:
+# Construim proiectul Gradle, dar excludem (-x) task-urile de frontend
+# deoarece le-am rulat deja în faza anterioară.
+# ==============================================================================
+RUN gradle build -x test -x buildReact -x copyReact --no-daemon
 
 # --- Faza 3: Rularea Aplicației Finale ---
 # Folosim o imagine mică, doar cu Java, pentru a rula aplicația
