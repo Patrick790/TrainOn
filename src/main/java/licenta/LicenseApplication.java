@@ -21,8 +21,7 @@ public class LicenseApplication {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "https://trainon.onrender.com",  // Adaugă URL-ul Render
-                                "https://*.onrender.com"         // Pentru orice subdomain Render
+                                "https://trainon.onrender.com"  // DOAR URL-ul exact
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")

@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="website is live">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="website is live + 403">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application-render.properties" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -366,7 +365,7 @@
       <workItem from="1749370892688" duration="11655000" />
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
-      <workItem from="1749719443674" duration="20494000" />
+      <workItem from="1749719443674" duration="21196000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -600,7 +599,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749751299499</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="website is live + 403">
+      <option name="closed" value="true" />
+      <created>1749753608361</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1749753608361</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -654,7 +661,8 @@
     <MESSAGE value="application.propertis update" />
     <MESSAGE value="update" />
     <MESSAGE value="website is live" />
-    <option name="LAST_COMMIT_MESSAGE" value="website is live" />
+    <MESSAGE value="website is live + 403" />
+    <option name="LAST_COMMIT_MESSAGE" value="website is live + 403" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

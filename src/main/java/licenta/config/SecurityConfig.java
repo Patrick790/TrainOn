@@ -51,51 +51,54 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // ==========================================================
-                        // === LINIIL NOI ADAUGATE PENTRU A PERMITE ACCESUL LA FRONTEND ===
-                        .requestMatchers("/", "/index.html", "/static/**", "/*.png", "/*.ico", "/*.json", "/*.js", "/*.css").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        // ==========================================================
-
-                        // Regulile tale existente pentru API-uri (păstrate intact)
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
+                        // ADĂUGAT: Endpoint-uri pentru resetarea parolei
                         .requestMatchers("/forgot-password").permitAll()
                         .requestMatchers("/reset-password/**").permitAll()
                         .requestMatchers("/reset-password").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
                         .requestMatchers(HttpMethod.GET, "/sportsHalls/cities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET pentru săli sunt publice
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
+                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll() // Permite accesul public la endpoint-ul de recenzii
+                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll() // Permite accesul public la detalii specifice de recenzii
+                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza săli
+                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
+                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli
+                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge imagini
 
-                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
-                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
-                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
-                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin")
+                        // Configurare pentru rezervări - ACTUALIZAT
+                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll() // Listarea generală publică
+                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll() // Mentenanța publică
+                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin") // Toate celelalte operații necesită autentificare
 
-                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll()
-                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin")
-
+                        // Configurare pentru hall-schedules - programul sălilor
                         .requestMatchers(HttpMethod.GET, "/schedules/hall/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
-                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
-                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
+                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
+                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge programul
 
-                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin")
-                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin")
-                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin")
+                        // Adaugare pentru profilurile de rezervare - doar utilizatorii autentificați pot accesa
+                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin") // Toți utilizatorii autentificați pot accesa profilurile
+
+                        // ADĂUGAT: Configurare pentru gestionarea cardurilor
+                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin") // Cardurile necesită autentificare
+
+                        // Adaugare pentru gestionarea înregistrărilor de echipe
+                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin") // Doar adminii pot accesa acest endpoint
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")
                         .requestMatchers("/users/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll()
+                        // Endpoint-uri pentru plăți - permit accesul public pentru webhook-uri BT Pay
+                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll() // Noul webhook Stripe
                         .requestMatchers(HttpMethod.GET, "/payment/bt/status/**").permitAll()
                         .requestMatchers("/payment/**").hasAnyAuthority("user", "admin", "hall_admin")
 
+                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări (doar pentru admini)
                         .requestMatchers("/booking-prioritization/**").hasAuthority("admin")
+                        ///////
                         .requestMatchers("/health", "/").permitAll()
 
                         .anyRequest().authenticated()
@@ -130,10 +133,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://trainon.onrender.com"
+                "https://trainon.onrender.com"  // DOAR URL-ul exact, fără wildcard
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

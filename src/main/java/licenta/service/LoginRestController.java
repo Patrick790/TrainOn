@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://trainon.onrender.com"})
 public class LoginRestController {
 
     private final IUserSpringRepository userSpringRepository;

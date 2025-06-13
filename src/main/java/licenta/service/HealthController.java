@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:3000", "https://trainon.onrender.com"})
 public class HealthController {
 
     @Value("${server.port:8080}")
