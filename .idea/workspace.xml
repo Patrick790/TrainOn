@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="frontend deploy">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +74,7 @@
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "jdk.selected.JAVA_MODULE": "corretto-17",
-    "last_opened_file_path": "C:/Users/ardel/IdeaProjects/Licenta/Licenta/frontend/src/components/admin/AdminPages",
+    "last_opened_file_path": "C:/Users/ardel/IdeaProjects/Licenta/Licenta/src/main/resources/static",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -98,11 +96,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\src\main\resources\static" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\halladmin\AdminPages" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\users" />
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\assets" />
-      <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\ardel\IdeaProjects\Licenta\Licenta\frontend\src\components\admin\AdminPages" />
@@ -367,7 +365,7 @@
       <workItem from="1749370892688" duration="11655000" />
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
-      <workItem from="1749719443674" duration="31729000" />
+      <workItem from="1749719443674" duration="32543000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -625,7 +623,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749810805806</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="frontend deploy">
+      <option name="closed" value="true" />
+      <created>1749812871802</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1749812871802</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

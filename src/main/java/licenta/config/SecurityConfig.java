@@ -51,6 +51,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/user-home", "/static/**", "/*.js", "/*.css", "/*.ico", "/*.png", "/*.jpg", "/*.gif",
+                                "/login", "/register", "/search", "/profile-creation", "/profile", "/reservations",
+                                "/fcfs-reservation", "/reset-password", "/payment", "/payment-success", "/payment-cancel",
+                                "/privacy", "/terms", "/hall-admin-dashboard/**", "/admin-dashboard/**", "/edit-hall/**",
+                                "/admin-profile", "/app-admin-profile", "/sportsHalls/*/reviews").permitAll()
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
                         // ADĂUGAT: Endpoint-uri pentru resetarea parolei
                         .requestMatchers("/forgot-password").permitAll()
