@@ -31,7 +31,7 @@ public class HealthController {
         return response;
     }
 
-    @GetMapping("/")
+    @GetMapping("/api")
     public Map<String, Object> root() {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "TrainOn API is running successfully");
