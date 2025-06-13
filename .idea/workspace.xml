@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="frontend deploy 5">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="backend deploy">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -365,7 +366,7 @@
       <workItem from="1749370892688" duration="11655000" />
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
-      <workItem from="1749719443674" duration="36718000" />
+      <workItem from="1749719443674" duration="39059000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -663,7 +664,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749817680514</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="backend deploy">
+      <option name="closed" value="true" />
+      <created>1749820624214</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1749820624214</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -693,7 +702,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="managing the schedule + maintenance reservations" />
     <MESSAGE value="all schedule fixes" />
     <MESSAGE value="view all halls + details + logo" />
     <MESSAGE value="emails working" />
@@ -718,7 +726,8 @@
     <MESSAGE value="frontend deploy 3" />
     <MESSAGE value="frontend deploy 4" />
     <MESSAGE value="frontend deploy 5" />
-    <option name="LAST_COMMIT_MESSAGE" value="frontend deploy 5" />
+    <MESSAGE value="backend deploy" />
+    <option name="LAST_COMMIT_MESSAGE" value="backend deploy" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
