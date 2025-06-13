@@ -9,6 +9,8 @@ const AppAdminSecuritySettings = () => {
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const handleChangePassword = () => {
         console.log('Butonul schimbă parola a fost apăsat!'); // Debug
@@ -83,7 +85,7 @@ const AppAdminSecuritySettings = () => {
             const userEmail = tokenPayload.sub;
 
             // Find user by email to get the ID
-            const usersResponse = await fetch('http://localhost:8080/users', {
+            const usersResponse = await fetch(`${API_BASE_URL}/users`, {
                 headers: {
                     'Authorization': `Bearer ${jwtToken}`,
                     'Content-Type': 'application/json'
@@ -102,7 +104,7 @@ const AppAdminSecuritySettings = () => {
             }
 
             // Call the change password endpoint
-            const response = await fetch(`http://localhost:8080/users/${currentUser.id}/change-password`, {
+            const response = await fetch(`${API_BASE_URL}/users/${currentUser.id}/change-password`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${jwtToken}`,

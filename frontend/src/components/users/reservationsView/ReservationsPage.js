@@ -4,6 +4,8 @@ import Header from '../Header';
 import './ReservationsPage.css';
 
 const ReservationsPage = () => {
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
     const [activeSection, setActiveSection] = useState('upcoming');
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
     const [userInfo, setUserInfo] = useState({
@@ -54,7 +56,7 @@ const ReservationsPage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -93,7 +95,7 @@ const ReservationsPage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/reservations/user/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/reservations/user/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -230,8 +232,7 @@ const ReservationsPage = () => {
 
         try {
             const token = localStorage.getItem('jwtToken');
-            const response = await fetch(`http://localhost:8080/reservations/${reservationId}/cancel`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}/cancel`, {                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

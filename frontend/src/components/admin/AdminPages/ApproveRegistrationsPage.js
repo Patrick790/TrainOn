@@ -12,7 +12,7 @@ const ApproveRegistrationsPage = () => {
     const [error, setError] = useState(null);
     const [certificateUrl, setCertificateUrl] = useState(null);
 
-    const API_URL = 'http://localhost:8080';
+    const API_URL = process.env.REACT_APP_API_URL || '';
 
     // Auth header helper function
     const getAuthHeader = () => {

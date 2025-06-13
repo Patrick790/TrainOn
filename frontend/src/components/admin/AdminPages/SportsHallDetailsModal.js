@@ -5,6 +5,8 @@ import './SportsHallDetailsModal.css';
 class SportsHallDetailsModal extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
         this.state = {
             hall: null,
             admin: null,
@@ -30,7 +32,7 @@ class SportsHallDetailsModal extends Component {
             const token = localStorage.getItem('jwtToken');
 
             // Obținem datele sălii
-            const hallResponse = await fetch(`http://localhost:8080/sportsHalls/${hallId}`, {
+            const hallResponse = await fetch(`${this.API_BASE_URL}/sportsHalls/${hallId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -69,7 +71,7 @@ class SportsHallDetailsModal extends Component {
     fetchAdminData = async (adminId) => {
         try {
             const token = localStorage.getItem('jwtToken');
-            const response = await fetch(`http://localhost:8080/users/${adminId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/users/${adminId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -88,7 +90,7 @@ class SportsHallDetailsModal extends Component {
     // Nouă metodă pentru încărcarea rating-urilor din baza de date
     fetchHallRating = async (hallId) => {
         try {
-            const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hallId}`);
+            const response = await fetch(`${this.API_BASE_URL}/feedbacks?hallId=${hallId}`);
 
             if (response.ok) {
                 const feedbacks = await response.json();
@@ -201,7 +203,7 @@ class SportsHallDetailsModal extends Component {
                                             <div className="modal-image-gallery">
                                                 <div className="modal-main-image-container">
                                                     <img
-                                                        src={`http://localhost:8080/images/${hall.images[currentImageIndex].id}`}
+                                                        src={`${this.API_BASE_URL}/images/${hall.images[currentImageIndex].id}`}
                                                         alt={hall.name}
                                                         className="modal-main-image"
                                                     />
@@ -234,7 +236,7 @@ class SportsHallDetailsModal extends Component {
                                                                 onClick={() => this.setState({ currentImageIndex: index })}
                                                             >
                                                                 <img
-                                                                    src={`http://localhost:8080/images/${image.id}`}
+                                                                    src={`${this.API_BASE_URL}/images/${image.id}`}
                                                                     alt={`${hall.name} - ${index + 1}`}
                                                                 />
                                                             </div>

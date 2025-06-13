@@ -39,7 +39,8 @@ class ReservationOptionsModal extends React.Component {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

@@ -7,6 +7,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
     // Refs pentru focus management
     const modalRef = useRef(null);
@@ -120,7 +121,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         setErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:8080/forgot-password', {
+            const response = await fetch(`${API_BASE_URL}/forgot-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

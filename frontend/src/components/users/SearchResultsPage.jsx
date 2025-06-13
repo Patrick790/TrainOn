@@ -37,7 +37,8 @@ const SearchResultsPage = () => {
         query: queryParams.get('query') || ''
     });
 
-    const API_URL = 'http://localhost:8080';
+
+    const API_URL = process.env.REACT_APP_API_URL || '';
 
     // Funcție pentru geocodarea adreselor (obținerea coordonatelor din adresă)
     const geocodeAddress = async (address, city, id) => {

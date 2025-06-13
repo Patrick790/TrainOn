@@ -18,6 +18,9 @@ const ReservationProfiles = () => {
         'Timișoara', 'Tulcea', 'Vâlcea', 'Vaslui', 'Vrancea'
     ];
 
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+
     const ageCategories = ['0-14', '15-16', '17-18', 'seniori'];
     const timeIntervals = ['7-14:30', '14:30-23', 'full-day'];
 
@@ -38,7 +41,7 @@ const ReservationProfiles = () => {
             const token = localStorage.getItem('jwtToken');
             if (!token) throw new Error('Nu sunt disponibile informațiile de autentificare');
 
-            const response = await fetch('http://localhost:8080/reservationProfiles', {
+            const response = await fetch(`${API_BASE_URL}/reservationProfiles`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
@@ -64,7 +67,7 @@ const ReservationProfiles = () => {
             const token = localStorage.getItem('jwtToken');
             if (!token) throw new Error('Nu sunt disponibile informațiile de autentificare');
 
-            const response = await fetch(`http://localhost:8080/reservationProfiles/${profileId}`, {
+            const response = await fetch(`${API_BASE_URL}/reservationProfiles/${profileId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
@@ -85,8 +88,7 @@ const ReservationProfiles = () => {
             const token = localStorage.getItem('jwtToken');
             if (!token) throw new Error('Nu sunt disponibile informațiile de autentificare');
 
-            const response = await fetch(`http://localhost:8080/reservationProfiles/${profileId}`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/reservationProfiles/${profileId}`, {                method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData)
             });

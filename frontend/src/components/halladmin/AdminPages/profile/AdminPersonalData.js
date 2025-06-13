@@ -18,6 +18,8 @@ const AppAdminPersonalData = () => {
         city: '',
         birthDate: ''
     });
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const [tempPersonalData, setTempPersonalData] = useState({...personalData});
 
@@ -46,7 +48,7 @@ const AppAdminPersonalData = () => {
             }
 
             // SCHIMBAT: folosim /users în loc de /app-admins
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -127,8 +129,7 @@ const AppAdminPersonalData = () => {
             };
 
             // SCHIMBAT: folosim /users în loc de /app-admins
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

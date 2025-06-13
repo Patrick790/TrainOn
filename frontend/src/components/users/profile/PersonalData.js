@@ -19,6 +19,9 @@ const PersonalData = () => {
         birthDate: ''
     });
 
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+
     const [tempPersonalData, setTempPersonalData] = useState({...personalData});
 
     // Orașele din România pentru dropdown
@@ -45,7 +48,7 @@ const PersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -125,8 +128,7 @@ const PersonalData = () => {
                 birthDate: birthDate
             };
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

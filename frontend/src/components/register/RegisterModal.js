@@ -19,6 +19,8 @@ const RegisterModal = ({ isOpen, onClose }) => {
     const [fileName, setFileName] = useState('');
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState('');
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     // Ref pentru primul input
     const firstInputRef = useRef(null);
@@ -149,7 +151,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
         console.log("Sending user data:", user);
 
         try {
-            const response = await fetch('http://localhost:8080/register/test', {
+            const response = await fetch(`${API_BASE_URL}/register/test`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

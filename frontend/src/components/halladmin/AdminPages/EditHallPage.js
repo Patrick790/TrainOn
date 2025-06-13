@@ -54,6 +54,7 @@ function withRouter(Component) {
 class EditHallPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             hallId: props.params.id,
             hallData: {
@@ -107,7 +108,7 @@ class EditHallPage extends Component {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/${hallId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/${hallId}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -135,7 +136,7 @@ class EditHallPage extends Component {
                     if (existingImages[type]) {
                         existingImages[type].push({
                             id: img.id,
-                            url: `http://localhost:8080/images/${img.id}`,
+                            url: `${this.API_BASE_URL}/images/${img.id}`,
                             type: img.description
                         });
                     }
@@ -357,7 +358,7 @@ class EditHallPage extends Component {
                 console.log(entry[0], entry[1]);
             }
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/${hallId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/${hallId}`, {
                 method: 'PUT',
                 body: formData,
                 headers: {
@@ -383,8 +384,7 @@ class EditHallPage extends Component {
                         if (existingImages[type]) {
                             existingImages[type].push({
                                 id: img.id,
-                                url: `http://localhost:8080/images/${img.id}`,
-                                type: img.description
+                                url: `${this.API_BASE_URL}/images/${img.id}`,                                type: img.description
                             });
                         }
                     });

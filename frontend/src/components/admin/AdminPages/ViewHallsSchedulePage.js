@@ -7,6 +7,7 @@ import './ViewHallsSchedulePage.css';
 class ViewHallsSchedulePage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
         this.state = {
             halls: [],
@@ -56,7 +57,7 @@ class ViewHallsSchedulePage extends Component {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/admin/fcfs-status', {
+            const response = await fetch(`${this.API_BASE_URL}/admin/fcfs-status`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -93,7 +94,7 @@ class ViewHallsSchedulePage extends Component {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/admin/fcfs-toggle', {
+            const response = await fetch(`${this.API_BASE_URL}/admin/fcfs-toggle`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -140,7 +141,7 @@ class ViewHallsSchedulePage extends Component {
             }
 
             // Obținem toate sălile
-            const response = await fetch(`http://localhost:8080/sportsHalls`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -182,7 +183,7 @@ class ViewHallsSchedulePage extends Component {
     // Metodă pentru a obține programul sălii din baza de date
     fetchHallSchedule = async (hallId, token) => {
         try {
-            const response = await fetch(`http://localhost:8080/schedules/hall/${hallId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/schedules/hall/${hallId}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -370,7 +371,7 @@ class ViewHallsSchedulePage extends Component {
 
     fetchMaintenanceReservations = async (hallId, startDateStr, token) => {
         const maintenanceResponse = await fetch(
-            `http://localhost:8080/reservations/maintenance/week?hallId=${hallId}&weekStart=${startDateStr}`,
+            `${this.API_BASE_URL}/reservations/maintenance/week?hallId=${hallId}&weekStart=${startDateStr}`,
             {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -393,7 +394,7 @@ class ViewHallsSchedulePage extends Component {
         }
 
         const bookingPromises = weekDates.map(dateStr =>
-            fetch(`http://localhost:8080/reservations?hallId=${hallId}&date=${dateStr}&type=reservation`, {
+            fetch(`${this.API_BASE_URL}/reservations?hallId=${hallId}&date=${dateStr}&type=reservation`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(response => {
@@ -657,7 +658,7 @@ class ViewHallsSchedulePage extends Component {
                     type: 'maintenance'
                 };
 
-                return fetch('http://localhost:8080/reservations', {
+                return fetch(`${this.API_BASE_URL}/reservations`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -672,8 +673,7 @@ class ViewHallsSchedulePage extends Component {
         return changedSlots
             .filter(slot => slot.action === 'delete' && slot.id)
             .map(slot => {
-                return fetch(`http://localhost:8080/reservations/${slot.id}`, {
-                    method: 'DELETE',
+                return fetch(`${this.API_BASE_URL}/reservations/${slot.id}`, {                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

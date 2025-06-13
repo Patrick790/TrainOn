@@ -7,6 +7,8 @@ const AppAdminPersonalData = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const [personalData, setPersonalData] = useState({
         firstName: '',
@@ -45,7 +47,7 @@ const AppAdminPersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -125,7 +127,7 @@ const AppAdminPersonalData = () => {
                 birthDate: birthDate
             };
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

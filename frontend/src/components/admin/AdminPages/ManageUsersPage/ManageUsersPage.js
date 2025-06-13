@@ -30,7 +30,7 @@ const ManageUsersPage = () => {
     // Nou state pentru modalul de profiluri de rezervare
     const [isReservationProfilesModalOpen, setIsReservationProfilesModalOpen] = useState(false);
 
-    const API_URL = 'http://localhost:8080';
+    const API_URL = process.env.REACT_APP_API_URL || '';
 
     // Auth header helper function
     const getAuthHeader = () => {

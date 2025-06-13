@@ -13,6 +13,7 @@ const AppAdminProfilePage = () => {
         lastName: '',
         email: ''
     });
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
     // Funcție pentru a obține informațiile de bază ale administratorului aplicației pentru sidebar
     const fetchBasicAdminInfo = async () => {
@@ -24,7 +25,7 @@ const AppAdminProfilePage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`,  {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`,  {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

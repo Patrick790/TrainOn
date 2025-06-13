@@ -18,6 +18,8 @@ const FCFSReservationPage = () => {
         globalEnabled: false
     });
 
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
     // State-urile existente
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedHall, setSelectedHall] = useState('');
@@ -54,7 +56,7 @@ const FCFSReservationPage = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/fcfs/access-check', {
+            const response = await fetch(`${API_BASE_URL}/fcfs/access-check`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -203,7 +205,7 @@ const FCFSReservationPage = () => {
     const fetchCities = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8080/sportsHalls/cities');
+            const response = await fetch(`${API_BASE_URL}/sportsHalls/cities`);
             const citiesData = response.ok ? await response.json() : [];
             setCities(Array.isArray(citiesData) ? citiesData : []);
         } catch (error) {
@@ -218,7 +220,7 @@ const FCFSReservationPage = () => {
         setLoading(true);
         try {
             // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active și filtrăm pe oraș
-            const response = await fetch('http://localhost:8080/sportsHalls/active');
+            const response = await fetch(`${API_BASE_URL}/sportsHalls/active`);
 
             if (response.ok) {
                 const allActiveHalls = await response.json();
@@ -246,7 +248,7 @@ const FCFSReservationPage = () => {
         if (!selectedHall) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/sportsHalls/${selectedHall}`);
+            const response = await fetch(`${API_BASE_URL}/sportsHalls/${selectedHall}`);
             if (response.ok) {
                 const hallData = await response.json();
                 setSelectedHallDetails(hallData);
@@ -265,8 +267,8 @@ const FCFSReservationPage = () => {
         setLoading(true);
         try {
             const [scheduleResponse, reservationsResponse] = await Promise.all([
-                fetch(`http://localhost:8080/schedules/hall/${selectedHall}`),
-                fetch(`http://localhost:8080/reservations?hallId=${selectedHall}`)
+                fetch(`${API_BASE_URL}/schedules/hall/${selectedHall}`),
+                fetch(`${API_BASE_URL}/reservations?hallId=${selectedHall}`)
             ]);
             const schedule = scheduleResponse.ok ? await scheduleResponse.json() : [];
             const reservations = reservationsResponse.ok ? await reservationsResponse.json() : [];

@@ -5,6 +5,8 @@ import './ViewReservationsPage.css';
 class ViewReservationsPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
         this.state = {
             halls: [],
             selectedHallId: '',
@@ -29,7 +31,7 @@ class ViewReservationsPage extends Component {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/admin/${userId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/admin/${userId}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -57,8 +59,7 @@ class ViewReservationsPage extends Component {
         this.setState({ loading: true, error: null });
 
         try {
-            const response = await fetch(`http://localhost:8080/reservations?hallId=${hallId}&type=reservation`);
-
+            const response = await fetch(`${this.API_BASE_URL}/reservations?hallId=${hallId}&type=reservation`);
             if (response.ok) {
                 const allReservations = await response.json();
 

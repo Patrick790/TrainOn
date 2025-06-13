@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { MapPin, ChevronDown } from 'lucide-react';
 import './SearchBar.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 class SearchBar extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -76,7 +79,7 @@ class SearchBar extends Component {
     fetchCities = async () => {
         this.setState({ loadingCities: true });
         try {
-            const response = await fetch('http://localhost:8080/sportsHalls/cities');
+            const response = await fetch(`${API_BASE_URL}/sportsHalls/cities`);
             if (response.ok) {
                 const citiesData = await response.json();
                 const cities = Array.isArray(citiesData) ? citiesData : [];
@@ -179,7 +182,7 @@ class SearchBar extends Component {
     fetchHallSuggestions = async (query) => {
         this.setState({ loadingSuggestions: true });
         try {
-            const response = await fetch(`http://localhost:8080/sportsHalls/names/suggestions?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`${API_BASE_URL}/sportsHalls/names/suggestions?query=${encodeURIComponent(query)}`);
             if (response.ok) {
                 const suggestions = await response.json();
                 this.setState({

@@ -6,6 +6,7 @@ import './ManageReviewsPage.css';
 class ManageReviewsPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             isLoading: true,
             error: null,
@@ -32,7 +33,7 @@ class ManageReviewsPage extends Component {
                 return;
             }
 
-            const response = await axios.get(`http://localhost:8080/sportsHalls/admin/${userId}`, {
+            const response = await axios.get(`${this.API_BASE_URL}/sportsHalls/admin/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                 }
@@ -67,7 +68,7 @@ class ManageReviewsPage extends Component {
     fetchReviews = async (hallId) => {
         this.setState({ isLoading: true });
         try {
-            const response = await axios.get(`http://localhost:8080/feedbacks?hallId=${hallId}`, {
+            const response = await axios.get(`${this.API_BASE_URL}/feedbacks?hallId=${hallId}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                 }

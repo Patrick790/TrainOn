@@ -18,11 +18,23 @@ public class LicenseApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                // Obține allowed origins din environment variable sau folosește default
+                String allowedOriginsEnv = System.getenv("CORS_ORIGINS");
+                String[] allowedOrigins;
+
+                if (allowedOriginsEnv != null && !allowedOriginsEnv.isEmpty()) {
+                    // Production: folosește CORS_ORIGINS din environment
+                    allowedOrigins = allowedOriginsEnv.split(",");
+                } else {
+                    // Development: folosește valorile default
+                    allowedOrigins = new String[]{
+                            "http://localhost:3000",
+                            "https://trainon.onrender.com"
+                    };
+                }
+
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://localhost:3000",
-                                "https://trainon.onrender.com"  // DOAR URL-ul exact
-                        )
+                        .allowedOrigins(allowedOrigins)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);

@@ -9,6 +9,8 @@ const AdminSecuritySettings = ({ userId }) => {
     });
     const [passwordErrors, setPasswordErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const handleChangePassword = () => {
         console.log('Butonul Schimbă parola a fost apăsat!');
@@ -84,7 +86,7 @@ const AdminSecuritySettings = ({ userId }) => {
 
         try {
             const token = localStorage.getItem('authToken');
-            const response = await fetch(`http://localhost:8080/users/${userId}/change-password`, {
+            const response = await fetch(`${API_BASE_URL}/users/${userId}/change-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

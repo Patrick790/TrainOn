@@ -6,6 +6,7 @@ import './MyHallsPage.css';
 class MyHallsPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             halls: [],
             hallRatings: {}, // Obiect pentru a stoca rating-urile fiecărei săli
@@ -33,7 +34,7 @@ class MyHallsPage extends Component {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/admin/${userId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/admin/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -68,7 +69,7 @@ class MyHallsPage extends Component {
         await Promise.all(
             halls.map(async (hall) => {
                 try {
-                    const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hall.id}`);
+                    const response = await fetch(`${this.API_BASE_URL}/feedbacks?hallId=${hall.id}`);
                     if (response.ok) {
                         const feedbacks = await response.json();
                         const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
@@ -115,8 +116,7 @@ class MyHallsPage extends Component {
         if (hall.images && hall.images.length > 0) {
             const coverImage = hall.images.find(img => img.description === 'cover');
             if (coverImage) {
-                return `http://localhost:8080/images/${coverImage.id}`;
-            }
+                return `${this.API_BASE_URL}/images/${coverImage.id}`;            }
         }
         return null;
     }

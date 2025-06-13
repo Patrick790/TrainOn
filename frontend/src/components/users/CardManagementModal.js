@@ -13,6 +13,8 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
         name: '',
         setAsDefault: false
     });
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem('jwtToken');
@@ -103,7 +105,7 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
             console.log('Token din localStorage:', localStorage.getItem('jwtToken'));
             console.log('Card number being sent:', cardNumber);
 
-            const response = await fetch('http://localhost:8080/card-payment-methods/save-card', {
+            const response = await fetch(`${API_BASE_URL}/card-payment-methods/save-card`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
@@ -163,7 +165,7 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:8080/card-payment-methods/${cardId}`, {
+            const response = await fetch(`${API_BASE_URL}/card-payment-methods/${cardId}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
             });
@@ -188,8 +190,7 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:8080/card-payment-methods/${cardId}/set-default`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/card-payment-methods/${cardId}/set-default`, {                method: 'PUT',
                 headers: getAuthHeaders()
             });
 

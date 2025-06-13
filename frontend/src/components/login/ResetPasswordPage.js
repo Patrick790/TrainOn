@@ -6,6 +6,8 @@ const ResetPasswordPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = searchParams.get('token');
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 
     const [formData, setFormData] = useState({
         newPassword: '',
@@ -44,7 +46,7 @@ const ResetPasswordPage = () => {
 
     const validateToken = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/reset-password/validate?token=${token}`);
+            const response = await fetch(`${API_BASE_URL}/reset-password/validate?token=${token}`);
             const data = await response.json();
 
             if (response.ok && data.valid) {
@@ -131,7 +133,7 @@ const ResetPasswordPage = () => {
         setErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:8080/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

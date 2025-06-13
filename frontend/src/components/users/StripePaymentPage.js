@@ -9,6 +9,9 @@ const getAuthToken = () => {
     return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
 };
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+
 // Funcție pentru header-uri cu autentificare
 const getAuthHeaders = () => {
     const token = getAuthToken();
@@ -174,7 +177,7 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
 
         try {
             // Pas 1: Creează PaymentIntent pe backend
-            const intentResponse = await fetch('http://localhost:8080/payment/stripe/create-payment-intent', {
+            const intentResponse = await fetch(`${API_BASE_URL}/payment/stripe/create-payment-intent`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
@@ -232,7 +235,7 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
                     paymentMethodId = paymentMethod.id;
                 } catch (pmErr) {
                     // Dacă crearea PaymentMethod-ului eșuează, folosim backend-ul
-                    const confirmResponse = await fetch('http://localhost:8080/payment/stripe/confirm-payment-with-card', {
+                    const confirmResponse = await fetch(`${API_BASE_URL}/payment/stripe/confirm-payment-with-card`, {
                         method: 'POST',
                         headers: getAuthHeaders(),
                         body: JSON.stringify({
@@ -261,7 +264,7 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
 
                     if (paymentIntent && paymentIntent.status === 'succeeded') {
                         // Continuă cu finalizarea
-                        const finalizeResponse = await fetch('http://localhost:8080/payment/stripe/finalize-payment-and-create-reservations', {
+                        const finalizeResponse = await fetch(`${API_BASE_URL}/payment/stripe/finalize-payment-and-create-reservations`, {
                             method: 'POST',
                             headers: getAuthHeaders(),
                             body: JSON.stringify({
@@ -432,7 +435,7 @@ const StripePaymentPage = () => {
 
             for (const reservation of reservationData) {
                 if (!hallDetailsMap[reservation.hallId]) {
-                    const response = await fetch(`http://localhost:8080/sportsHalls/${reservation.hallId}`);
+                    const response = await fetch(`${API_BASE_URL}/sportsHalls/${reservation.hallId}`);
                     if (response.ok) {
                         const hallData = await response.json();
                         hallDetailsMap[reservation.hallId] = hallData;
@@ -491,8 +494,7 @@ const StripePaymentPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:8080/payment/confirm-payment-cash', {
-                method: 'POST',
+            const response = await fetch(`${API_BASE_URL}/payment/confirm-payment-cash`, {                method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
                     reservations: reservationData,

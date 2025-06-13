@@ -7,6 +7,7 @@ import HallManagementModal from './HallManagementModal';
 class ViewAllHallsPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             halls: [],
             cities: [],
@@ -39,7 +40,7 @@ class ViewAllHallsPage extends Component {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/sportsHalls', {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -84,7 +85,7 @@ class ViewAllHallsPage extends Component {
             // Pentru fiecare admin ID, facem un fetch pentru a obține datele
             for (const adminId of uniqueAdminIds) {
                 try {
-                    const response = await fetch(`http://localhost:8080/users/${adminId}`, {
+                    const response = await fetch(`${this.API_BASE_URL}/users/${adminId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -121,7 +122,7 @@ class ViewAllHallsPage extends Component {
         await Promise.all(
             halls.map(async (hall) => {
                 try {
-                    const response = await fetch(`http://localhost:8080/feedbacks?hallId=${hall.id}`);
+                    const response = await fetch(`${this.API_BASE_URL}/feedbacks?hallId=${hall.id}`);
                     if (response.ok) {
                         const feedbacks = await response.json();
                         const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
@@ -168,8 +169,7 @@ class ViewAllHallsPage extends Component {
         if (hall.images && hall.images.length > 0) {
             const coverImage = hall.images.find(img => img.description === 'cover');
             if (coverImage) {
-                return `http://localhost:8080/images/${coverImage.id}`;
-            }
+                return `${this.API_BASE_URL}/images/${coverImage.id}`;            }
         }
         return null;
     }

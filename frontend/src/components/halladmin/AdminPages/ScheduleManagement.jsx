@@ -5,6 +5,7 @@ import './ScheduleManagement.css';
 class ScheduleManagement extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
         this.state = {
             schedules: [],
@@ -59,7 +60,7 @@ class ScheduleManagement extends Component {
                 throw new Error('Nu sunteți autentificat corect');
             }
 
-            const response = await fetch(`http://localhost:8080/schedules/hall/${this.props.selectedHallId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/schedules/hall/${this.props.selectedHallId}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -129,8 +130,7 @@ class ScheduleManagement extends Component {
                 }
             }
 
-            const response = await fetch(`http://localhost:8080/schedules/hall/${this.props.selectedHallId}`, {
-                method: 'POST',
+            const response = await fetch(`${this.API_BASE_URL}/schedules/hall/${this.props.selectedHallId}`, {                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

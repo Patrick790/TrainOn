@@ -15,6 +15,9 @@ const ProfilePage = () => {
         email: ''
     });
 
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+
     // Funcție pentru a obține informațiile de bază ale utilizatorului pentru sidebar
     const fetchBasicUserInfo = async () => {
         try {
@@ -25,8 +28,7 @@ const ProfilePage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
-                method: 'GET',
+            const response = await fetch(`${API_BASE_URL}/users/${userId}`, {                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

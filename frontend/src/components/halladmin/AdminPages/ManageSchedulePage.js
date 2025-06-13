@@ -6,7 +6,7 @@ import './ManageSchedulePage.css';
 class ManageSchedulePage extends Component {
     constructor(props) {
         super(props);
-
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             halls: [],
             selectedHallId: null,
@@ -38,7 +38,7 @@ class ManageSchedulePage extends Component {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/admin/${userId}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/admin/${userId}`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

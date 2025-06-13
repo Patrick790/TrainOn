@@ -5,6 +5,7 @@ import { Play, CreditCard, Banknote, CheckCircle, XCircle, Info, AlertTriangle }
 class BookingPrioritization extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             isGenerating: false,
             generationComplete: false,
@@ -33,7 +34,7 @@ class BookingPrioritization extends Component {
             }
 
             // Facem apelul către API pentru generarea rezervărilor
-            const response = await fetch('http://localhost:8080/booking-prioritization/generate', {
+            const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

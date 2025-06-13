@@ -35,7 +35,7 @@ const ProfileCreationPage = () => {
     const [stripe, setStripe] = useState(null);
 
     // URL-ul API-ului
-    const API_URL = 'http://localhost:8080';
+    const API_URL = process.env.REACT_APP_API_URL || '';
 
     // Constante pentru formulare
     const ageCategories = [
@@ -192,8 +192,7 @@ const ProfileCreationPage = () => {
 
     const fetchCities = async () => {
         try {
-            const response = await fetch(`${API_URL}/sportsHalls/cities`);
-            if (response.ok) {
+            const response = await fetch(`${API_URL}/sportsHalls/cities`);            if (response.ok) {
                 const citiesData = await response.json();
                 const cities = Array.isArray(citiesData) ? citiesData : [];
                 console.log(`Loaded ${cities.length} cities for profile creation`);

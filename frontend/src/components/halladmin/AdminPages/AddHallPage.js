@@ -42,6 +42,7 @@ const IMAGE_TYPES = [
 class AddHallPage extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             hallData: {
                 name: '',
@@ -251,7 +252,7 @@ class AddHallPage extends Component {
                 console.log(entry[0], entry[1]);
             }
 
-            const response = await fetch('http://localhost:8080/sportsHalls', {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls`, {
                 method: 'POST',
                 body: formData,
                 headers: {

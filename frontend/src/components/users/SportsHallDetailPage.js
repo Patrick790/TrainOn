@@ -14,6 +14,8 @@ import './SportsHallDetailPage.css';
 const ReservationOptionsModal = ({ isOpen, onClose }) => {
     const [userType, setUserType] = useState(null);
     const [loading, setLoading] = useState(true);
+    const API_URL = process.env.REACT_APP_API_URL || '';
+
 
     useEffect(() => {
         if (isOpen) {
@@ -31,8 +33,7 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
-                headers: {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/users/${userId}`, {                headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }

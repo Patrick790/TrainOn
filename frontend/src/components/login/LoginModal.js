@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
 
 const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
+    // Configurația API URL dinamică
+    const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -136,7 +139,8 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         setErrorMessage('');
 
         try {
-            const loginResponse = await fetch('http://localhost:8080/login', {
+            // ACTUALIZAT: Folosește API_BASE_URL dinamic
+            const loginResponse = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -160,7 +164,8 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                 throw new Error(loginData.message || 'Autentificare eșuată');
             }
 
-            const tokenResponse = await fetch('http://localhost:8080/login/generateToken', {
+            // ACTUALIZAT: Folosește API_BASE_URL dinamic
+            const tokenResponse = await fetch(`${API_BASE_URL}/login/generateToken`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -251,7 +256,8 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         setForgotErrorMessage('');
 
         try {
-            const response = await fetch('http://localhost:8080/forgot-password', {
+            // ACTUALIZAT: Folosește API_BASE_URL dinamic
+            const response = await fetch(`${API_BASE_URL}/forgot-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

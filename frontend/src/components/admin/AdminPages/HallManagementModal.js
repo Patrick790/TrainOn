@@ -5,6 +5,7 @@ import './HallManagementModal.css';
 class HallManagementModal extends Component {
     constructor(props) {
         super(props);
+        this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             hall: null,
             loading: true,
@@ -36,7 +37,7 @@ class HallManagementModal extends Component {
             const token = localStorage.getItem('jwtToken');
 
             // Fetch hall details
-            const hallResponse = await fetch(`http://localhost:8080/sportsHalls/${this.props.hallId}`, {
+            const hallResponse = await fetch(`${this.API_BASE_URL}/sportsHalls/${this.props.hallId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -50,7 +51,7 @@ class HallManagementModal extends Component {
             let adminData = null;
             if (hall.adminId) {
                 try {
-                    const adminResponse = await fetch(`http://localhost:8080/users/${hall.adminId}`, {
+                    const adminResponse = await fetch(`${this.API_BASE_URL}/users/${hall.adminId}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (adminResponse.ok) {
@@ -64,7 +65,7 @@ class HallManagementModal extends Component {
             // Fetch ratings
             let hallRating = { averageRating: 0, totalReviews: 0 };
             try {
-                const ratingsResponse = await fetch(`http://localhost:8080/feedbacks?hallId=${hall.id}`);
+                const ratingsResponse = await fetch(`${this.API_BASE_URL}/feedbacks?hallId=${hall.id}`);
                 if (ratingsResponse.ok) {
                     const feedbacks = await ratingsResponse.json();
                     hallRating = this.calculateRatingFromFeedbacks(feedbacks);
@@ -138,7 +139,7 @@ class HallManagementModal extends Component {
             // Adăugăm datele sălii ca JSON string
             formData.append('sportsHall', JSON.stringify(this.state.editData));
 
-            const response = await fetch(`http://localhost:8080/sportsHalls/${this.state.hall.id}`, {
+            const response = await fetch(`${this.API_BASE_URL}/sportsHalls/${this.state.hall.id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -186,8 +187,8 @@ class HallManagementModal extends Component {
 
             // Folosește endpoint-urile specifice pentru activare/dezactivare
             const endpoint = isCurrentlyActive
-                ? `http://localhost:8080/sportsHalls/${this.state.hall.id}/deactivate`
-                : `http://localhost:8080/sportsHalls/${this.state.hall.id}/activate`;
+                ? `${this.API_BASE_URL}/sportsHalls/${this.state.hall.id}/deactivate`
+                : `${this.API_BASE_URL}/sportsHalls/${this.state.hall.id}/activate`;
 
             console.log('=== DEBUG INFO ===');
             console.log('Token exists:', !!token);
@@ -245,8 +246,7 @@ class HallManagementModal extends Component {
         if (hall?.images && hall.images.length > 0) {
             const coverImage = hall.images.find(img => img.description === 'cover');
             if (coverImage) {
-                return `http://localhost:8080/images/${coverImage.id}`;
-            }
+                return `${this.API_BASE_URL}/images/${coverImage.id}`;            }
         }
         return null;
     }
