@@ -29,7 +29,7 @@ public class LicenseApplication {
                     // Development: folosește valorile default
                     allowedOrigins = new String[]{
                             "http://localhost:3000",
-                            "https://trainon.onrender.com"
+                            "https://trainonapp.onrender.com"  // Noul URL frontend
                     };
                 }
 
