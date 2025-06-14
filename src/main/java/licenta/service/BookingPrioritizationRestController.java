@@ -105,7 +105,7 @@ public class BookingPrioritizationRestController {
      * Calculează data de început pentru săptămâna următoare calendaristică
      */
     private Date calculateNextWeekStart() {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Bucharest"));
         int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         logger.info("Ziua curentă: {} (1=Duminică, 2=Luni, etc.)", currentDayOfWeek);
