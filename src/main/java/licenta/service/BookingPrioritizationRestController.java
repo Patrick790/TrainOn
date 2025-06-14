@@ -64,6 +64,108 @@ public class BookingPrioritizationRestController {
     @PostMapping("/generate")
     public ResponseEntity<Map<String, Object>> generateBookings() {
         try {
+            logger.info("=== ÎNCEPUT DEBUG COMPLET - GENERARE REZERVĂRI ===");
+
+            // ===== DEBUGGING: VERIFICARE PROFILURI =====
+            List<ReservationProfile> allProfiles = StreamSupport.stream(
+                            reservationProfileRepository.findAll().spliterator(), false)
+                    .collect(Collectors.toList());
+
+            logger.info("📊 TOTAL PROFILURI ÎN DB: {}", allProfiles.size());
+
+            // Debug detaliat pentru fiecare profil
+            for (ReservationProfile profile : allProfiles) {
+                User user = profile.getUser();
+                logger.info("🔍 === PROFIL {} ===", profile.getId());
+                logger.info("  📝 Nume: {}", profile.getName());
+                logger.info("  👤 User: {} (ID: {})",
+                        user != null ? user.getEmail() : "NULL",
+                        user != null ? user.getId() : "NULL");
+                logger.info("  💳 AutoPayment: {}", profile.getAutoPaymentEnabled());
+                logger.info("  🏢 SelectedHalls: {}",
+                        profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : "NULL");
+
+                if (user != null) {
+                    logger.info("  🏷️ TeamType: '{}' (null: {})",
+                            user.getTeamType(), user.getTeamType() == null);
+                    logger.info("  ✅ AccountStatus: '{}' (active/verified: {})",
+                            user.getAccountStatus(),
+                            user.getAccountStatus() != null &&
+                                    (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified")));
+                } else {
+                    logger.warn("  ❌ USER ESTE NULL!");
+                }
+
+                // Testează eligibilitatea pas cu pas
+                boolean userExists = user != null;
+                boolean hasTeamType = user != null && user.getTeamType() != null;
+                boolean teamTypeNotEmpty = user != null && user.getTeamType() != null && !user.getTeamType().isEmpty();
+                boolean statusValid = user != null && user.getAccountStatus() != null &&
+                        (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"));
+                boolean hasHalls = profile.getSelectedHalls() != null;
+                boolean hallsNotEmpty = profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
+
+                logger.info("  🧪 TESTE ELIGIBILITATE:");
+                logger.info("    - User exists: {}", userExists);
+                logger.info("    - Has team_type: {}", hasTeamType);
+                logger.info("    - Team_type not empty: {}", teamTypeNotEmpty);
+                logger.info("    - Status valid: {}", statusValid);
+                logger.info("    - Has halls: {}", hasHalls);
+                logger.info("    - Halls not empty: {}", hallsNotEmpty);
+
+                boolean eligible = userExists && hasTeamType && teamTypeNotEmpty && statusValid && hasHalls && hallsNotEmpty;
+                logger.info("  🎯 REZULTAT FINAL - ELIGIBIL: {}", eligible);
+
+                if (!eligible) {
+                    logger.warn("  ⚠️ PROFIL NEELIGIBIL - MOTIVUL:");
+                    if (!userExists) logger.warn("    - User lipsește");
+                    if (!hasTeamType) logger.warn("    - team_type este null");
+                    if (!teamTypeNotEmpty) logger.warn("    - team_type este gol");
+                    if (!statusValid) logger.warn("    - account_status nu este active/verified");
+                    if (!hasHalls) logger.warn("    - selectedHalls este null");
+                    if (!hallsNotEmpty) logger.warn("    - selectedHalls este gol");
+                }
+            }
+
+            // ===== DEBUGGING: VERIFICARE ELIGIBILITATE =====
+            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
+            logger.info("🎯 === REZULTAT ELIGIBILITATE ===");
+            logger.info("Profiluri eligibile: {} din {}", eligibleProfiles.size(), allProfiles.size());
+
+            if (eligibleProfiles.isEmpty()) {
+                logger.error("❌ ZERO PROFILURI ELIGIBILE! Procesul se oprește aici.");
+                logger.error("🔧 SOLUȚII POSIBILE:");
+                logger.error("   1. UPDATE users SET team_type = 'standard' WHERE id IN (11, 13, 14);");
+                logger.error("   2. UPDATE users SET account_status = 'active' WHERE id IN (11, 13, 14);");
+                logger.error("   3. Verifică tabela profile_halls pentru asocieri");
+
+                Map<String, Object> debugResponse = new HashMap<>();
+                debugResponse.put("success", false);
+                debugResponse.put("message", "Nu există profiluri eligibile pentru generare");
+                debugResponse.put("totalProfiles", allProfiles.size());
+                debugResponse.put("eligibleProfiles", 0);
+                debugResponse.put("debug", "Verifică team_type, account_status și selected_halls");
+
+                return ResponseEntity.ok(debugResponse);
+            }
+
+            // ===== DEBUGGING: VERIFICARE SĂLI ACTIVE =====
+            List<SportsHall> activeHalls = getActiveHallsWithSchedules();
+            logger.info("🏢 === SĂLI ACTIVE ===");
+            logger.info("Săli active găsite: {}", activeHalls.size());
+
+            if (activeHalls.isEmpty()) {
+                logger.error("❌ ZERO SĂLI ACTIVE! Procesul se oprește aici.");
+
+                Map<String, Object> debugResponse = new HashMap<>();
+                debugResponse.put("success", false);
+                debugResponse.put("message", "Nu există săli active disponibile");
+                debugResponse.put("eligibleProfiles", eligibleProfiles.size());
+                debugResponse.put("activeHalls", 0);
+
+                return ResponseEntity.ok(debugResponse);
+            }
+
             logger.info("Începerea procesului de generare automată a rezervărilor...");
 
             // Calculează data pentru săptămâna următoare
