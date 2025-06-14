@@ -22,8 +22,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/card-payment-methods")
-@CrossOrigin(origins = "http://localhost:3000")
-@Transactional
+@CrossOrigin(origins = {"https://trainonapp.onrender.com", "http://localhost:3000"})@Transactional
 public class CardPaymentMethodController {
 
     private static final Logger logger = LoggerFactory.getLogger(CardPaymentMethodController.class);
