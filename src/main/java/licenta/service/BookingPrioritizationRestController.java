@@ -64,108 +64,6 @@ public class BookingPrioritizationRestController {
     @PostMapping("/generate")
     public ResponseEntity<Map<String, Object>> generateBookings() {
         try {
-            logger.info("=== ÎNCEPUT DEBUG COMPLET - GENERARE REZERVĂRI ===");
-
-            // ===== DEBUGGING: VERIFICARE PROFILURI =====
-            List<ReservationProfile> allProfiles = StreamSupport.stream(
-                            reservationProfileRepository.findAll().spliterator(), false)
-                    .collect(Collectors.toList());
-
-            logger.info("📊 TOTAL PROFILURI ÎN DB: {}", allProfiles.size());
-
-            // Debug detaliat pentru fiecare profil
-            for (ReservationProfile profile : allProfiles) {
-                User user = profile.getUser();
-                logger.info("🔍 === PROFIL {} ===", profile.getId());
-                logger.info("  📝 Nume: {}", profile.getName());
-                logger.info("  👤 User: {} (ID: {})",
-                        user != null ? user.getEmail() : "NULL",
-                        user != null ? user.getId() : "NULL");
-                logger.info("  💳 AutoPayment: {}", profile.getAutoPaymentEnabled());
-                logger.info("  🏢 SelectedHalls: {}",
-                        profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : "NULL");
-
-                if (user != null) {
-                    logger.info("  🏷️ TeamType: '{}' (null: {})",
-                            user.getTeamType(), user.getTeamType() == null);
-                    logger.info("  ✅ AccountStatus: '{}' (active/verified: {})",
-                            user.getAccountStatus(),
-                            user.getAccountStatus() != null &&
-                                    (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified")));
-                } else {
-                    logger.warn("  ❌ USER ESTE NULL!");
-                }
-
-                // Testează eligibilitatea pas cu pas
-                boolean userExists = user != null;
-                boolean hasTeamType = user != null && user.getTeamType() != null;
-                boolean teamTypeNotEmpty = user != null && user.getTeamType() != null && !user.getTeamType().isEmpty();
-                boolean statusValid = user != null && user.getAccountStatus() != null &&
-                        (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"));
-                boolean hasHalls = profile.getSelectedHalls() != null;
-                boolean hallsNotEmpty = profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
-
-                logger.info("  🧪 TESTE ELIGIBILITATE:");
-                logger.info("    - User exists: {}", userExists);
-                logger.info("    - Has team_type: {}", hasTeamType);
-                logger.info("    - Team_type not empty: {}", teamTypeNotEmpty);
-                logger.info("    - Status valid: {}", statusValid);
-                logger.info("    - Has halls: {}", hasHalls);
-                logger.info("    - Halls not empty: {}", hallsNotEmpty);
-
-                boolean eligible = userExists && hasTeamType && teamTypeNotEmpty && statusValid && hasHalls && hallsNotEmpty;
-                logger.info("  🎯 REZULTAT FINAL - ELIGIBIL: {}", eligible);
-
-                if (!eligible) {
-                    logger.warn("  ⚠️ PROFIL NEELIGIBIL - MOTIVUL:");
-                    if (!userExists) logger.warn("    - User lipsește");
-                    if (!hasTeamType) logger.warn("    - team_type este null");
-                    if (!teamTypeNotEmpty) logger.warn("    - team_type este gol");
-                    if (!statusValid) logger.warn("    - account_status nu este active/verified");
-                    if (!hasHalls) logger.warn("    - selectedHalls este null");
-                    if (!hallsNotEmpty) logger.warn("    - selectedHalls este gol");
-                }
-            }
-
-            // ===== DEBUGGING: VERIFICARE ELIGIBILITATE =====
-            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
-            logger.info("🎯 === REZULTAT ELIGIBILITATE ===");
-            logger.info("Profiluri eligibile: {} din {}", eligibleProfiles.size(), allProfiles.size());
-
-            if (eligibleProfiles.isEmpty()) {
-                logger.error("❌ ZERO PROFILURI ELIGIBILE! Procesul se oprește aici.");
-                logger.error("🔧 SOLUȚII POSIBILE:");
-                logger.error("   1. UPDATE users SET team_type = 'standard' WHERE id IN (11, 13, 14);");
-                logger.error("   2. UPDATE users SET account_status = 'active' WHERE id IN (11, 13, 14);");
-                logger.error("   3. Verifică tabela profile_halls pentru asocieri");
-
-                Map<String, Object> debugResponse = new HashMap<>();
-                debugResponse.put("success", false);
-                debugResponse.put("message", "Nu există profiluri eligibile pentru generare");
-                debugResponse.put("totalProfiles", allProfiles.size());
-                debugResponse.put("eligibleProfiles", 0);
-                debugResponse.put("debug", "Verifică team_type, account_status și selected_halls");
-
-                return ResponseEntity.ok(debugResponse);
-            }
-
-            // ===== DEBUGGING: VERIFICARE SĂLI ACTIVE =====
-            List<SportsHall> activeHalls = getActiveHallsWithSchedules();
-            logger.info("🏢 === SĂLI ACTIVE ===");
-            logger.info("Săli active găsite: {}", activeHalls.size());
-
-            if (activeHalls.isEmpty()) {
-                logger.error("❌ ZERO SĂLI ACTIVE! Procesul se oprește aici.");
-
-                Map<String, Object> debugResponse = new HashMap<>();
-                debugResponse.put("success", false);
-                debugResponse.put("message", "Nu există săli active disponibile");
-                debugResponse.put("eligibleProfiles", eligibleProfiles.size());
-                debugResponse.put("activeHalls", 0);
-
-                return ResponseEntity.ok(debugResponse);
-            }
-
             logger.info("Începerea procesului de generare automată a rezervărilor...");
 
             // Calculează data pentru săptămâna următoare
@@ -208,6 +106,9 @@ public class BookingPrioritizationRestController {
      */
     private Date calculateNextWeekStart() {
         Calendar calendar = Calendar.getInstance();
+        logger.info("Calendar timezone: {}", calendar.getTimeZone().getID());
+        logger.info("Current day of week: {} (1=Sunday, 2=Monday, etc.)", calendar.get(Calendar.DAY_OF_WEEK));
+        logger.info("Current date: {}", calendar.getTime());
         int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         logger.info("Ziua curentă: {} (1=Duminică, 2=Luni, etc.)", currentDayOfWeek);
@@ -320,27 +221,59 @@ public class BookingPrioritizationRestController {
                 .stream(reservationProfileRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
 
-        return allProfiles.stream()
+        logger.info("Total profiluri găsite în DB: {}", allProfiles.size());
+
+        // Log detaliat pentru fiecare profil
+        for (ReservationProfile profile : allProfiles) {
+            logger.info("Profil {}: user={}, teamType={}, accountStatus={}, selectedHalls={}",
+                    profile.getName(),
+                    profile.getUser() != null ? profile.getUser().getId() : "null",
+                    profile.getUser() != null ? profile.getUser().getTeamType() : "null",
+                    profile.getUser() != null ? profile.getUser().getAccountStatus() : "null",
+                    profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0
+            );
+        }
+
+        List<ReservationProfile> eligibleProfiles = allProfiles.stream()
                 .filter(profile -> {
                     User user = profile.getUser();
-                    return user != null
-                            && user.getTeamType() != null
-                            && !user.getTeamType().isEmpty()
-                            && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"))
-                            && profile.getSelectedHalls() != null
-                            && !profile.getSelectedHalls().isEmpty();
+                    boolean hasUser = user != null;
+                    boolean hasTeamType = hasUser && user.getTeamType() != null && !user.getTeamType().isEmpty();
+                    boolean hasValidStatus = hasUser && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"));
+                    boolean hasSelectedHalls = profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
+
+                    logger.debug("Profil {} - hasUser: {}, hasTeamType: {}, hasValidStatus: {}, hasSelectedHalls: {}",
+                            profile.getName(), hasUser, hasTeamType, hasValidStatus, hasSelectedHalls);
+
+                    return hasUser && hasTeamType && hasValidStatus && hasSelectedHalls;
                 })
                 .collect(Collectors.toList());
+
+        logger.info("Profiluri eligibile după filtrare: {}", eligibleProfiles.size());
+        return eligibleProfiles;
     }
 
     /**
      * Obține sălile active cu programele lor
      */
     private List<SportsHall> getActiveHallsWithSchedules() {
-        return StreamSupport
+        List<SportsHall> allHalls = StreamSupport
                 .stream(sportsHallRepository.findAll().spliterator(), false)
-                .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE)
                 .collect(Collectors.toList());
+
+        logger.info("Total săli găsite în DB: {}", allHalls.size());
+
+        List<SportsHall> activeHalls = allHalls.stream()
+                .filter(hall -> {
+                    boolean isActive = hall.getStatus() == SportsHall.HallStatus.ACTIVE;
+                    logger.debug("Sala {} - status: {}, isActive: {}",
+                            hall.getName(), hall.getStatus(), isActive);
+                    return isActive;
+                })
+                .collect(Collectors.toList());
+
+        logger.info("Săli active: {}", activeHalls.size());
+        return activeHalls;
     }
 
     /**
@@ -348,9 +281,11 @@ public class BookingPrioritizationRestController {
      */
     private List<Schedule> fetchHallSchedule(Long hallId) {
         try {
-            return scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
+            List<Schedule> schedules = scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
+            logger.info("Program găsit pentru sala {}: {} intrări", hallId, schedules.size());
+            return schedules;
         } catch (Exception e) {
-            logger.error("Error fetching hall schedule for hall ID {}: {}", hallId, e.getMessage());
+            logger.error("Error fetching hall schedule for hall ID {}: {}", hallId, e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -462,6 +397,8 @@ public class BookingPrioritizationRestController {
         ProfileReservationResult result = new ProfileReservationResult();
         result.setProfile(profile);
 
+        logger.info("Generare rezervări pentru profilul: {}", profile.getName());
+
         // Determină numărul maxim de rezervări și bugetul
         int maxBookings = getMaxBookingsPerWeek(profile);
         BigDecimal weeklyBudget = profile.getWeeklyBudget();
@@ -469,11 +406,22 @@ public class BookingPrioritizationRestController {
         User user = profile.getUser();
         String city = profile.getCity();
 
+        logger.info("Profil {} - maxBookings: {}, weeklyBudget: {}, city: {}, timeInterval: {}",
+                profile.getName(), maxBookings, weeklyBudget, city, timeInterval);
+
         // Filtrează sălile în funcție de oraș și profilele selectate
         List<SportsHall> availableHalls = profile.getSelectedHalls().stream()
-                .filter(hall -> hall.getCity().equals(city) &&
-                        hall.getStatus() == SportsHall.HallStatus.ACTIVE)
+                .filter(hall -> {
+                    boolean cityMatch = hall.getCity().equals(city);
+                    boolean isActive = hall.getStatus() == SportsHall.HallStatus.ACTIVE;
+                    logger.debug("Sala {} - oraș: {} (match: {}), status: {} (active: {})",
+                            hall.getName(), hall.getCity(), cityMatch, hall.getStatus(), isActive);
+                    return cityMatch && isActive;
+                })
                 .collect(Collectors.toList());
+
+        logger.info("Săli disponibile pentru profilul {}: {} din {}",
+                profile.getName(), availableHalls.size(), profile.getSelectedHalls().size());
 
         if (availableHalls.isEmpty()) {
             logger.warn("Nu există săli disponibile pentru profilul {} în orașul {}",
@@ -485,9 +433,15 @@ public class BookingPrioritizationRestController {
         List<AvailableSlot> availableSlots = findAvailableSlotsForProfile(
                 schedule, availableHalls, profile, startDate);
 
+        logger.info("Sloturi disponibile găsite pentru profilul {}: {}",
+                profile.getName(), availableSlots.size());
+
         // Selectează rezervările în funcție de buget și prioritate
         List<SelectedReservation> selectedReservations = selectReservationsWithinBudget(
                 availableSlots, maxBookings, weeklyBudget);
+
+        logger.info("Rezervări selectate pentru profilul {}: {} din {} sloturi disponibile",
+                profile.getName(), selectedReservations.size(), availableSlots.size());
 
         if (selectedReservations.isEmpty()) {
             logger.info("Nu s-au putut selecta rezervări pentru profilul {} din cauza bugetului sau disponibilității",
@@ -1008,5 +962,160 @@ public class BookingPrioritizationRestController {
 
         public int getStartMinutes() { return startMinutes; }
         public int getEndMinutes() { return endMinutes; }
+    }
+
+    // Adaugă acest endpoint în BookingPrioritizationRestController pentru debugging
+
+    @GetMapping("/debug-generation")
+    public ResponseEntity<Map<String, Object>> debugGeneration() {
+        Map<String, Object> debug = new HashMap<>();
+
+        try {
+            // 1. Date generale
+            debug.put("serverTime", new Date());
+            debug.put("serverTimezone", TimeZone.getDefault().getID());
+            debug.put("nextWeekStart", calculateNextWeekStart());
+
+            // 2. Statistici DB
+            Map<String, Long> dbStats = new HashMap<>();
+            dbStats.put("totalProfiles", reservationProfileRepository.count());
+            dbStats.put("totalUsers", userRepository.count());
+            dbStats.put("totalHalls", sportsHallRepository.count());
+            dbStats.put("totalSchedules", scheduleRepository.count());
+            debug.put("dbStats", dbStats);
+
+            // 3. Profiluri eligibile
+            List<ReservationProfile> allProfiles = StreamSupport
+                    .stream(reservationProfileRepository.findAll().spliterator(), false)
+                    .collect(Collectors.toList());
+
+            List<Map<String, Object>> profileDetails = new ArrayList<>();
+            for (ReservationProfile profile : allProfiles) {
+                Map<String, Object> profileInfo = new HashMap<>();
+                profileInfo.put("id", profile.getId());
+                profileInfo.put("name", profile.getName());
+                profileInfo.put("hasUser", profile.getUser() != null);
+                profileInfo.put("userId", profile.getUser() != null ? profile.getUser().getId() : null);
+                profileInfo.put("userTeamType", profile.getUser() != null ? profile.getUser().getTeamType() : null);
+                profileInfo.put("userStatus", profile.getUser() != null ? profile.getUser().getAccountStatus() : null);
+                profileInfo.put("selectedHallsCount", profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0);
+                profileInfo.put("city", profile.getCity());
+                profileInfo.put("weeklyBudget", profile.getWeeklyBudget());
+                profileInfo.put("autoPaymentEnabled", profile.getAutoPaymentEnabled());
+
+                // Verifică eligibilitatea
+                User user = profile.getUser();
+                boolean isEligible = user != null
+                        && user.getTeamType() != null
+                        && !user.getTeamType().isEmpty()
+                        && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"))
+                        && profile.getSelectedHalls() != null
+                        && !profile.getSelectedHalls().isEmpty();
+                profileInfo.put("isEligible", isEligible);
+
+                profileDetails.add(profileInfo);
+            }
+            debug.put("profileDetails", profileDetails);
+            debug.put("eligibleProfilesCount", getEligibleProfiles().size());
+
+            // 4. Săli active
+            List<SportsHall> allHalls = StreamSupport
+                    .stream(sportsHallRepository.findAll().spliterator(), false)
+                    .collect(Collectors.toList());
+
+            List<Map<String, Object>> hallDetails = new ArrayList<>();
+            for (SportsHall hall : allHalls) {
+                Map<String, Object> hallInfo = new HashMap<>();
+                hallInfo.put("id", hall.getId());
+                hallInfo.put("name", hall.getName());
+                hallInfo.put("city", hall.getCity());
+                hallInfo.put("status", hall.getStatus());
+                hallInfo.put("isActive", hall.getStatus() == SportsHall.HallStatus.ACTIVE);
+
+                // Verifică programul
+                List<Schedule> schedules = fetchHallSchedule(hall.getId());
+                hallInfo.put("scheduleCount", schedules.size());
+
+                hallDetails.add(hallInfo);
+            }
+            debug.put("hallDetails", hallDetails);
+            debug.put("activeHallsCount", getActiveHallsWithSchedules().size());
+
+            // 5. Test de generare pentru primul profil eligibil
+            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
+            if (!eligibleProfiles.isEmpty()) {
+                ReservationProfile testProfile = eligibleProfiles.get(0);
+                Map<String, Object> testGen = new HashMap<>();
+                testGen.put("profileName", testProfile.getName());
+                testGen.put("profileCity", testProfile.getCity());
+
+                // Verifică sălile pentru acest profil
+                List<SportsHall> profileHalls = testProfile.getSelectedHalls().stream()
+                        .filter(hall -> hall.getCity().equals(testProfile.getCity()) &&
+                                hall.getStatus() == SportsHall.HallStatus.ACTIVE)
+                        .collect(Collectors.toList());
+                testGen.put("availableHallsForProfile", profileHalls.size());
+
+                debug.put("testProfileGeneration", testGen);
+            }
+
+            return ResponseEntity.ok(debug);
+
+        } catch (Exception e) {
+            debug.put("error", e.getMessage());
+            debug.put("stackTrace", Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(debug);
+        }
+    }
+
+    // Adaugă și acest endpoint pentru a verifica o generare simulată
+    @PostMapping("/simulate-generation")
+    public ResponseEntity<Map<String, Object>> simulateGeneration() {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            Date nextMonday = calculateNextWeekStart();
+            result.put("targetWeek", formatDate(nextMonday));
+
+            List<ReservationProfile> eligible = getEligibleProfiles();
+            result.put("eligibleProfiles", eligible.size());
+
+            if (eligible.isEmpty()) {
+                result.put("reason", "Nu există profiluri eligibile");
+                return ResponseEntity.ok(result);
+            }
+
+            List<SportsHall> activeHalls = getActiveHallsWithSchedules();
+            result.put("activeHalls", activeHalls.size());
+
+            if (activeHalls.isEmpty()) {
+                result.put("reason", "Nu există săli active");
+                return ResponseEntity.ok(result);
+            }
+
+            // Simulează pentru primul profil
+            ReservationProfile firstProfile = eligible.get(0);
+            Map<Long, Map<String, Map<String, SlotAvailability>>> schedule =
+                    createAvailabilityScheduleWithHallPrograms(activeHalls, nextMonday);
+
+            List<AvailableSlot> slots = findAvailableSlotsForProfile(
+                    schedule,
+                    firstProfile.getSelectedHalls().stream()
+                            .filter(h -> h.getStatus() == SportsHall.HallStatus.ACTIVE)
+                            .collect(Collectors.toList()),
+                    firstProfile,
+                    nextMonday
+            );
+
+            result.put("availableSlotsForFirstProfile", slots.size());
+            result.put("firstProfileName", firstProfile.getName());
+            result.put("firstProfileCity", firstProfile.getCity());
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            result.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
     }
 }

@@ -35,6 +35,7 @@ public class WeeklyPaymentScheduler {
     @Autowired
     private AutoPaymentService autoPaymentService;
 
+
     /**
      * Se execută în fiecare duminică la ora 22:00 pentru a procesa plățile automate
      * Cron expression: "0 0 22 * * SUN" = la ora 22:00 în fiecare duminică
