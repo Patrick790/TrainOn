@@ -27,8 +27,7 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "tariff")
     private Float tariff;
 
-    @Lob
-    @Column(name = "facilities")
+    @Column(name = "facilities", columnDefinition = "TEXT")
     private String facilities;
 
     @Column(name = "county")
@@ -37,8 +36,7 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "city")
     private String city;
 
-    @Lob
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "phone_number")

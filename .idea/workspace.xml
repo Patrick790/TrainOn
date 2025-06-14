@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="backend deploy 2">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="@Lob for SportsHall">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -366,7 +367,7 @@
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
       <workItem from="1749719443674" duration="40253000" />
-      <workItem from="1749892706593" duration="339000" />
+      <workItem from="1749892706593" duration="1993000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -680,7 +681,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749824046436</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="@Lob for SportsHall">
+      <option name="closed" value="true" />
+      <created>1749893236693</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1749893236693</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -710,7 +719,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="view all halls + details + logo" />
     <MESSAGE value="emails working" />
     <MESSAGE value="users management" />
     <MESSAGE value="single hall + halls list" />
@@ -735,7 +743,8 @@
     <MESSAGE value="frontend deploy 5" />
     <MESSAGE value="backend deploy" />
     <MESSAGE value="backend deploy 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="backend deploy 2" />
+    <MESSAGE value="@Lob for SportsHall" />
+    <option name="LAST_COMMIT_MESSAGE" value="@Lob for SportsHall" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
