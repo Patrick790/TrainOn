@@ -140,7 +140,7 @@ const SportsHallDetailPage = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
-    const API_URL = 'http://localhost:8080';
+    const API_URL = process.env.REACT_APP_API_URL || '';
 
     useEffect(() => {
         fetchSportsHall();
