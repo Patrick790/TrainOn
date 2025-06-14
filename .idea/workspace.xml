@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="timezone">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -369,7 +371,7 @@
       <workItem from="1749719443674" duration="40253000" />
       <workItem from="1749892706593" duration="6009000" />
       <workItem from="1749913355386" duration="2309000" />
-      <workItem from="1749916696305" duration="8786000" />
+      <workItem from="1749916696305" duration="9841000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -755,7 +757,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749926292011</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="timezone">
+      <option name="closed" value="true" />
+      <created>1749928472221</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1749928472221</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

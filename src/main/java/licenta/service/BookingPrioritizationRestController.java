@@ -1,5 +1,6 @@
 package licenta.service;
 
+import jakarta.transaction.Transactional;
 import licenta.model.*;
 import licenta.persistence.*;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/booking-prioritization")
+@Transactional
 public class BookingPrioritizationRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingPrioritizationRestController.class);
@@ -56,6 +59,109 @@ public class BookingPrioritizationRestController {
         this.paymentRepository = paymentRepository;
         this.cardPaymentMethodRepository = cardPaymentMethodRepository;
         this.autoPaymentService = autoPaymentService;
+    }
+
+    @GetMapping("/diagnostic")
+    public ResponseEntity<Map<String, Object>> diagnosticCheck() {
+        Map<String, Object> diagnostic = new HashMap<>();
+
+        try {
+            // 1. Verifică profilurile
+            List<ReservationProfile> allProfiles = (List<ReservationProfile>) reservationProfileRepository.findAll();
+            diagnostic.put("totalProfiles", allProfiles.size());
+
+            List<Map<String, Object>> profilesInfo = new ArrayList<>();
+            for (ReservationProfile profile : allProfiles) {
+                Map<String, Object> profileInfo = new HashMap<>();
+                profileInfo.put("id", profile.getId());
+                profileInfo.put("name", profile.getName());
+                profileInfo.put("hasUser", profile.getUser() != null);
+
+                if (profile.getUser() != null) {
+                    profileInfo.put("userEmail", profile.getUser().getEmail());
+                    profileInfo.put("userTeamType", profile.getUser().getTeamType());
+                    profileInfo.put("userAccountStatus", profile.getUser().getAccountStatus());
+                }
+
+                profileInfo.put("selectedHallsCount",
+                        profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0);
+                profileInfo.put("weeklyBudget", profile.getWeeklyBudget());
+                profileInfo.put("city", profile.getCity());
+                profileInfo.put("sport", profile.getSport());
+
+                profilesInfo.add(profileInfo);
+            }
+            diagnostic.put("profiles", profilesInfo);
+
+            // 2. Verifică profilurile eligibile
+            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
+            diagnostic.put("eligibleProfilesCount", eligibleProfiles.size());
+
+            // 3. Verifică sălile active
+            List<SportsHall> activeHalls = getActiveHallsWithSchedules();
+            diagnostic.put("activeHallsCount", activeHalls.size());
+
+            List<Map<String, Object>> hallsInfo = new ArrayList<>();
+            for (SportsHall hall : activeHalls) {
+                Map<String, Object> hallInfo = new HashMap<>();
+                hallInfo.put("id", hall.getId());
+                hallInfo.put("name", hall.getName());
+                hallInfo.put("city", hall.getCity());
+                hallInfo.put("status", hall.getStatus());
+
+                List<Schedule> schedules = fetchHallSchedule(hall.getId());
+                hallInfo.put("schedulesCount", schedules.size());
+
+                hallsInfo.add(hallInfo);
+            }
+            diagnostic.put("halls", hallsInfo);
+
+            // 4. Verifică datele pentru generare
+            Date nextWeekStart = calculateNextWeekStart();
+            Date nextWeekEnd = calculateWeekEnd(nextWeekStart);
+
+            diagnostic.put("nextWeekStart", nextWeekStart.toString());
+            diagnostic.put("nextWeekEnd", nextWeekEnd.toString());
+            diagnostic.put("currentTime", new Date().toString());
+            diagnostic.put("timezone", TimeZone.getDefault().getID());
+
+            // 5. Test de generare pentru primul profil eligibil
+            if (!eligibleProfiles.isEmpty()) {
+                ReservationProfile testProfile = eligibleProfiles.get(0);
+                diagnostic.put("testProfileName", testProfile.getName());
+
+                // Verifică sălile selectate pentru acest profil
+                List<String> selectedHallNames = testProfile.getSelectedHalls().stream()
+                        .map(SportsHall::getName)
+                        .collect(Collectors.toList());
+                diagnostic.put("testProfileSelectedHalls", selectedHallNames);
+
+                // Verifică disponibilitatea
+                Map<Long, Map<String, Map<String, SlotAvailability>>> schedule =
+                        createAvailabilityScheduleWithHallPrograms(activeHalls, nextWeekStart);
+
+                List<AvailableSlot> availableSlots = findAvailableSlotsForProfile(
+                        schedule,
+                        testProfile.getSelectedHalls().stream()
+                                .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE)
+                                .collect(Collectors.toList()),
+                        testProfile,
+                        nextWeekStart
+                );
+
+                diagnostic.put("testProfileAvailableSlots", availableSlots.size());
+            }
+
+            diagnostic.put("success", true);
+
+        } catch (Exception e) {
+            diagnostic.put("success", false);
+            diagnostic.put("error", e.getMessage());
+            diagnostic.put("stackTrace", Arrays.toString(e.getStackTrace()));
+            logger.error("Diagnostic check failed", e);
+        }
+
+        return ResponseEntity.ok(diagnostic);
     }
 
     /**
@@ -105,20 +211,23 @@ public class BookingPrioritizationRestController {
      * Calculează data de început pentru săptămâna următoare calendaristică
      */
     private Date calculateNextWeekStart() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Bucharest"));
+        // IMPORTANT: Folosește timezone-ul României explicit
+        TimeZone romaniaTimeZone = TimeZone.getTimeZone("Europe/Bucharest");
+        Calendar calendar = Calendar.getInstance(romaniaTimeZone);
+
+        // Log pentru debug
+        logger.info("DEBUG: Current date/time in Romania: {}", calendar.getTime());
+        logger.info("DEBUG: Current day of week: {} (1=Sunday, 2=Monday, etc.)", calendar.get(Calendar.DAY_OF_WEEK));
+
         int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-        logger.info("Ziua curentă: {} (1=Duminică, 2=Luni, etc.)", currentDayOfWeek);
-
         if (currentDayOfWeek == Calendar.SUNDAY) {
-            // Dacă e duminică, săptămâna următoare începe mâine (luni)
             calendar.add(Calendar.DAY_OF_YEAR, 1);
-            logger.info("Este duminică - generez pentru săptămâna care începe mâine");
+            logger.info("DEBUG: Este duminică - generez pentru săptămâna care începe mâine");
         } else {
-            // Pentru orice altă zi, mergi la luni săptămâna viitoare
             int daysUntilNextMonday = Calendar.MONDAY - currentDayOfWeek + 7;
             calendar.add(Calendar.DAY_OF_YEAR, daysUntilNextMonday);
-            logger.info("Nu este duminică - generez pentru luni săptămâna viitoare (peste {} zile)", daysUntilNextMonday);
+            logger.info("DEBUG: Nu este duminică - generez pentru luni săptămâna viitoare (peste {} zile)", daysUntilNextMonday);
         }
 
         // Setează la începutul zilei
@@ -127,7 +236,10 @@ public class BookingPrioritizationRestController {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        return calendar.getTime();
+        Date nextWeekStart = calendar.getTime();
+        logger.info("DEBUG: Next week start date: {}", nextWeekStart);
+
+        return nextWeekStart;
     }
 
     /**
@@ -144,25 +256,38 @@ public class BookingPrioritizationRestController {
      * Șterge toate rezervările existente din săptămâna următoare pentru a permite regenerarea
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea rezervărilor existente pentru săptămâna {} - {}", startDate, endDate);
+        logger.info("DEBUG: Ștergerea rezervărilor existente pentru săptămâna {} - {}", startDate, endDate);
 
-        Iterable<Reservation> existingReservations = reservationRepository.findAll();
-        List<Reservation> reservationsToDelete = new ArrayList<>();
+        try {
+            // Folosește @Query pentru ștergere mai eficientă
+            List<Reservation> reservationsToDelete = StreamSupport
+                    .stream(reservationRepository.findAll().spliterator(), false)
+                    .filter(reservation -> {
+                        Date reservationDate = reservation.getDate();
+                        return reservationDate != null
+                                && !reservationDate.before(startDate)
+                                && !reservationDate.after(endDate)
+                                && "reservation".equals(reservation.getType())
+                                && !"CANCELLED".equals(reservation.getStatus());
+                    })
+                    .collect(Collectors.toList());
 
-        for (Reservation reservation : existingReservations) {
-            Date reservationDate = reservation.getDate();
+            if (!reservationsToDelete.isEmpty()) {
+                logger.info("DEBUG: Se șterg {} rezervări existente", reservationsToDelete.size());
 
-            if (reservationDate != null
-                    && !reservationDate.before(startDate)
-                    && !reservationDate.after(endDate)
-                    && "reservation".equals(reservation.getType())) {
-                reservationsToDelete.add(reservation);
+                // Log primele câteva pentru debug
+                reservationsToDelete.stream().limit(5).forEach(r ->
+                        logger.info("DEBUG: Șterg rezervarea: Hall {}, Date {}, TimeSlot {}",
+                                r.getHall().getName(), r.getDate(), r.getTimeSlot())
+                );
+
+                reservationRepository.deleteAll(reservationsToDelete);
+            } else {
+                logger.info("DEBUG: Nu există rezervări de șters pentru perioada specificată");
             }
-        }
-
-        if (!reservationsToDelete.isEmpty()) {
-            logger.info("Se șterg {} rezervări existente", reservationsToDelete.size());
-            reservationRepository.deleteAll(reservationsToDelete);
+        } catch (Exception e) {
+            logger.error("ERROR: Eroare la ștergerea rezervărilor existente", e);
+            throw new RuntimeException("Eroare la ștergerea rezervărilor existente: " + e.getMessage());
         }
     }
 
@@ -174,18 +299,41 @@ public class BookingPrioritizationRestController {
 
         // Obține toate profilurile eligibile
         List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
-        logger.info("Profiluri eligibile găsite: {}", eligibleProfiles.size());
+        logger.info("DEBUG: Profiluri eligibile găsite: {}", eligibleProfiles.size());
+
+        // Log detaliat pentru fiecare profil
+        for (ReservationProfile profile : eligibleProfiles) {
+            logger.info("DEBUG: Profil {} - User: {}, TeamType: {}, AccountStatus: {}, SelectedHalls: {}",
+                    profile.getName(),
+                    profile.getUser() != null ? profile.getUser().getEmail() : "NULL",
+                    profile.getUser() != null ? profile.getUser().getTeamType() : "NULL",
+                    profile.getUser() != null ? profile.getUser().getAccountStatus() : "NULL",
+                    profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0
+            );
+        }
 
         // Sortează profilele după prioritate
         List<ReservationProfile> prioritizedProfiles = prioritizeProfiles(eligibleProfiles);
+        logger.info("DEBUG: Profiluri după prioritizare: {}", prioritizedProfiles.size());
 
         // Obține toate sălile active cu programele lor
         List<SportsHall> allHalls = getActiveHallsWithSchedules();
-        logger.info("Săli active găsite: {}", allHalls.size());
+        logger.info("DEBUG: Săli active găsite: {}", allHalls.size());
+
+        // Log pentru fiecare sală
+        for (SportsHall hall : allHalls) {
+            logger.info("DEBUG: Sală {} - Status: {}, City: {}",
+                    hall.getName(),
+                    hall.getStatus(),
+                    hall.getCity()
+            );
+        }
 
         // Creează programul disponibil pentru săptămâna următoare
         Map<Long, Map<String, Map<String, SlotAvailability>>> availabilitySchedule =
                 createAvailabilityScheduleWithHallPrograms(allHalls, startDate);
+
+        logger.info("DEBUG: Availability schedule created for {} halls", availabilitySchedule.size());
 
         // Marchează sloturile deja rezervate și cele de mentenanță
         markExistingReservations(availabilitySchedule, startDate);
@@ -193,40 +341,62 @@ public class BookingPrioritizationRestController {
         // Generează rezervările automate cu plăți
         for (ReservationProfile profile : prioritizedProfiles) {
             try {
+                logger.info("DEBUG: Procesare profil: {}", profile.getName());
+
                 ProfileReservationResult profileResult = generateReservationsForProfileWithPayment(
                         profile, availabilitySchedule, startDate);
 
                 result.addProfileResult(profileResult);
-                logger.info("Profil {}: {} rezervări generate",
-                        profile.getName(), profileResult.getReservations().size());
+
+                logger.info("DEBUG: Profil {} - Rezervări generate: {}, Payment success: {}",
+                        profile.getName(),
+                        profileResult.getReservations().size(),
+                        profileResult.getPaymentResult() != null ? profileResult.getPaymentResult().isSuccessful() : "NULL"
+                );
 
             } catch (Exception e) {
-                logger.error("Eroare la generarea rezervărilor pentru profilul {}: {}",
+                logger.error("DEBUG: Eroare la generarea rezervărilor pentru profilul {}: {}",
                         profile.getName(), e.getMessage(), e);
                 result.addFailedProfile(profile, e.getMessage());
             }
         }
 
+        logger.info("DEBUG: Total rezervări generate: {}", result.getTotalReservations());
         return result;
     }
 
-    /**
-     * Obține profilurile eligibile pentru generarea automată
-     */
+    // În metoda getEligibleProfiles - adaugă debugging
     private List<ReservationProfile> getEligibleProfiles() {
         List<ReservationProfile> allProfiles = StreamSupport
                 .stream(reservationProfileRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
 
+        logger.info("DEBUG: Total profiluri în DB: {}", allProfiles.size());
+
+        for (ReservationProfile profile : allProfiles) {
+            if (profile.getUser() != null) {
+                // Accesează câmpurile pentru a forța încărcarea
+                profile.getUser().getEmail();
+                profile.getUser().getTeamType();
+                profile.getUser().getAccountStatus();
+            }
+            if (profile.getSelectedHalls() != null) {
+                profile.getSelectedHalls().size(); // Forțează încărcarea colecției
+            }
+        }
+
         return allProfiles.stream()
                 .filter(profile -> {
                     User user = profile.getUser();
-                    return user != null
-                            && user.getTeamType() != null
-                            && !user.getTeamType().isEmpty()
-                            && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"))
-                            && profile.getSelectedHalls() != null
-                            && !profile.getSelectedHalls().isEmpty();
+                    boolean hasUser = user != null;
+                    boolean hasTeamType = hasUser && user.getTeamType() != null && !user.getTeamType().isEmpty();
+                    boolean hasValidStatus = hasUser && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"));
+                    boolean hasSelectedHalls = profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
+
+                    logger.info("DEBUG: Profil {} - hasUser: {}, hasTeamType: {}, hasValidStatus: {}, hasSelectedHalls: {}",
+                            profile.getName(), hasUser, hasTeamType, hasValidStatus, hasSelectedHalls);
+
+                    return hasUser && hasTeamType && hasValidStatus && hasSelectedHalls;
                 })
                 .collect(Collectors.toList());
     }
@@ -235,10 +405,26 @@ public class BookingPrioritizationRestController {
      * Obține sălile active cu programele lor
      */
     private List<SportsHall> getActiveHallsWithSchedules() {
-        return StreamSupport
+        List<SportsHall> activeHalls = StreamSupport
                 .stream(sportsHallRepository.findAll().spliterator(), false)
                 .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE)
                 .collect(Collectors.toList());
+
+        logger.info("DEBUG: Total active halls: {}", activeHalls.size());
+
+        // Verifică că fiecare sală are program
+        for (SportsHall hall : activeHalls) {
+            List<Schedule> schedules = fetchHallSchedule(hall.getId());
+            if (schedules.isEmpty()) {
+                logger.warn("WARNING: Hall {} ({}) has no schedules defined!",
+                        hall.getName(), hall.getId());
+            } else {
+                logger.info("DEBUG: Hall {} has {} schedule entries",
+                        hall.getName(), schedules.size());
+            }
+        }
+
+        return activeHalls;
     }
 
     /**
@@ -246,9 +432,11 @@ public class BookingPrioritizationRestController {
      */
     private List<Schedule> fetchHallSchedule(Long hallId) {
         try {
-            return scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
+            List<Schedule> schedules = scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
+            logger.info("DEBUG: Hall {} - Found {} schedules", hallId, schedules.size());
+            return schedules;
         } catch (Exception e) {
-            logger.error("Error fetching hall schedule for hall ID {}: {}", hallId, e.getMessage());
+            logger.error("DEBUG: Error fetching hall schedule for hall ID {}: {}", hallId, e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -432,9 +620,14 @@ public class BookingPrioritizationRestController {
 
         List<AvailableSlot> availableSlots = new ArrayList<>();
 
+        logger.info("DEBUG: Finding slots for profile {} - Checking {} halls", profile.getName(), halls.size());
+
         // Determină intervalul de ore preferat
         TimeInterval preferredInterval = getPreferredTimeInterval(profile.getTimeInterval());
         boolean isSenior = "senior".equals(profile.getAgeCategory()) || "seniori".equals(profile.getAgeCategory());
+
+        logger.info("DEBUG: Profile {} - TimeInterval: {}, IsSenior: {}",
+                profile.getName(), profile.getTimeInterval(), isSenior);
 
         // Generează toate combinațiile posibile
         for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
@@ -446,10 +639,12 @@ public class BookingPrioritizationRestController {
             for (SportsHall hall : halls) {
                 if (!schedule.containsKey(hall.getId()) ||
                         !schedule.get(hall.getId()).containsKey(dateKey)) {
+                    logger.warn("DEBUG: Schedule missing for hall {} on date {}", hall.getId(), dateKey);
                     continue;
                 }
 
                 Map<String, SlotAvailability> daySchedule = schedule.get(hall.getId()).get(dateKey);
+                int availableSlotsForDay = 0;
 
                 for (Map.Entry<String, SlotAvailability> entry : daySchedule.entrySet()) {
                     String timeSlot = entry.getKey();
@@ -457,19 +652,26 @@ public class BookingPrioritizationRestController {
 
                     if (availability.getStatus() == SlotStatus.AVAILABLE &&
                             isSlotSuitableForProfile(timeSlot, preferredInterval, isSenior)) {
-
+                        availableSlotsForDay++;
                         AvailableSlot slot = new AvailableSlot();
                         slot.setHall(hall);
                         slot.setDate(cal.getTime());
                         slot.setTimeSlot(timeSlot);
                         slot.setPrice(BigDecimal.valueOf(hall.getTariff()));
                         slot.setPriority(calculateSlotPriority(timeSlot, preferredInterval, isSenior));
-
                         availableSlots.add(slot);
                     }
                 }
+
+                if (availableSlotsForDay > 0) {
+                    logger.info("DEBUG: Hall {} on {} - {} available slots",
+                            hall.getName(), dateKey, availableSlotsForDay);
+                }
             }
         }
+
+        logger.info("DEBUG: Profile {} - Total available slots found: {}",
+                profile.getName(), availableSlots.size());
 
         // Sortează după prioritate și apoi randomizează în cadrul aceleiași priorități
         return availableSlots.stream()
@@ -741,12 +943,12 @@ public class BookingPrioritizationRestController {
     }
 
     private String formatDate(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        return String.format("%d-%02d-%02d", year, month, day);
+        // Folosește SimpleDateFormat cu timezone explicit
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/Bucharest"));
+        String formatted = sdf.format(date);
+        logger.debug("DEBUG: Formatted date {} to {}", date, formatted);
+        return formatted;
     }
 
     private void markExistingReservations(

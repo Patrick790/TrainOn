@@ -2,7 +2,7 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - LOG: %msg%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
         <RollingFile name="fileLogger"
                      fileName="./logs/app.log"
@@ -16,7 +16,7 @@
             </Policies>
             <!-- Max 10 files will be created everyday -->
             <DefaultRolloverStrategy max="10">
-                <Delete basePath="Licenta/logs" maxDepth="10">
+                <Delete basePath="logs" maxDepth="10">
                     <!-- Delete all files older than 30 days -->
                     <IfLastModified age="30d" />
                 </Delete>
@@ -24,7 +24,21 @@
         </RollingFile>
     </Appenders>
     <Loggers>
+        <!-- Logger specific pentru clasa ta de booking -->
+        <Logger name="licenta.service.BookingPrioritizationRestController" level="DEBUG" additivity="true">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="fileLogger"/>
+        </Logger>
+
+        <!-- Logger pentru toate clasele din service -->
+        <Logger name="licenta.service" level="DEBUG" additivity="true">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="fileLogger"/>
+        </Logger>
+
+        <!-- Root logger -->
         <Root level="info" additivity="false">
+            <AppenderRef ref="console"/>
             <AppenderRef ref="fileLogger"/>
         </Root>
     </Loggers>
