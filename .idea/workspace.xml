@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="debugging">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="debugging2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/WeeklyPaymentScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/WeeklyPaymentScheduler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -373,7 +370,7 @@
       <workItem from="1749719443674" duration="40253000" />
       <workItem from="1749892706593" duration="6009000" />
       <workItem from="1749913355386" duration="2309000" />
-      <workItem from="1749916696305" duration="5430000" />
+      <workItem from="1749916696305" duration="7206000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -743,7 +740,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749920504344</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="debugging2">
+      <option name="closed" value="true" />
+      <created>1749924377920</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1749924377920</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -773,7 +778,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="beginning of prioritization + footer pages" />
     <MESSAGE value="idk" />
     <MESSAGE value="almost finished" />
     <MESSAGE value="10.06.2025" />
@@ -798,7 +802,8 @@
     <MESSAGE value="Frontend fix" />
     <MESSAGE value="payment fix" />
     <MESSAGE value="debugging" />
-    <option name="LAST_COMMIT_MESSAGE" value="debugging" />
+    <MESSAGE value="debugging2" />
+    <option name="LAST_COMMIT_MESSAGE" value="debugging2" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

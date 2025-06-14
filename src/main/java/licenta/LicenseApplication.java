@@ -1,13 +1,28 @@
 package licenta;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.TimeZone;
+
 @SpringBootApplication
+@EnableScheduling // Adăugat pentru a asigura că @Scheduled funcționează
 public class LicenseApplication {
+
+    /**
+     * Setează fusul orar default pentru întreaga aplicație Java (JVM).
+     * Acest lucru asigură că operațiuni precum Calendar.getInstance()
+     * funcționează la fel pe orice server, indiferent de locația lui.
+     */
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Bucharest"));
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(LicenseApplication.class, args);
