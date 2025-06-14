@@ -101,10 +101,25 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/payment/bt/status/**").permitAll()
                         .requestMatchers("/payment/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări (doar pentru admini)
-                        .requestMatchers("/booking-prioritization/**").hasAuthority("admin")
-                        ///////
-                        .requestMatchers("/health", "/").permitAll()
+                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări
+                        .requestMatchers("/booking-prioritization/generate").hasAuthority("admin")
+                        .requestMatchers("/booking-prioritization/diagnostic").hasAuthority("admin")
+                        .requestMatchers("/booking-prioritization/test-generation").hasAuthority("admin")
+
+                        // TEMPORAR PENTRU DEBUG: Endpoint public pentru testare
+                        .requestMatchers("/booking-prioritization/public-debug").permitAll()
+
+                        // ADĂUGAT: Endpoints pentru vizualizarea log-urilor (doar pentru admini)
+                        .requestMatchers("/admin/logs/**").hasAuthority("admin")
+
+                        // ADĂUGAT: Endpoint pentru scheduler (doar pentru admini)
+                        .requestMatchers("/admin/scheduler/**").hasAuthority("admin")
+
+                        // Endpoint pentru FCFS status
+                        .requestMatchers("/fcfs/**").permitAll()
+
+                        // Endpoint pentru health check
+                        .requestMatchers("/health", "/", "/api", "/ping").permitAll()
 
                         .anyRequest().authenticated()
                 )
@@ -115,6 +130,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
