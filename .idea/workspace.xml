@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="TEXT">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="Frontend fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/users/StripePaymentPage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -366,7 +367,8 @@
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
       <workItem from="1749719443674" duration="40253000" />
-      <workItem from="1749892706593" duration="3769000" />
+      <workItem from="1749892706593" duration="6009000" />
+      <workItem from="1749913355386" duration="308000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -696,7 +698,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749894910947</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Frontend fix">
+      <option name="closed" value="true" />
+      <created>1749897196165</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1749897196165</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -726,7 +736,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="users management" />
     <MESSAGE value="single hall + halls list" />
     <MESSAGE value="profile creation + reserve button in home" />
     <MESSAGE value="beginning of prioritization + footer pages" />
@@ -751,7 +760,8 @@
     <MESSAGE value="backend deploy 2" />
     <MESSAGE value="@Lob for SportsHall" />
     <MESSAGE value="TEXT" />
-    <option name="LAST_COMMIT_MESSAGE" value="TEXT" />
+    <MESSAGE value="Frontend fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Frontend fix" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

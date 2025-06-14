@@ -11,7 +11,6 @@ const getAuthToken = () => {
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-
 // Funcție pentru header-uri cu autentificare
 const getAuthHeaders = () => {
     const token = getAuthToken();
@@ -301,8 +300,8 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
             }
 
             if (paymentIntent && paymentIntent.status === 'succeeded') {
-                // Pas 3: Finalizează comanda pe backend
-                const finalizeResponse = await fetch('http://localhost:8080/payment/stripe/finalize-payment-and-create-reservations', {
+                // Pas 3: Finalizează comanda pe backend - CORECTAT pentru a folosi API_BASE_URL
+                const finalizeResponse = await fetch(`${API_BASE_URL}/payment/stripe/finalize-payment-and-create-reservations`, {
                     method: 'POST',
                     headers: getAuthHeaders(),
                     body: JSON.stringify({
@@ -494,7 +493,8 @@ const StripePaymentPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${API_BASE_URL}/payment/confirm-payment-cash`, {                method: 'POST',
+            const response = await fetch(`${API_BASE_URL}/payment/confirm-payment-cash`, {
+                method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
                     reservations: reservationData,
