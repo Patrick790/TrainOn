@@ -6,10 +6,8 @@ import licenta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -26,663 +24,492 @@ public class BookingPrioritizationRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingPrioritizationRestController.class);
 
-    private final IReservationProfileRepository reservationProfileRepository;
-    private final IUserSpringRepository userRepository;
-    private final ISportsHallSpringRepository sportsHallRepository;
-    private final IReservationSpringRepository reservationRepository;
-    private final IScheduleSpringRepository scheduleRepository;
-    private final IPaymentSpringRepository paymentRepository;
-    private final ICardPaymentMethodSpringRepository cardPaymentMethodRepository;
-    private final AutoPaymentService autoPaymentService;
-
-    @Value("${spring.mail.username}")
-    private String senderEmail;
-
     @Autowired
-    private JavaMailSender mailSender;
-
+    private IReservationProfileRepository reservationProfileRepository;
     @Autowired
-    public BookingPrioritizationRestController(
-            IReservationProfileRepository reservationProfileRepository,
-            IUserSpringRepository userRepository,
-            ISportsHallSpringRepository sportsHallRepository,
-            IReservationSpringRepository reservationRepository,
-            IScheduleSpringRepository scheduleRepository,
-            IPaymentSpringRepository paymentRepository,
-            ICardPaymentMethodSpringRepository cardPaymentMethodRepository,
-            AutoPaymentService autoPaymentService) {
-        this.reservationProfileRepository = reservationProfileRepository;
-        this.userRepository = userRepository;
-        this.sportsHallRepository = sportsHallRepository;
-        this.reservationRepository = reservationRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.paymentRepository = paymentRepository;
-        this.cardPaymentMethodRepository = cardPaymentMethodRepository;
-        this.autoPaymentService = autoPaymentService;
-    }
-
-    @GetMapping("/diagnostic")
-    public ResponseEntity<Map<String, Object>> diagnosticCheck() {
-        Map<String, Object> diagnostic = new HashMap<>();
-
-        try {
-            // 1. Verifică profilurile
-            List<ReservationProfile> allProfiles = (List<ReservationProfile>) reservationProfileRepository.findAll();
-            diagnostic.put("totalProfiles", allProfiles.size());
-
-            List<Map<String, Object>> profilesInfo = new ArrayList<>();
-            for (ReservationProfile profile : allProfiles) {
-                Map<String, Object> profileInfo = new HashMap<>();
-                profileInfo.put("id", profile.getId());
-                profileInfo.put("name", profile.getName());
-                profileInfo.put("hasUser", profile.getUser() != null);
-
-                if (profile.getUser() != null) {
-                    profileInfo.put("userEmail", profile.getUser().getEmail());
-                    profileInfo.put("userTeamType", profile.getUser().getTeamType());
-                    profileInfo.put("userAccountStatus", profile.getUser().getAccountStatus());
-                }
-
-                profileInfo.put("selectedHallsCount",
-                        profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0);
-                profileInfo.put("weeklyBudget", profile.getWeeklyBudget());
-                profileInfo.put("city", profile.getCity());
-                profileInfo.put("sport", profile.getSport());
-
-                profilesInfo.add(profileInfo);
-            }
-            diagnostic.put("profiles", profilesInfo);
-
-            // 2. Verifică profilurile eligibile
-            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
-            diagnostic.put("eligibleProfilesCount", eligibleProfiles.size());
-
-            // 3. Verifică sălile active
-            List<SportsHall> activeHalls = getActiveHallsWithSchedules();
-            diagnostic.put("activeHallsCount", activeHalls.size());
-
-            List<Map<String, Object>> hallsInfo = new ArrayList<>();
-            for (SportsHall hall : activeHalls) {
-                Map<String, Object> hallInfo = new HashMap<>();
-                hallInfo.put("id", hall.getId());
-                hallInfo.put("name", hall.getName());
-                hallInfo.put("city", hall.getCity());
-                hallInfo.put("status", hall.getStatus());
-
-                List<Schedule> schedules = fetchHallSchedule(hall.getId());
-                hallInfo.put("schedulesCount", schedules.size());
-
-                hallsInfo.add(hallInfo);
-            }
-            diagnostic.put("halls", hallsInfo);
-
-            // 4. Verifică datele pentru generare
-            Date nextWeekStart = calculateNextWeekStart();
-            Date nextWeekEnd = calculateWeekEnd(nextWeekStart);
-
-            diagnostic.put("nextWeekStart", nextWeekStart.toString());
-            diagnostic.put("nextWeekEnd", nextWeekEnd.toString());
-            diagnostic.put("currentTime", new Date().toString());
-            diagnostic.put("timezone", TimeZone.getDefault().getID());
-
-            // 5. Test de generare pentru primul profil eligibil
-            if (!eligibleProfiles.isEmpty()) {
-                ReservationProfile testProfile = eligibleProfiles.get(0);
-                diagnostic.put("testProfileName", testProfile.getName());
-
-                // Verifică sălile selectate pentru acest profil
-                List<String> selectedHallNames = testProfile.getSelectedHalls().stream()
-                        .map(SportsHall::getName)
-                        .collect(Collectors.toList());
-                diagnostic.put("testProfileSelectedHalls", selectedHallNames);
-
-                // Verifică disponibilitatea
-                Map<Long, Map<String, Map<String, SlotAvailability>>> schedule =
-                        createAvailabilityScheduleWithHallPrograms(activeHalls, nextWeekStart);
-
-                List<AvailableSlot> availableSlots = findAvailableSlotsForProfile(
-                        schedule,
-                        testProfile.getSelectedHalls().stream()
-                                .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE)
-                                .collect(Collectors.toList()),
-                        testProfile,
-                        nextWeekStart
-                );
-
-                diagnostic.put("testProfileAvailableSlots", availableSlots.size());
-            }
-
-            diagnostic.put("success", true);
-
-        } catch (Exception e) {
-            diagnostic.put("success", false);
-            diagnostic.put("error", e.getMessage());
-            diagnostic.put("stackTrace", Arrays.toString(e.getStackTrace()));
-            logger.error("Diagnostic check failed", e);
-        }
-
-        return ResponseEntity.ok(diagnostic);
-    }
+    private IUserSpringRepository userRepository;
+    @Autowired
+    private ISportsHallSpringRepository sportsHallRepository;
+    @Autowired
+    private IReservationSpringRepository reservationRepository;
+    @Autowired
+    private IScheduleSpringRepository scheduleRepository;
+    @Autowired
+    private IPaymentSpringRepository paymentRepository;
 
     /**
-     * Endpoint pentru generarea automată a rezervărilor cu plăți automate
+     * Endpoint pentru generarea automată a rezervărilor (versiune simplificată)
      */
     @PostMapping("/generate")
     public ResponseEntity<Map<String, Object>> generateBookings() {
         try {
-            logger.info("Începerea procesului de generare automată a rezervărilor...");
+            logger.info("Începerea procesului simplificat de generare rezervări...");
 
-            // Calculează data pentru săptămâna următoare
-            Date nextMonday = calculateNextWeekStart();
-            Date nextSunday = calculateWeekEnd(nextMonday);
+            // 1. Calculează perioada pentru săptămâna următoare
+            Calendar nextWeekStart = getNextWeekStart();
+            Calendar nextWeekEnd = getNextWeekEnd(nextWeekStart);
 
-            logger.info("Generare pentru săptămâna: {} - {}", formatDate(nextMonday), formatDate(nextSunday));
+            logger.info("Generare pentru perioada: {} - {}",
+                    formatDate(nextWeekStart.getTime()),
+                    formatDate(nextWeekEnd.getTime()));
 
-            // Șterge rezervările existente din săptămâna următoare
-            deleteExistingReservationsForNextWeek(nextMonday, nextSunday);
+            // 2. Șterge rezervările existente pentru săptămâna următoare
+            deleteExistingReservationsForNextWeek(nextWeekStart.getTime(), nextWeekEnd.getTime());
 
-            // Generează noi rezervări cu plăți automate
-            GenerationResult result = generateAutomatedBookingsWithPayments(nextMonday);
+            // 3. Obține toate profilurile eligibile
+            List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
+            logger.info("Profiluri eligibile găsite: {}", eligibleProfiles.size());
+
+            if (eligibleProfiles.isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Nu există profiluri eligibile pentru generarea rezervărilor");
+                response.put("count", 0);
+                response.put("reservations", Collections.emptyList());
+                response.put("payments", Collections.emptyList());
+                return ResponseEntity.ok(response);
+            }
+
+            // 4. Sortează profilurile după prioritate
+            List<ReservationProfile> prioritizedProfiles = prioritizeProfiles(eligibleProfiles);
+
+            // 5. Obține toate sălile active
+            List<SportsHall> activeHalls = getActiveHalls();
+            logger.info("Săli active găsite: {}", activeHalls.size());
+
+            if (activeHalls.isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", "Nu există săli active pentru generarea rezervărilor");
+                response.put("count", 0);
+                response.put("reservations", Collections.emptyList());
+                response.put("payments", Collections.emptyList());
+                return ResponseEntity.ok(response);
+            }
+
+            // 6. Creează matricea de disponibilitate pentru săptămâna următoare
+            Map<String, Map<String, Map<String, Boolean>>> availabilityMatrix =
+                    createAvailabilityMatrix(activeHalls, nextWeekStart);
+
+            // 7. Generează rezervările pentru fiecare profil
+            List<Reservation> allReservations = new ArrayList<>();
+            List<Payment> allPayments = new ArrayList<>();
+
+            for (ReservationProfile profile : prioritizedProfiles) {
+                try {
+                    GenerationResult profileResult = generateReservationsForProfile(
+                            profile, availabilityMatrix, nextWeekStart);
+
+                    allReservations.addAll(profileResult.getReservations());
+                    allPayments.addAll(profileResult.getPayments());
+
+                    logger.info("Profil '{}' - {} rezervări generate",
+                            profile.getName(), profileResult.getReservations().size());
+
+                } catch (Exception e) {
+                    logger.error("Eroare la generarea rezervărilor pentru profilul '{}': {}",
+                            profile.getName(), e.getMessage(), e);
+                }
+            }
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Rezervările au fost generate cu succes.");
-            response.put("count", result.getTotalReservations());
-            response.put("reservations", result.getReservations());
-            response.put("payments", result.getPayments());
-            response.put("paymentsCount", result.getPayments().size());
-            response.put("autoPaymentsSuccessful", result.getAutoPaymentsSuccessful());
-            response.put("autoPaymentsFailed", result.getAutoPaymentsFailed());
+            response.put("message", "Rezervările au fost generate cu succes");
+            response.put("count", allReservations.size());
+            response.put("reservations", allReservations);
+            response.put("payments", allPayments);
+            response.put("paymentsCount", allPayments.size());
 
-            logger.info("Generare completă: {} rezervări, {} plăți procesate",
-                    result.getTotalReservations(), result.getPayments().size());
+            logger.info("Generare completă: {} rezervări, {} plăți",
+                    allReservations.size(), allPayments.size());
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             logger.error("Eroare la generarea rezervărilor", e);
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", "Eroare la generarea rezervărilor: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Eroare la generarea rezervărilor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     /**
-     * Calculează data de început pentru săptămâna următoare calendaristică
+     * Calculează începutul săptămânii următoare (luni)
      */
-    private Date calculateNextWeekStart() {
-        // IMPORTANT: Folosește timezone-ul României explicit
-        TimeZone romaniaTimeZone = TimeZone.getTimeZone("Europe/Bucharest");
-        Calendar calendar = Calendar.getInstance(romaniaTimeZone);
+    private Calendar getNextWeekStart() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Bucharest"));
 
-        // Log pentru debug
-        logger.info("DEBUG: Current date/time in Romania: {}", calendar.getTime());
-        logger.info("DEBUG: Current day of week: {} (1=Sunday, 2=Monday, etc.)", calendar.get(Calendar.DAY_OF_WEEK));
-
-        int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        // Găsește următoarea luni
+        int currentDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        int daysUntilNextMonday;
 
         if (currentDayOfWeek == Calendar.SUNDAY) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            logger.info("DEBUG: Este duminică - generez pentru săptămâna care începe mâine");
+            daysUntilNextMonday = 1; // Mâine este luni
         } else {
-            int daysUntilNextMonday = Calendar.MONDAY - currentDayOfWeek + 7;
-            calendar.add(Calendar.DAY_OF_YEAR, daysUntilNextMonday);
-            logger.info("DEBUG: Nu este duminică - generez pentru luni săptămâna viitoare (peste {} zile)", daysUntilNextMonday);
+            daysUntilNextMonday = Calendar.MONDAY - currentDayOfWeek + 7;
         }
 
+        cal.add(Calendar.DAY_OF_YEAR, daysUntilNextMonday);
+
         // Setează la începutul zilei
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
-        Date nextWeekStart = calendar.getTime();
-        logger.info("DEBUG: Next week start date: {}", nextWeekStart);
-
-        return nextWeekStart;
+        return cal;
     }
 
     /**
      * Calculează sfârșitul săptămânii (duminică)
      */
-    private Date calculateWeekEnd(Date weekStart) {
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime(weekStart);
-        endCal.add(Calendar.DAY_OF_YEAR, 6); // Luni + 6 zile = Duminică
-        return endCal.getTime();
+    private Calendar getNextWeekEnd(Calendar weekStart) {
+        Calendar weekEnd = (Calendar) weekStart.clone();
+        weekEnd.add(Calendar.DAY_OF_YEAR, 6); // Luni + 6 zile = Duminică
+        weekEnd.set(Calendar.HOUR_OF_DAY, 23);
+        weekEnd.set(Calendar.MINUTE, 59);
+        weekEnd.set(Calendar.SECOND, 59);
+        return weekEnd;
     }
 
     /**
-     * Șterge toate rezervările existente din săptămâna următoare pentru a permite regenerarea
+     * Șterge rezervările existente din săptămâna următoare
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("DEBUG: Ștergerea rezervărilor existente pentru săptămâna {} - {}", startDate, endDate);
-
         try {
-            // Folosește @Query pentru ștergere mai eficientă
-            List<Reservation> reservationsToDelete = StreamSupport
+            List<Reservation> existingReservations = StreamSupport
                     .stream(reservationRepository.findAll().spliterator(), false)
-                    .filter(reservation -> {
-                        Date reservationDate = reservation.getDate();
-                        return reservationDate != null
-                                && !reservationDate.before(startDate)
-                                && !reservationDate.after(endDate)
-                                && "reservation".equals(reservation.getType())
-                                && !"CANCELLED".equals(reservation.getStatus());
-                    })
+                    .filter(res -> res.getDate() != null &&
+                            !res.getDate().before(startDate) &&
+                            !res.getDate().after(endDate) &&
+                            "reservation".equals(res.getType()) &&
+                            !"CANCELLED".equals(res.getStatus()))
                     .collect(Collectors.toList());
 
-            if (!reservationsToDelete.isEmpty()) {
-                logger.info("DEBUG: Se șterg {} rezervări existente", reservationsToDelete.size());
-
-                // Log primele câteva pentru debug
-                reservationsToDelete.stream().limit(5).forEach(r ->
-                        logger.info("DEBUG: Șterg rezervarea: Hall {}, Date {}, TimeSlot {}",
-                                r.getHall().getName(), r.getDate(), r.getTimeSlot())
-                );
-
-                reservationRepository.deleteAll(reservationsToDelete);
-            } else {
-                logger.info("DEBUG: Nu există rezervări de șters pentru perioada specificată");
+            if (!existingReservations.isEmpty()) {
+                logger.info("Șterg {} rezervări existente pentru regenerare", existingReservations.size());
+                reservationRepository.deleteAll(existingReservations);
             }
         } catch (Exception e) {
-            logger.error("ERROR: Eroare la ștergerea rezervărilor existente", e);
+            logger.error("Eroare la ștergerea rezervărilor existente", e);
             throw new RuntimeException("Eroare la ștergerea rezervărilor existente: " + e.getMessage());
         }
     }
 
     /**
-     * Generează rezervări automate pentru săptămâna următoare cu plăți automate
+     * Obține profilurile eligibile pentru generarea rezervărilor
      */
-    private GenerationResult generateAutomatedBookingsWithPayments(Date startDate) {
-        GenerationResult result = new GenerationResult();
-
-        // Obține toate profilurile eligibile
-        List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
-        logger.info("DEBUG: Profiluri eligibile găsite: {}", eligibleProfiles.size());
-
-        // Log detaliat pentru fiecare profil
-        for (ReservationProfile profile : eligibleProfiles) {
-            logger.info("DEBUG: Profil {} - User: {}, TeamType: {}, AccountStatus: {}, SelectedHalls: {}",
-                    profile.getName(),
-                    profile.getUser() != null ? profile.getUser().getEmail() : "NULL",
-                    profile.getUser() != null ? profile.getUser().getTeamType() : "NULL",
-                    profile.getUser() != null ? profile.getUser().getAccountStatus() : "NULL",
-                    profile.getSelectedHalls() != null ? profile.getSelectedHalls().size() : 0
-            );
-        }
-
-        // Sortează profilele după prioritate
-        List<ReservationProfile> prioritizedProfiles = prioritizeProfiles(eligibleProfiles);
-        logger.info("DEBUG: Profiluri după prioritizare: {}", prioritizedProfiles.size());
-
-        // Obține toate sălile active cu programele lor
-        List<SportsHall> allHalls = getActiveHallsWithSchedules();
-        logger.info("DEBUG: Săli active găsite: {}", allHalls.size());
-
-        // Log pentru fiecare sală
-        for (SportsHall hall : allHalls) {
-            logger.info("DEBUG: Sală {} - Status: {}, City: {}",
-                    hall.getName(),
-                    hall.getStatus(),
-                    hall.getCity()
-            );
-        }
-
-        // Creează programul disponibil pentru săptămâna următoare
-        Map<Long, Map<String, Map<String, SlotAvailability>>> availabilitySchedule =
-                createAvailabilityScheduleWithHallPrograms(allHalls, startDate);
-
-        logger.info("DEBUG: Availability schedule created for {} halls", availabilitySchedule.size());
-
-        // Marchează sloturile deja rezervate și cele de mentenanță
-        markExistingReservations(availabilitySchedule, startDate);
-
-        // Generează rezervările automate cu plăți
-        for (ReservationProfile profile : prioritizedProfiles) {
-            try {
-                logger.info("DEBUG: Procesare profil: {}", profile.getName());
-
-                ProfileReservationResult profileResult = generateReservationsForProfileWithPayment(
-                        profile, availabilitySchedule, startDate);
-
-                result.addProfileResult(profileResult);
-
-                logger.info("DEBUG: Profil {} - Rezervări generate: {}, Payment success: {}",
-                        profile.getName(),
-                        profileResult.getReservations().size(),
-                        profileResult.getPaymentResult() != null ? profileResult.getPaymentResult().isSuccessful() : "NULL"
-                );
-
-            } catch (Exception e) {
-                logger.error("DEBUG: Eroare la generarea rezervărilor pentru profilul {}: {}",
-                        profile.getName(), e.getMessage(), e);
-                result.addFailedProfile(profile, e.getMessage());
-            }
-        }
-
-        logger.info("DEBUG: Total rezervări generate: {}", result.getTotalReservations());
-        return result;
-    }
-
-    // În metoda getEligibleProfiles - adaugă debugging
     private List<ReservationProfile> getEligibleProfiles() {
-        List<ReservationProfile> allProfiles = StreamSupport
+        return StreamSupport
                 .stream(reservationProfileRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
-
-        logger.info("DEBUG: Total profiluri în DB: {}", allProfiles.size());
-
-        for (ReservationProfile profile : allProfiles) {
-            if (profile.getUser() != null) {
-                // Accesează câmpurile pentru a forța încărcarea
-                profile.getUser().getEmail();
-                profile.getUser().getTeamType();
-                profile.getUser().getAccountStatus();
-            }
-            if (profile.getSelectedHalls() != null) {
-                profile.getSelectedHalls().size(); // Forțează încărcarea colecției
-            }
-        }
-
-        return allProfiles.stream()
                 .filter(profile -> {
                     User user = profile.getUser();
-                    boolean hasUser = user != null;
-                    boolean hasTeamType = hasUser && user.getTeamType() != null && !user.getTeamType().isEmpty();
-                    boolean hasValidStatus = hasUser && (user.getAccountStatus().equals("active") || user.getAccountStatus().equals("verified"));
-                    boolean hasSelectedHalls = profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
-
-                    logger.info("DEBUG: Profil {} - hasUser: {}, hasTeamType: {}, hasValidStatus: {}, hasSelectedHalls: {}",
-                            profile.getName(), hasUser, hasTeamType, hasValidStatus, hasSelectedHalls);
-
-                    return hasUser && hasTeamType && hasValidStatus && hasSelectedHalls;
+                    return user != null &&
+                            user.getTeamType() != null && !user.getTeamType().isEmpty() &&
+                            ("active".equals(user.getAccountStatus()) || "verified".equals(user.getAccountStatus())) &&
+                            profile.getSelectedHalls() != null && !profile.getSelectedHalls().isEmpty();
                 })
                 .collect(Collectors.toList());
     }
 
     /**
-     * Obține sălile active cu programele lor
+     * Sortează profilurile după prioritate (seniori > juniori mari > juniori mici)
      */
-    private List<SportsHall> getActiveHallsWithSchedules() {
-        List<SportsHall> activeHalls = StreamSupport
+    private List<ReservationProfile> prioritizeProfiles(List<ReservationProfile> profiles) {
+        return profiles.stream()
+                .sorted((p1, p2) -> {
+                    int priority1 = getAgePriority(p1.getAgeCategory());
+                    int priority2 = getAgePriority(p2.getAgeCategory());
+
+                    if (priority1 != priority2) {
+                        return Integer.compare(priority2, priority1); // Prioritate mai mare = mai întâi
+                    }
+
+                    // La aceeași prioritate, sortează după buget (mai mare = mai întâi)
+                    return p2.getWeeklyBudget().compareTo(p1.getWeeklyBudget());
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returnează prioritatea pe baza categoriei de vârstă
+     */
+    private int getAgePriority(String ageCategory) {
+        if (ageCategory == null) return 0;
+
+        switch (ageCategory.toLowerCase()) {
+            case "senior":
+            case "seniori": return 100;
+            case "17-18": return 80;
+            case "15-16": return 60;
+            case "13-14": return 40;
+            case "0-14": return 20;
+            default: return 10;
+        }
+    }
+
+    /**
+     * Obține toate sălile active
+     */
+    private List<SportsHall> getActiveHalls() {
+        return StreamSupport
                 .stream(sportsHallRepository.findAll().spliterator(), false)
                 .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE)
                 .collect(Collectors.toList());
-
-        logger.info("DEBUG: Total active halls: {}", activeHalls.size());
-
-        // Verifică că fiecare sală are program
-        for (SportsHall hall : activeHalls) {
-            List<Schedule> schedules = fetchHallSchedule(hall.getId());
-            if (schedules.isEmpty()) {
-                logger.warn("WARNING: Hall {} ({}) has no schedules defined!",
-                        hall.getName(), hall.getId());
-            } else {
-                logger.info("DEBUG: Hall {} has {} schedule entries",
-                        hall.getName(), schedules.size());
-            }
-        }
-
-        return activeHalls;
     }
 
     /**
-     * Obține programul unei săli din baza de date
+     * Creează matricea de disponibilitate pentru toate sălile și zilele săptămânii
      */
-    private List<Schedule> fetchHallSchedule(Long hallId) {
-        try {
-            List<Schedule> schedules = scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
-            logger.info("DEBUG: Hall {} - Found {} schedules", hallId, schedules.size());
-            return schedules;
-        } catch (Exception e) {
-            logger.error("DEBUG: Error fetching hall schedule for hall ID {}: {}", hallId, e.getMessage(), e);
-            return new ArrayList<>();
-        }
-    }
+    private Map<String, Map<String, Map<String, Boolean>>> createAvailabilityMatrix(
+            List<SportsHall> halls, Calendar weekStart) {
 
-    /**
-     * Creează programul de disponibilitate bazat pe programele sălilor
-     */
-    private Map<Long, Map<String, Map<String, SlotAvailability>>> createAvailabilityScheduleWithHallPrograms(
-            List<SportsHall> halls, Date startDate) {
-
-        Map<Long, Map<String, Map<String, SlotAvailability>>> schedule = new HashMap<>();
+        Map<String, Map<String, Map<String, Boolean>>> matrix = new HashMap<>();
         List<String> timeSlots = generateTimeSlots();
 
         for (SportsHall hall : halls) {
-            Map<String, Map<String, SlotAvailability>> hallSchedule = new HashMap<>();
-            List<Schedule> hallSchedules = fetchHallSchedule(hall.getId());
+            Map<String, Map<String, Boolean>> hallSchedule = new HashMap<>();
 
-            // Pentru fiecare zi din săptămâna următoare
-            for (int i = 0; i < 7; i++) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(startDate);
-                cal.add(Calendar.DAY_OF_YEAR, i);
-                String dateKey = formatDate(cal.getTime());
-                int dayOfWeek = getDayOfWeekForSchedule(cal.getTime());
+            // Pentru fiecare zi a săptămânii
+            for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
+                Calendar currentDay = (Calendar) weekStart.clone();
+                currentDay.add(Calendar.DAY_OF_YEAR, dayOffset);
+                String dateKey = formatDate(currentDay.getTime());
 
-                Map<String, SlotAvailability> daySchedule = new HashMap<>();
+                Map<String, Boolean> daySlots = new HashMap<>();
 
-                // Găsește programul pentru această zi
-                Optional<Schedule> dayScheduleOpt = hallSchedules.stream()
-                        .filter(s -> s.getDayOfWeek().equals(dayOfWeek))
-                        .findFirst();
+                // Verifică dacă sala are program în această zi
+                int dayOfWeek = getDayOfWeekForSchedule(currentDay.get(Calendar.DAY_OF_WEEK));
+                Schedule daySchedule = getHallScheduleForDay(hall.getId(), dayOfWeek);
 
-                // Pentru fiecare slot orar
                 for (String timeSlot : timeSlots) {
-                    SlotAvailability availability = new SlotAvailability();
-                    availability.setTimeSlot(timeSlot);
-                    availability.setDate(dateKey);
-                    availability.setHallId(hall.getId());
-
-                    if (dayScheduleOpt.isPresent()) {
-                        Schedule dayProgramSchedule = dayScheduleOpt.get();
-                        if (isSlotInWorkingHours(timeSlot, dayProgramSchedule.getStartTime(), dayProgramSchedule.getEndTime())) {
-                            availability.setStatus(SlotStatus.AVAILABLE);
-                        } else {
-                            availability.setStatus(SlotStatus.OUTSIDE_HOURS);
-                        }
-                    } else {
-                        availability.setStatus(SlotStatus.HALL_CLOSED);
-                    }
-
-                    daySchedule.put(timeSlot, availability);
+                    boolean isAvailable = daySchedule != null &&
+                            isSlotInWorkingHours(timeSlot, daySchedule);
+                    daySlots.put(timeSlot, isAvailable);
                 }
 
-                hallSchedule.put(dateKey, daySchedule);
+                hallSchedule.put(dateKey, daySlots);
             }
 
-            schedule.put(hall.getId(), hallSchedule);
+            matrix.put(hall.getId().toString(), hallSchedule);
         }
 
-        return schedule;
+        // Marchează sloturile deja rezervate
+        markExistingReservations(matrix, weekStart);
+
+        return matrix;
+    }
+
+    /**
+     * Obține programul unei săli pentru o anumită zi
+     */
+    private Schedule getHallScheduleForDay(Long hallId, int dayOfWeek) {
+        List<Schedule> schedules = scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hallId, true);
+        return schedules.stream()
+                .filter(schedule -> schedule.getDayOfWeek().equals(dayOfWeek))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
      * Verifică dacă un slot este în orele de funcționare
      */
-    private boolean isSlotInWorkingHours(String timeSlot, String workingStartTime, String workingEndTime) {
+    private boolean isSlotInWorkingHours(String timeSlot, Schedule schedule) {
         try {
-            String slotStartTime = timeSlot.split(" - ")[0];
-            String slotEndTime = timeSlot.split(" - ")[1];
+            String[] slotParts = timeSlot.split(" - ");
+            String slotStart = slotParts[0];
+            String slotEnd = slotParts[1];
 
-            int slotStart = timeToMinutes(slotStartTime);
-            int slotEnd = timeToMinutes(slotEndTime);
-            int workingStart = timeToMinutes(workingStartTime);
-            int workingEnd = timeToMinutes(workingEndTime);
+            int slotStartMinutes = timeToMinutes(slotStart);
+            int slotEndMinutes = timeToMinutes(slotEnd);
+            int workingStartMinutes = timeToMinutes(schedule.getStartTime());
+            int workingEndMinutes = timeToMinutes(schedule.getEndTime());
 
-            return slotStart >= workingStart && slotEnd <= workingEnd;
+            return slotStartMinutes >= workingStartMinutes && slotEndMinutes <= workingEndMinutes;
         } catch (Exception e) {
-            logger.warn("Eroare la verificarea orelor de funcționare pentru slot {}: {}", timeSlot, e.getMessage());
             return false;
         }
     }
 
     /**
-     * Convertește ora în minute
+     * Convertește timpul în minute
      */
-    private int timeToMinutes(String timeString) {
-        String[] parts = timeString.split(":");
+    private int timeToMinutes(String time) {
+        String[] parts = time.split(":");
         return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
     }
 
     /**
-     * Obține ziua săptămânii pentru programul sălii (1=Luni, 7=Duminică)
+     * Convertește Calendar DAY_OF_WEEK la formatul backend (1=Luni, 7=Duminică)
      */
-    private int getDayOfWeekForSchedule(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-        return dayOfWeek == 1 ? 7 : dayOfWeek - 1; // Convertește din format Calendar la format backend
+    private int getDayOfWeekForSchedule(int calendarDayOfWeek) {
+        return calendarDayOfWeek == Calendar.SUNDAY ? 7 : calendarDayOfWeek - 1;
     }
 
     /**
-     * Generează rezervări pentru un profil cu plată automată
+     * Marchează sloturile deja rezervate în matrice
      */
-    private ProfileReservationResult generateReservationsForProfileWithPayment(
+    private void markExistingReservations(Map<String, Map<String, Map<String, Boolean>>> matrix,
+                                          Calendar weekStart) {
+        Calendar weekEnd = getNextWeekEnd(weekStart);
+
+        StreamSupport
+                .stream(reservationRepository.findAll().spliterator(), false)
+                .filter(res -> res.getDate() != null &&
+                        !res.getDate().before(weekStart.getTime()) &&
+                        !res.getDate().after(weekEnd.getTime()) &&
+                        !"CANCELLED".equals(res.getStatus()))
+                .forEach(reservation -> {
+                    String hallId = reservation.getHall().getId().toString();
+                    String dateKey = formatDate(reservation.getDate());
+                    String timeSlot = reservation.getTimeSlot();
+
+                    if (matrix.containsKey(hallId) &&
+                            matrix.get(hallId).containsKey(dateKey) &&
+                            matrix.get(hallId).get(dateKey).containsKey(timeSlot)) {
+                        matrix.get(hallId).get(dateKey).put(timeSlot, false);
+                    }
+                });
+    }
+
+    /**
+     * Generează rezervări pentru un profil specific
+     */
+    private GenerationResult generateReservationsForProfile(
             ReservationProfile profile,
-            Map<Long, Map<String, Map<String, SlotAvailability>>> schedule,
-            Date startDate) {
+            Map<String, Map<String, Map<String, Boolean>>> availabilityMatrix,
+            Calendar weekStart) {
 
-        ProfileReservationResult result = new ProfileReservationResult();
-        result.setProfile(profile);
+        GenerationResult result = new GenerationResult();
 
-        // Determină numărul maxim de rezervări și bugetul
-        int maxBookings = getMaxBookingsPerWeek(profile);
+        // Determină numărul maxim de rezervări pentru profil
+        int maxBookings = getMaxBookingsForProfile(profile);
         BigDecimal weeklyBudget = profile.getWeeklyBudget();
-        String timeInterval = profile.getTimeInterval();
-        User user = profile.getUser();
-        String city = profile.getCity();
 
-        // Filtrează sălile în funcție de oraș și profilele selectate
-        List<SportsHall> availableHalls = profile.getSelectedHalls().stream()
-                .filter(hall -> hall.getCity().equals(city) &&
-                        hall.getStatus() == SportsHall.HallStatus.ACTIVE)
+        // Filtrează sălile din profil care sunt active și în orașul corect
+        List<SportsHall> profileHalls = profile.getSelectedHalls().stream()
+                .filter(hall -> hall.getStatus() == SportsHall.HallStatus.ACTIVE &&
+                        hall.getCity().equals(profile.getCity()))
                 .collect(Collectors.toList());
 
-        if (availableHalls.isEmpty()) {
-            logger.warn("Nu există săli disponibile pentru profilul {} în orașul {}",
-                    profile.getName(), city);
+        if (profileHalls.isEmpty()) {
+            logger.warn("Profilul '{}' nu are săli valide în orașul {}",
+                    profile.getName(), profile.getCity());
             return result;
         }
 
-        // Găsește sloturile disponibile pentru profil
-        List<AvailableSlot> availableSlots = findAvailableSlotsForProfile(
-                schedule, availableHalls, profile, startDate);
+        // Găsește toate sloturile disponibile pentru acest profil
+        List<AvailableSlot> availableSlots = findAvailableSlots(
+                profile, profileHalls, availabilityMatrix, weekStart);
 
         // Selectează rezervările în funcție de buget și prioritate
-        List<SelectedReservation> selectedReservations = selectReservationsWithinBudget(
+        List<AvailableSlot> selectedSlots = selectSlotsWithinBudget(
                 availableSlots, maxBookings, weeklyBudget);
 
-        if (selectedReservations.isEmpty()) {
-            logger.info("Nu s-au putut selecta rezervări pentru profilul {} din cauza bugetului sau disponibilității",
-                    profile.getName());
+        if (selectedSlots.isEmpty()) {
+            logger.info("Nu s-au putut selecta sloturile pentru profilul '{}'", profile.getName());
             return result;
         }
 
-        // Calculează costul total
-        BigDecimal totalCost = selectedReservations.stream()
-                .map(sr -> BigDecimal.valueOf(sr.getHall().getTariff()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Creează rezervările și plata cash
+        BigDecimal totalCost = BigDecimal.ZERO;
+        List<Reservation> reservations = new ArrayList<>();
 
-        // Procesează plata
-        PaymentResult paymentResult = processPaymentForProfile(profile, totalCost, user);
-        result.setPaymentResult(paymentResult);
+        for (AvailableSlot slot : selectedSlots) {
+            Reservation reservation = new Reservation();
+            reservation.setHall(slot.getHall());
+            reservation.setUser(profile.getUser());
+            reservation.setDate(slot.getDate());
+            reservation.setTimeSlot(slot.getTimeSlot());
+            reservation.setPrice(slot.getHall().getTariff());
+            reservation.setType("reservation");
+            reservation.setStatus("CONFIRMED");
 
-        if (paymentResult.isSuccessful()) {
-            // Creează rezervările
-            List<Reservation> reservations = createReservationsFromSelected(
-                    selectedReservations, user, paymentResult.getPayment());
-            result.setReservations(reservations);
+            Reservation savedReservation = reservationRepository.save(reservation);
+            reservations.add(savedReservation);
+            totalCost = totalCost.add(BigDecimal.valueOf(slot.getHall().getTariff()));
 
-            // Actualizează programul cu rezervările create
-            updateScheduleWithReservations(schedule, reservations);
-
-            // Trimite email de confirmare
-            sendConfirmationEmail(user, reservations, paymentResult.getPayment());
-
-            logger.info("Profilul {} - {} rezervări create cu plată de {} RON",
-                    profile.getName(), reservations.size(), totalCost);
+            // Marchează slotul ca ocupat în matrice
+            String hallId = slot.getHall().getId().toString();
+            String dateKey = formatDate(slot.getDate());
+            availabilityMatrix.get(hallId).get(dateKey).put(slot.getTimeSlot(), false);
         }
 
+        // Creează plata cash
+        if (!reservations.isEmpty()) {
+            Payment payment = new Payment();
+            payment.setUserId(profile.getUser().getId());
+            payment.setTotalAmount(totalCost);
+            payment.setPaymentMethod(PaymentMethod.CASH);
+            payment.setStatus(PaymentStatus.SUCCEEDED);
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setCurrency("RON");
+            payment.setDescription("Rezervare automată - profil: " + profile.getName());
+
+            Payment savedPayment = paymentRepository.save(payment);
+            result.addPayment(savedPayment);
+
+            // Creează legăturile payment-reservation
+            for (Reservation reservation : reservations) {
+                PaymentReservation paymentReservation = new PaymentReservation(savedPayment, reservation);
+                savedPayment.getPaymentReservations().add(paymentReservation);
+            }
+            paymentRepository.save(savedPayment);
+        }
+
+        result.setReservations(reservations);
         return result;
     }
 
     /**
-     * Găsește sloturile disponibile pentru un profil
+     * Găsește toate sloturile disponibile pentru un profil
      */
-    private List<AvailableSlot> findAvailableSlotsForProfile(
-            Map<Long, Map<String, Map<String, SlotAvailability>>> schedule,
-            List<SportsHall> halls,
+    private List<AvailableSlot> findAvailableSlots(
             ReservationProfile profile,
-            Date startDate) {
+            List<SportsHall> halls,
+            Map<String, Map<String, Map<String, Boolean>>> availabilityMatrix,
+            Calendar weekStart) {
 
         List<AvailableSlot> availableSlots = new ArrayList<>();
-
-        logger.info("DEBUG: Finding slots for profile {} - Checking {} halls", profile.getName(), halls.size());
-
-        // Determină intervalul de ore preferat
         TimeInterval preferredInterval = getPreferredTimeInterval(profile.getTimeInterval());
         boolean isSenior = "senior".equals(profile.getAgeCategory()) || "seniori".equals(profile.getAgeCategory());
 
-        logger.info("DEBUG: Profile {} - TimeInterval: {}, IsSenior: {}",
-                profile.getName(), profile.getTimeInterval(), isSenior);
-
-        // Generează toate combinațiile posibile
         for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(startDate);
-            cal.add(Calendar.DAY_OF_YEAR, dayOffset);
-            String dateKey = formatDate(cal.getTime());
+            Calendar currentDay = (Calendar) weekStart.clone();
+            currentDay.add(Calendar.DAY_OF_YEAR, dayOffset);
+            String dateKey = formatDate(currentDay.getTime());
 
             for (SportsHall hall : halls) {
-                if (!schedule.containsKey(hall.getId()) ||
-                        !schedule.get(hall.getId()).containsKey(dateKey)) {
-                    logger.warn("DEBUG: Schedule missing for hall {} on date {}", hall.getId(), dateKey);
+                String hallId = hall.getId().toString();
+
+                if (!availabilityMatrix.containsKey(hallId) ||
+                        !availabilityMatrix.get(hallId).containsKey(dateKey)) {
                     continue;
                 }
 
-                Map<String, SlotAvailability> daySchedule = schedule.get(hall.getId()).get(dateKey);
-                int availableSlotsForDay = 0;
+                Map<String, Boolean> daySlots = availabilityMatrix.get(hallId).get(dateKey);
 
-                for (Map.Entry<String, SlotAvailability> entry : daySchedule.entrySet()) {
+                for (Map.Entry<String, Boolean> entry : daySlots.entrySet()) {
                     String timeSlot = entry.getKey();
-                    SlotAvailability availability = entry.getValue();
+                    Boolean isAvailable = entry.getValue();
 
-                    if (availability.getStatus() == SlotStatus.AVAILABLE &&
-                            isSlotSuitableForProfile(timeSlot, preferredInterval, isSenior)) {
-                        availableSlotsForDay++;
+                    if (isAvailable && isSlotSuitableForProfile(timeSlot, preferredInterval, isSenior)) {
                         AvailableSlot slot = new AvailableSlot();
                         slot.setHall(hall);
-                        slot.setDate(cal.getTime());
+                        slot.setDate(currentDay.getTime());
                         slot.setTimeSlot(timeSlot);
-                        slot.setPrice(BigDecimal.valueOf(hall.getTariff()));
-                        slot.setPriority(calculateSlotPriority(timeSlot, preferredInterval, isSenior));
+                        slot.setPriority(calculateSlotPriority(timeSlot, preferredInterval));
+
                         availableSlots.add(slot);
                     }
-                }
-
-                if (availableSlotsForDay > 0) {
-                    logger.info("DEBUG: Hall {} on {} - {} available slots",
-                            hall.getName(), dateKey, availableSlotsForDay);
                 }
             }
         }
 
-        logger.info("DEBUG: Profile {} - Total available slots found: {}",
-                profile.getName(), availableSlots.size());
-
-        // Sortează după prioritate și apoi randomizează în cadrul aceleiași priorități
+        // Sortează după prioritate și randomizează pentru echitate
         return availableSlots.stream()
-                .collect(Collectors.groupingBy(AvailableSlot::getPriority))
-                .entrySet().stream()
-                .sorted(Map.Entry.<Integer, List<AvailableSlot>>comparingByKey().reversed())
-                .flatMap(entry -> {
-                    List<AvailableSlot> slots = entry.getValue();
-                    Collections.shuffle(slots); // Randomizează pentru echitate
-                    return slots.stream();
-                })
+                .sorted((s1, s2) -> Integer.compare(s2.getPriority(), s1.getPriority()))
                 .collect(Collectors.toList());
     }
 
@@ -694,64 +521,52 @@ public class BookingPrioritizationRestController {
             String startTime = timeSlot.split(" - ")[0];
             int hour = Integer.parseInt(startTime.split(":")[0]);
             int minute = Integer.parseInt(startTime.split(":")[1]);
+            int totalMinutes = hour * 60 + minute;
 
             // Verifică intervalul preferat
-            if (!isInTimeInterval(hour, minute, preferredInterval)) {
+            if (totalMinutes < preferredInterval.startMinutes || totalMinutes >= preferredInterval.endMinutes) {
                 return false;
             }
 
-            // Aplică regula pentru seniori/juniori la ora 14:30
+            // Regula pentru seniori vs juniori la 14:30
             if (isSenior) {
-                // Pentru seniori: până la ora 14:00 (excludem 14:30)
                 return hour < 14 || (hour == 14 && minute == 0);
             } else {
-                // Pentru juniori: începând cu ora 14:30
                 return hour > 14 || (hour == 14 && minute == 30);
             }
         } catch (Exception e) {
-            logger.warn("Eroare la verificarea slot-ului {}: {}", timeSlot, e.getMessage());
             return false;
         }
     }
 
     /**
-     * Verifică dacă ora este în intervalul preferat
-     */
-    private boolean isInTimeInterval(int hour, int minute, TimeInterval interval) {
-        int totalMinutes = hour * 60 + minute;
-        return totalMinutes >= interval.getStartMinutes() && totalMinutes < interval.getEndMinutes();
-    }
-
-    /**
      * Calculează prioritatea unui slot
      */
-    private int calculateSlotPriority(String timeSlot, TimeInterval preferredInterval, boolean isSenior) {
+    private int calculateSlotPriority(String timeSlot, TimeInterval preferredInterval) {
         try {
             String startTime = timeSlot.split(" - ")[0];
             int hour = Integer.parseInt(startTime.split(":")[0]);
             int minute = Integer.parseInt(startTime.split(":")[1]);
             int totalMinutes = hour * 60 + minute;
 
-            // Prioritate bazată pe cât de aproape este de mijlocul intervalului preferat
-            int intervalCenter = (preferredInterval.getStartMinutes() + preferredInterval.getEndMinutes()) / 2;
+            int intervalCenter = (preferredInterval.startMinutes + preferredInterval.endMinutes) / 2;
             int distance = Math.abs(totalMinutes - intervalCenter);
 
-            // Prioritate inversă (distanță mai mică = prioritate mai mare)
-            return 1000 - distance;
+            return 1000 - distance; // Prioritate mai mare pentru sloturile mai apropiate de centru
         } catch (Exception e) {
             return 0;
         }
     }
 
     /**
-     * Selectează rezervările în funcție de buget
+     * Selectează sloturile în funcție de buget
      */
-    private List<SelectedReservation> selectReservationsWithinBudget(
+    private List<AvailableSlot> selectSlotsWithinBudget(
             List<AvailableSlot> availableSlots, int maxBookings, BigDecimal weeklyBudget) {
 
-        List<SelectedReservation> selected = new ArrayList<>();
+        List<AvailableSlot> selected = new ArrayList<>();
         BigDecimal remainingBudget = weeklyBudget;
-        Set<String> usedDateSlots = new HashSet<>(); // Pentru a evita suprapunerile
+        Set<String> usedDateSlots = new HashSet<>();
 
         for (AvailableSlot slot : availableSlots) {
             if (selected.size() >= maxBookings) {
@@ -760,18 +575,13 @@ public class BookingPrioritizationRestController {
 
             String dateSlotKey = formatDate(slot.getDate()) + "_" + slot.getTimeSlot();
             if (usedDateSlots.contains(dateSlotKey)) {
-                continue; // Evită suprapunerile
+                continue;
             }
 
-            if (remainingBudget.compareTo(slot.getPrice()) >= 0) {
-                SelectedReservation reservation = new SelectedReservation();
-                reservation.setHall(slot.getHall());
-                reservation.setDate(slot.getDate());
-                reservation.setTimeSlot(slot.getTimeSlot());
-                reservation.setPrice(slot.getPrice());
-
-                selected.add(reservation);
-                remainingBudget = remainingBudget.subtract(slot.getPrice());
+            BigDecimal slotPrice = BigDecimal.valueOf(slot.getHall().getTariff());
+            if (remainingBudget.compareTo(slotPrice) >= 0) {
+                selected.add(slot);
+                remainingBudget = remainingBudget.subtract(slotPrice);
                 usedDateSlots.add(dateSlotKey);
             }
         }
@@ -779,157 +589,30 @@ public class BookingPrioritizationRestController {
         return selected;
     }
 
-    /**
-     * Procesează plata pentru un profil
-     */
-    private PaymentResult processPaymentForProfile(ReservationProfile profile, BigDecimal totalCost, User user) {
-        try {
-            // Verifică dacă profilul are plata automată activată
-            if (profile.getAutoPaymentEnabled() && profile.canProcessAutoPayment(totalCost)) {
-                // Procesează plata automată
-                return autoPaymentService.processAutoPayment(profile, totalCost, user);
-            } else {
-                // Creează o plată cash (la fața locului)
-                Payment payment = new Payment();
-                payment.setUserId(user.getId());
-                payment.setTotalAmount(totalCost);
-                payment.setPaymentMethod(PaymentMethod.CASH);
-                payment.setStatus(PaymentStatus.SUCCEEDED);
-                payment.setPaymentDate(LocalDateTime.now());
-                payment.setCurrency("RON");
-                payment.setDescription("Rezervare automată - profil: " + profile.getName());
+    // Helper methods
 
-                Payment savedPayment = paymentRepository.save(payment);
-
-                return PaymentResult.success(savedPayment, "cash", "Plată cash programată");
-            }
-        } catch (Exception e) {
-            logger.error("Eroare la procesarea plății pentru profilul {}: {}",
-                    profile.getName(), e.getMessage(), e);
-            return PaymentResult.failure("Eroare la procesarea plății: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Creează rezervările din selecția făcută
-     */
-    private List<Reservation> createReservationsFromSelected(
-            List<SelectedReservation> selectedReservations, User user, Payment payment) {
-
-        List<Reservation> reservations = new ArrayList<>();
-
-        for (SelectedReservation selected : selectedReservations) {
-            Reservation reservation = new Reservation();
-            reservation.setHall(selected.getHall());
-            reservation.setUser(user);
-            reservation.setDate(selected.getDate());
-            reservation.setTimeSlot(selected.getTimeSlot());
-            reservation.setPrice(selected.getPrice().floatValue());
-            reservation.setType("reservation");
-            reservation.setStatus("CONFIRMED");
-
-            Reservation savedReservation = reservationRepository.save(reservation);
-            reservations.add(savedReservation);
-
-            // Creează legătura cu plata
-            if (payment != null) {
-                PaymentReservation paymentReservation = new PaymentReservation();
-                paymentReservation.setPayment(payment);
-                paymentReservation.setReservation(savedReservation);
-                payment.getPaymentReservations().add(paymentReservation);
-            }
-        }
-
-        if (payment != null && !payment.getPaymentReservations().isEmpty()) {
-            paymentRepository.save(payment);
-        }
-
-        return reservations;
-    }
-
-    /**
-     * Actualizează programul cu rezervările create
-     */
-    private void updateScheduleWithReservations(
-            Map<Long, Map<String, Map<String, SlotAvailability>>> schedule,
-            List<Reservation> reservations) {
-
-        for (Reservation reservation : reservations) {
-            String dateKey = formatDate(reservation.getDate());
-            Long hallId = reservation.getHall().getId();
-            String timeSlot = reservation.getTimeSlot();
-
-            if (schedule.containsKey(hallId) &&
-                    schedule.get(hallId).containsKey(dateKey) &&
-                    schedule.get(hallId).get(dateKey).containsKey(timeSlot)) {
-
-                schedule.get(hallId).get(dateKey).get(timeSlot).setStatus(SlotStatus.BOOKED);
-            }
-        }
-    }
-
-    /**
-     * Trimite email de confirmare
-     */
-    private void sendConfirmationEmail(User user, List<Reservation> reservations, Payment payment) {
-        try {
-            ReservationEmailService.sendReservationConfirmationEmail(
-                    mailSender, senderEmail, user, reservations, payment);
-        } catch (Exception e) {
-            logger.error("Eroare la trimiterea email-ului de confirmare pentru utilizatorul {}: {}",
-                    user.getEmail(), e.getMessage(), e);
-        }
-    }
-
-    // Metode helper
-
-    private List<ReservationProfile> prioritizeProfiles(List<ReservationProfile> profiles) {
-        return profiles.stream()
-                .sorted((p1, p2) -> {
-                    String age1 = p1.getAgeCategory();
-                    String age2 = p2.getAgeCategory();
-
-                    // Verifică pentru seniori (atât "senior" cât și "seniori")
-                    boolean isSenior1 = "senior".equals(age1) || "seniori".equals(age1);
-                    boolean isSenior2 = "senior".equals(age2) || "seniori".equals(age2);
-
-                    if (isSenior1 && !isSenior2) return -1;
-                    if (!isSenior1 && isSenior2) return 1;
-
-                    // Pentru categoriile de juniori (nu-seniori)
-                    if (!isSenior1 && !isSenior2) {
-                        if (age1.equals("17-18") && !age2.equals("17-18")) return -1;
-                        if (!age1.equals("17-18") && age2.equals("17-18")) return 1;
-                        if (age1.equals("15-16") && !age2.equals("15-16")) return -1;
-                        if (!age1.equals("15-16") && age2.equals("15-16")) return 1;
-                    }
-
-                    return p2.getWeeklyBudget().compareTo(p1.getWeeklyBudget());
-                })
-                .collect(Collectors.toList());
-    }
-
-    private int getMaxBookingsPerWeek(ReservationProfile profile) {
+    private int getMaxBookingsForProfile(ReservationProfile profile) {
         String ageCategory = profile.getAgeCategory();
-        switch (ageCategory) {
+        if (ageCategory == null) return 3;
+
+        switch (ageCategory.toLowerCase()) {
             case "senior":
             case "seniori": return 6;
             case "17-18": return 5;
             case "15-16": return 4;
+            case "13-14": return 3;
             case "0-14": return 3;
             default: return 3;
         }
     }
 
     private TimeInterval getPreferredTimeInterval(String timeInterval) {
-        if (timeInterval == null || timeInterval.isEmpty()) {
-            return new TimeInterval(8 * 60, 23 * 60); // 08:00 - 23:00
-        }
+        if (timeInterval == null) return new TimeInterval(8 * 60, 23 * 60);
 
-        switch (timeInterval) {
-            case "morning": return new TimeInterval(8 * 60, 12 * 60);   // 08:00 - 12:00
-            case "afternoon": return new TimeInterval(12 * 60, 17 * 60); // 12:00 - 17:00
-            case "evening": return new TimeInterval(17 * 60, 23 * 60);   // 17:00 - 23:00
+        switch (timeInterval.toLowerCase()) {
+            case "morning": return new TimeInterval(8 * 60, 12 * 60);
+            case "afternoon": return new TimeInterval(12 * 60, 17 * 60);
+            case "evening": return new TimeInterval(17 * 60, 23 * 60);
             default: return new TimeInterval(8 * 60, 23 * 60);
         }
     }
@@ -943,170 +626,81 @@ public class BookingPrioritizationRestController {
     }
 
     private String formatDate(Date date) {
-        // Folosește SimpleDateFormat cu timezone explicit
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("Europe/Bucharest"));
-        String formatted = sdf.format(date);
-        logger.debug("DEBUG: Formatted date {} to {}", date, formatted);
-        return formatted;
+        return sdf.format(date);
     }
 
-    private void markExistingReservations(
-            Map<Long, Map<String, Map<String, SlotAvailability>>> schedule, Date startDate) {
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(startDate);
-        cal.add(Calendar.DAY_OF_YEAR, 6);
-        Date endDate = cal.getTime();
-
-        Iterable<Reservation> existingReservations = reservationRepository.findAll();
-
-        for (Reservation reservation : existingReservations) {
-            Date reservationDate = reservation.getDate();
-
-            if (reservationDate == null || reservationDate.before(startDate) || reservationDate.after(endDate)) {
-                continue;
-            }
-
-            Long hallId = reservation.getHall().getId();
-            String dateKey = formatDate(reservationDate);
-            String timeSlot = reservation.getTimeSlot();
-
-            if (schedule.containsKey(hallId) &&
-                    schedule.get(hallId).containsKey(dateKey) &&
-                    schedule.get(hallId).get(dateKey).containsKey(timeSlot)) {
-
-                SlotAvailability availability = schedule.get(hallId).get(dateKey).get(timeSlot);
-                if ("maintenance".equals(reservation.getType())) {
-                    availability.setStatus(SlotStatus.MAINTENANCE);
-                } else if ("reservation".equals(reservation.getType()) &&
-                        !"CANCELLED".equals(reservation.getStatus())) {
-                    availability.setStatus(SlotStatus.BOOKED);
-                }
-            }
-        }
-    }
-
-    // Classes pentru rezultate și structuri de date
+    // Inner classes
 
     private static class GenerationResult {
         private List<Reservation> reservations = new ArrayList<>();
         private List<Payment> payments = new ArrayList<>();
-        private int autoPaymentsSuccessful = 0;
-        private int autoPaymentsFailed = 0;
-        private List<String> errors = new ArrayList<>();
 
-        public void addProfileResult(ProfileReservationResult profileResult) {
-            if (profileResult.getReservations() != null) {
-                reservations.addAll(profileResult.getReservations());
-            }
-            if (profileResult.getPaymentResult() != null &&
-                    profileResult.getPaymentResult().getPayment() != null) {
-                payments.add(profileResult.getPaymentResult().getPayment());
-                if (profileResult.getPaymentResult().isSuccessful()) {
-                    autoPaymentsSuccessful++;
-                } else {
-                    autoPaymentsFailed++;
-                }
-            }
+        public List<Reservation> getReservations() {
+            return reservations;
         }
 
-        public void addFailedProfile(ReservationProfile profile, String error) {
-            autoPaymentsFailed++;
-            errors.add("Profil " + profile.getName() + ": " + error);
+        public void setReservations(List<Reservation> reservations) {
+            this.reservations = reservations;
         }
 
-        // Getters
-        public List<Reservation> getReservations() { return reservations; }
-        public List<Payment> getPayments() { return payments; }
-        public int getTotalReservations() { return reservations.size(); }
-        public int getAutoPaymentsSuccessful() { return autoPaymentsSuccessful; }
-        public int getAutoPaymentsFailed() { return autoPaymentsFailed; }
-        public List<String> getErrors() { return errors; }
-    }
+        public List<Payment> getPayments() {
+            return payments;
+        }
 
-    private static class ProfileReservationResult {
-        private ReservationProfile profile;
-        private List<Reservation> reservations = new ArrayList<>();
-        private PaymentResult paymentResult;
-
-        // Getters și setters
-        public ReservationProfile getProfile() { return profile; }
-        public void setProfile(ReservationProfile profile) { this.profile = profile; }
-        public List<Reservation> getReservations() { return reservations; }
-        public void setReservations(List<Reservation> reservations) { this.reservations = reservations; }
-        public PaymentResult getPaymentResult() { return paymentResult; }
-        public void setPaymentResult(PaymentResult paymentResult) { this.paymentResult = paymentResult; }
-    }
-
-    private static class SlotAvailability {
-        private String timeSlot;
-        private String date;
-        private Long hallId;
-        private SlotStatus status;
-
-        // Getters și setters
-        public String getTimeSlot() { return timeSlot; }
-        public void setTimeSlot(String timeSlot) { this.timeSlot = timeSlot; }
-        public String getDate() { return date; }
-        public void setDate(String date) { this.date = date; }
-        public Long getHallId() { return hallId; }
-        public void setHallId(Long hallId) { this.hallId = hallId; }
-        public SlotStatus getStatus() { return status; }
-        public void setStatus(SlotStatus status) { this.status = status; }
-    }
-
-    private enum SlotStatus {
-        AVAILABLE, BOOKED, MAINTENANCE, OUTSIDE_HOURS, HALL_CLOSED
+        public void addPayment(Payment payment) {
+            this.payments.add(payment);
+        }
     }
 
     private static class AvailableSlot {
         private SportsHall hall;
         private Date date;
         private String timeSlot;
-        private BigDecimal price;
         private int priority;
 
         // Getters și setters
-        public SportsHall getHall() { return hall; }
-        public void setHall(SportsHall hall) { this.hall = hall; }
-        public Date getDate() { return date; }
-        public void setDate(Date date) { this.date = date; }
-        public String getTimeSlot() { return timeSlot; }
-        public void setTimeSlot(String timeSlot) { this.timeSlot = timeSlot; }
-        public BigDecimal getPrice() { return price; }
-        public void setPrice(BigDecimal price) { this.price = price; }
-        public int getPriority() { return priority; }
-        public void setPriority(int priority) { this.priority = priority; }
-    }
+        public SportsHall getHall() {
+            return hall;
+        }
 
-    private static class SelectedReservation {
-        private SportsHall hall;
-        private Date date;
-        private String timeSlot;
-        private BigDecimal price;
+        public void setHall(SportsHall hall) {
+            this.hall = hall;
+        }
 
-        // Getters și setters
-        public SportsHall getHall() { return hall; }
-        public void setHall(SportsHall hall) { this.hall = hall; }
-        public Date getDate() { return date; }
-        public void setDate(Date date) { this.date = date; }
-        public String getTimeSlot() { return timeSlot; }
-        public void setTimeSlot(String timeSlot) { this.timeSlot = timeSlot; }
-        public BigDecimal getPrice() { return price; }
-        public void setPrice(BigDecimal price) { this.price = price; }
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public String getTimeSlot() {
+            return timeSlot;
+        }
+
+        public void setTimeSlot(String timeSlot) {
+            this.timeSlot = timeSlot;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
+        public void setPriority(int priority) {
+            this.priority = priority;
+        }
     }
 
     private static class TimeInterval {
-        private int startMinutes;
-        private int endMinutes;
+        private final int startMinutes;
+        private final int endMinutes;
 
         public TimeInterval(int startMinutes, int endMinutes) {
             this.startMinutes = startMinutes;
             this.endMinutes = endMinutes;
         }
-
-        public int getStartMinutes() { return startMinutes; }
-        public int getEndMinutes() { return endMinutes; }
     }
 }
