@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './BookingPrioritization.css';
-import { Play, CreditCard, Banknote, CheckCircle, XCircle, Info, AlertTriangle } from 'lucide-react';
+import { Play, CheckCircle, XCircle, Info, AlertTriangle, Calendar, Users, MapPin } from 'lucide-react';
 
 class BookingPrioritization extends Component {
     constructor(props) {
@@ -12,47 +12,58 @@ class BookingPrioritization extends Component {
             generationSuccess: false,
             resultMessage: '',
             generationResult: null,
-            showDetailedResults: false
+            showDetailedResults: false,
+            systemStatus: null,
+            isLoadingStatus: false
         };
     }
 
-    // Funcția care va fi apelată la click pe butonul de generare
+    componentDidMount() {
+        this.loadSystemStatus();
+    }
+
+    // Încarcă statusul sistemului
+    loadSystemStatus = async () => {
+        try {
+            this.setState({ isLoadingStatus: true });
+
+            const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/status`);
+
+            if (response.ok) {
+                const statusData = await response.json();
+                this.setState({ systemStatus: statusData });
+            }
+        } catch (error) {
+            console.error('Eroare la încărcarea statusului sistemului:', error);
+        } finally {
+            this.setState({ isLoadingStatus: false });
+        }
+    };
+
+    // Funcția principală pentru generarea rezervărilor
     handleGenerateBookings = async () => {
         try {
-            // Setăm starea de generare în curs
             this.setState({
                 isGenerating: true,
                 generationComplete: false,
                 showDetailedResults: false
             });
 
-            // Obținem token-ul JWT din localStorage
-            const token = localStorage.getItem('jwtToken');
-
-            if (!token) {
-                throw new Error('Nu sunteți autentificat. Vă rugăm să vă autentificați pentru a continua.');
-            }
-
-            // Facem apelul către API pentru generarea rezervărilor
+            // Nu mai este necesar token-ul JWT pentru că endpoint-ul este public
             const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/generate`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 }
             });
 
-            // Verificăm dacă răspunsul este de succes
             if (!response.ok) {
                 throw new Error(`Serverul a răspuns cu codul: ${response.status}`);
             }
 
-            // Parsăm răspunsul JSON
             const data = await response.json();
 
-            // Verificăm dacă operația a fost de succes
             if (data.success) {
-                // Actualizăm starea cu rezultatul
                 this.setState({
                     isGenerating: false,
                     generationComplete: true,
@@ -61,7 +72,9 @@ class BookingPrioritization extends Component {
                     generationResult: data
                 });
 
-                // Notificăm componenta părinte despre generarea cu succes
+                // Reîncarcă statusul sistemului după generare
+                this.loadSystemStatus();
+
                 if (this.props.onGenerationComplete) {
                     this.props.onGenerationComplete(true);
                 }
@@ -78,43 +91,35 @@ class BookingPrioritization extends Component {
                 generationResult: null
             });
 
-            // Notificăm componenta părinte despre eșec
             if (this.props.onGenerationComplete) {
                 this.props.onGenerationComplete(false, error.message);
             }
         }
     };
 
-    // Construiește mesajul de succes cu detalii despre plăți
+    // Construiește mesajul de succes simplificat (fără plăți)
     buildSuccessMessage = (data) => {
-        const { count, paymentsCount, autoPaymentsSuccessful, autoPaymentsFailed } = data;
+        const { count, profileResults } = data;
+        const successfulProfiles = profileResults ? profileResults.filter(p => p.success).length : 0;
 
         let message = `${data.message} Au fost generate ${count} rezervări`;
 
-        if (paymentsCount > 0) {
-            message += ` cu ${paymentsCount} plăți procesate`;
-
-            if (autoPaymentsSuccessful > 0 || autoPaymentsFailed > 0) {
-                message += ` (${autoPaymentsSuccessful} plăți automate reușite`;
-                if (autoPaymentsFailed > 0) {
-                    message += `, ${autoPaymentsFailed} eșuate`;
-                }
-                message += ')';
-            }
+        if (successfulProfiles > 0) {
+            message += ` pentru ${successfulProfiles} profiluri de rezervare`;
         }
 
         message += '.';
         return message;
     };
 
-    // Toggle pentru afișarea rezultatelor detaliate
+    // Toggle pentru rezultatele detaliate
     toggleDetailedResults = () => {
         this.setState(prevState => ({
             showDetailedResults: !prevState.showDetailedResults
         }));
     };
 
-    // Resetăm starea după ce utilizatorul a văzut mesajul
+    // Resetează starea
     handleMessageDismiss = () => {
         this.setState({
             generationComplete: false,
@@ -124,20 +129,63 @@ class BookingPrioritization extends Component {
         });
     };
 
+    // Render pentru statusul sistemului
+    renderSystemStatus = () => {
+        const { systemStatus, isLoadingStatus } = this.state;
+
+        if (isLoadingStatus) {
+            return (
+                <div className="bp-status-card">
+                    <div className="bp-status-loading">
+                        <div className="bp-spinner-small"></div>
+                        <span>Se încarcă statusul sistemului...</span>
+                    </div>
+                </div>
+            );
+        }
+
+        if (!systemStatus) {
+            return (
+                <div className="bp-status-card bp-status-error">
+                    <AlertTriangle size={16} />
+                    <span>Nu s-a putut încărca statusul sistemului</span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="bp-status-card bp-status-ready">
+                <div className="bp-status-header">
+                    <CheckCircle size={16} className="bp-status-icon" />
+                    <span>Sistem Pregătit</span>
+                </div>
+                <div className="bp-status-details">
+                    <div className="bp-status-item">
+                        <Users size={14} />
+                        <span>{systemStatus.eligibleProfiles} / {systemStatus.totalProfiles} profiluri eligibile</span>
+                    </div>
+                    <div className="bp-status-item">
+                        <MapPin size={14} />
+                        <span>{systemStatus.activeHalls} săli active</span>
+                    </div>
+                    <div className="bp-status-item">
+                        <Calendar size={14} />
+                        <span>Săptămâna: {systemStatus.nextWeekStart} - {systemStatus.nextWeekEnd}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     // Render pentru rezultatele detaliate
     renderDetailedResults = () => {
         const { generationResult } = this.state;
 
         if (!generationResult) return null;
 
-        const {
-            count,
-            paymentsCount,
-            autoPaymentsSuccessful,
-            autoPaymentsFailed,
-            reservations,
-            payments
-        } = generationResult;
+        const { count, profileResults, reservations } = generationResult;
+        const successfulProfiles = profileResults ? profileResults.filter(p => p.success).length : 0;
+        const failedProfiles = profileResults ? profileResults.filter(p => !p.success).length : 0;
 
         return (
             <div className="bp-detailed-results">
@@ -165,51 +213,47 @@ class BookingPrioritization extends Component {
 
                     <div className="bp-result-card">
                         <div className="bp-result-icon">
-                            <CreditCard className="bp-icon-info" size={24} />
+                            <Users className="bp-icon-info" size={24} />
                         </div>
                         <div className="bp-result-content">
-                            <h5>Plăți procesate</h5>
-                            <span className="bp-result-value">{paymentsCount}</span>
+                            <h5>Profiluri cu succes</h5>
+                            <span className="bp-result-value">{successfulProfiles}</span>
                         </div>
                     </div>
 
-                    {(autoPaymentsSuccessful > 0 || autoPaymentsFailed > 0) && (
-                        <>
-                            <div className="bp-result-card">
-                                <div className="bp-result-icon">
-                                    <CheckCircle className="bp-icon-success" size={24} />
-                                </div>
-                                <div className="bp-result-content">
-                                    <h5>Plăți automate reușite</h5>
-                                    <span className="bp-result-value">{autoPaymentsSuccessful}</span>
-                                </div>
+                    {failedProfiles > 0 && (
+                        <div className="bp-result-card">
+                            <div className="bp-result-icon">
+                                <XCircle className="bp-icon-error" size={24} />
                             </div>
-
-                            {autoPaymentsFailed > 0 && (
-                                <div className="bp-result-card">
-                                    <div className="bp-result-icon">
-                                        <XCircle className="bp-icon-error" size={24} />
-                                    </div>
-                                    <div className="bp-result-content">
-                                        <h5>Plăți automate eșuate</h5>
-                                        <span className="bp-result-value">{autoPaymentsFailed}</span>
-                                    </div>
-                                </div>
-                            )}
-                        </>
+                            <div className="bp-result-content">
+                                <h5>Profiluri eșuate</h5>
+                                <span className="bp-result-value">{failedProfiles}</span>
+                            </div>
+                        </div>
                     )}
                 </div>
 
-                {autoPaymentsFailed > 0 && (
+                {failedProfiles > 0 && (
                     <div className="bp-warning-notice">
                         <AlertTriangle size={18} />
                         <span>
-                            Unele plăți automate au eșuat. Rezervările respective vor fi plătite la fața locului.
+                            {failedProfiles} profiluri nu au putut genera rezervări din cauza lipsei de disponibilitate sau buget insuficient.
                         </span>
                     </div>
                 )}
 
-                {/* Opțional: Lista rezervărilor generate */}
+                {/* Lista profilurilor procesate */}
+                {profileResults && profileResults.length > 0 && (
+                    <div className="bp-profiles-list">
+                        <h5>Profiluri procesate ({profileResults.length})</h5>
+                        <div className="bp-profiles-summary">
+                            {this.renderProfilesSummary(profileResults)}
+                        </div>
+                    </div>
+                )}
+
+                {/* Lista rezervărilor generate */}
                 {reservations && reservations.length > 0 && (
                     <div className="bp-reservations-list">
                         <h5>Rezervări generate ({reservations.length})</h5>
@@ -222,9 +266,30 @@ class BookingPrioritization extends Component {
         );
     };
 
+    // Render pentru rezumatul profilurilor
+    renderProfilesSummary = (profileResults) => {
+        return profileResults.map((result, index) => (
+            <div key={index} className={`bp-profile-summary ${result.success ? 'bp-success' : 'bp-error'}`}>
+                <div className="bp-profile-name">
+                    {result.profile?.name || 'Profil necunoscut'}
+                </div>
+                <div className="bp-profile-result">
+                    {result.success ? (
+                        <span className="bp-success-text">
+                            {result.reservations?.length || 0} rezervări
+                        </span>
+                    ) : (
+                        <span className="bp-error-text">
+                            {result.error || 'Eroare necunoscută'}
+                        </span>
+                    )}
+                </div>
+            </div>
+        ));
+    };
+
     // Render pentru rezumatul rezervărilor
     renderReservationsSummary = (reservations) => {
-        // Grupează rezervările după sală
         const groupedByHall = reservations.reduce((acc, reservation) => {
             const hallName = reservation.hall?.name || 'Sală necunoscută';
             if (!acc[hallName]) {
@@ -242,7 +307,7 @@ class BookingPrioritization extends Component {
         ));
     };
 
-    // Metoda de randare a componentei
+    // Metoda principală de render
     render() {
         const {
             isGenerating,
@@ -265,21 +330,12 @@ class BookingPrioritization extends Component {
                             <p>
                                 Sistemul va genera automat rezervările pentru săptămâna următoare
                                 bazându-se pe profilurile de rezervare și prioritățile stabilite.
-                                Plățile vor fi procesate automat pentru profilurile configurate.
+                                Rezervările vor fi confirmate și utilizatorii vor primi email-uri de notificare.
                             </p>
                         </div>
                     </div>
 
-                    <div className="bp-payment-info">
-                        <div className="bp-payment-method">
-                            <CreditCard size={16} />
-                            <span>Plăți automate pentru profilurile configurate</span>
-                        </div>
-                        <div className="bp-payment-method">
-                            <Banknote size={16} />
-                            <span>Plăți cash pentru celelalte rezervări</span>
-                        </div>
-                    </div>
+                    {this.renderSystemStatus()}
                 </div>
 
                 <div className="bp-generate-button-container">
