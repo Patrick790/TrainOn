@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="card">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="12.06.2025">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/LicenseApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/LicenseApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -373,7 +373,6 @@
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
       <workItem from="1749719443674" duration="7061000" />
-      <workItem from="1749971916168" duration="1327000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />

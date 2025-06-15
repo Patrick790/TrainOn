@@ -102,7 +102,9 @@ public class SecurityConfig {
                         .requestMatchers("/payment/**").hasAnyAuthority("user", "admin", "hall_admin")
 
                         // ADĂUGAT: Endpoint pentru generarea automată de rezervări
-                        .requestMatchers("/booking-prioritization/generate").hasAuthority("admin")
+                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări - TEMPORAR PUBLIC
+                        .requestMatchers("/booking-prioritization/**").permitAll()
+                        .requestMatchers("/booking-prioritization/test").permitAll()
                         .requestMatchers("/booking-prioritization/diagnostic").hasAuthority("admin")
                         .requestMatchers("/booking-prioritization/test-generation").hasAuthority("admin")
 
@@ -119,7 +121,7 @@ public class SecurityConfig {
                         .requestMatchers("/fcfs/**").permitAll()
 
                         // Endpoint pentru health check
-                        .requestMatchers("/health", "/", "/api", "/ping").permitAll()
+                        .requestMatchers("/health", "/", "/api", "/ping", "/booking-prioritization/test").permitAll()
 
                         .anyRequest().authenticated()
                 )

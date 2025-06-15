@@ -1,6 +1,7 @@
 package licenta.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,6 +44,11 @@ public class HealthController {
                 "register", "/register"
         ));
         return response;
+    }
+
+    @GetMapping("/booking-prioritization/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Controller is working!");
     }
 
     @GetMapping("/ping")
