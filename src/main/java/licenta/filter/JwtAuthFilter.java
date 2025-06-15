@@ -36,7 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
                 // ADĂUGAT: Excludem endpoint-urile pentru resetarea parolei
