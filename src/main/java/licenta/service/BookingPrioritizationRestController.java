@@ -573,7 +573,7 @@ public class BookingPrioritizationRestController {
         // Sortează grupurile după prioritate (descendent)
         List<Integer> sortedPriorities = priorityGroups.keySet().stream()
                 .sorted((a, b) -> Integer.compare(b, a))
-                .collect(Collectors.toList());
+                .toList();
 
         // Pentru fiecare nivel de prioritate, amestecă slot-urile
         for (Integer priority : sortedPriorities) {
