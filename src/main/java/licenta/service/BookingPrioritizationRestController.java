@@ -294,81 +294,51 @@ public class BookingPrioritizationRestController {
      * Șterge rezervările existente din săptămâna următoare - OPTIMIZAT
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea COMPLETĂ a rezervărilor pentru săptămâna {} - {}",
+        logger.info("Ștergerea rezervărilor pentru săptămâna {} - {}",
                 formatDate(startDate), formatDate(endDate));
 
         try {
-            int totalDeleted = 0;
-            int round = 1;
+            // QUERY DIRECT ȘI SIMPLU
+            int deletedCount = reservationRepository.deleteReservationsByDateRange(startDate, endDate);
 
-            // Repetă ștergerea până când nu mai există rezervări în săptămâna țintă
-            while (true) {
-                logger.info("Runda {} de ștergere...", round);
+            logger.info("Șterse {} rezervări prin query direct", deletedCount);
 
-                // Găsește TOATE rezervările din săptămâna țintă
-                List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
-                List<Reservation> reservationsToDelete = allReservations.stream()
-                        .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
-                        .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("Eroare la ștergerea rezervărilor", e);
 
-                if (reservationsToDelete.isEmpty()) {
-                    logger.info("✓ Nu mai există rezervări de șters în săptămâna țintă");
-                    break;
-                }
+            // FALLBACK: Dacă query-ul direct nu merge, folosește metoda clasică
+            logger.info("🔄 Încerc metoda clasică de ștergere...");
+            deleteReservationsClassicWay(startDate, endDate);
+        }
+    }
 
-                logger.info("Găsite {} rezervări de șters în runda {}", reservationsToDelete.size(), round);
+    /**
+     * FALLBACK: Metodă clasică dacă query-ul direct nu funcționează
+     */
+    private void deleteReservationsClassicWay(Date startDate, Date endDate) {
+        try {
+            // Găsește toate rezervările din intervalul țintă
+            List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
 
-                // Șterge TOATE rezervările găsite, nu doar primele 500
-                int deletedInRound = 0;
-                for (Reservation reservation : reservationsToDelete) {
-                    try {
-                        reservationRepository.deleteById(reservation.getId());
-                        deletedInRound++;
-                        totalDeleted++;
+            List<Reservation> toDelete = allReservations.stream()
+                    .filter(r -> r.getDate() != null)
+                    .filter(r -> "reservation".equals(r.getType()))
+                    .filter(r -> !r.getDate().before(startDate) && !r.getDate().after(endDate))
+                    .collect(Collectors.toList());
 
-                        // Log progres la fiecare 10 rezervări șterse
-                        if (deletedInRound % 10 == 0) {
-                            logger.debug("Șterse {} rezervări în runda {}", deletedInRound, round);
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Nu s-a putut șterge rezervarea ID {}: {}",
-                                reservation.getId(), e.getMessage());
-                    }
-                }
+            logger.info("📋 Găsite {} rezervări de șters (metoda clasică)", toDelete.size());
 
-                logger.info("Runda {}: Șterse {} rezervări", round, deletedInRound);
-                round++;
-
-                // Limită de siguranță pentru a evita bucla infinită
-                if (round > 10) {
-                    logger.warn("ATENȚIE: S-au făcut 10 runde de ștergere, se oprește pentru siguranță");
-                    break;
-                }
-            }
-
-            // Verificare finală
-            List<Reservation> finalCheck = (List<Reservation>) reservationRepository.findAll();
-            long remainingReservations = finalCheck.stream()
-                    .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
-                    .count();
-
-            if (remainingReservations > 0) {
-                logger.error("PROBLEMA: Încă există {} rezervări în săptămâna țintă după {} runde!",
-                        remainingReservations, round - 1);
-
-                // Listează rezervările rămase pentru debugging
-                finalCheck.stream()
-                        .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
-                        .limit(5) // Doar primele 5 pentru debugging
-                        .forEach(r -> logger.error("Rezervare rămasă: ID={}, Data={}, Interval={}, Tip={}",
-                                r.getId(), formatDate(r.getDate()), r.getTimeSlot(), r.getType()));
+            if (!toDelete.isEmpty()) {
+                // Șterge toate deodată
+                reservationRepository.deleteAll(toDelete);
+                logger.info("✅ Șterse {} rezervări (metoda clasică)", toDelete.size());
             } else {
-                logger.info("ȘTERGERE COMPLETĂ: {} rezervări șterse din săptămâna țintă", totalDeleted);
+                logger.info("ℹ️ Nu există rezervări de șters în perioada specificată");
             }
 
         } catch (Exception e) {
-            logger.error("Eroare critică la ștergerea rezervărilor", e);
-            throw new RuntimeException("Nu s-au putut șterge rezervările existente: " + e.getMessage());
+            logger.error("Eroare critică la ștergerea clasică", e);
+            throw new RuntimeException("Nu s-au putut șterge rezervările: " + e.getMessage());
         }
     }
     /**
