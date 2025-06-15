@@ -46,13 +46,10 @@ const ApproveRegistrationsPage = () => {
 
                 console.log("Response data:", response.data);
 
-                // Filtrare suplimentară în frontend pentru a ne asigura că echipele au statusul corect
                 const filteredTeams = response.data.filter(team => {
                     if (activeTab === 'pending') {
-                        // În tab-ul "Cereri în așteptare" vom afișa doar echipele cu status "pending" sau null
                         return team.accountStatus === 'pending' || team.accountStatus === null;
                     } else if (activeTab === 'rejected') {
-                        // În tab-ul "Cereri respinse" vom afișa doar echipele cu status "rejected"
                         return team.accountStatus === 'rejected';
                     }
                     return true;
@@ -97,7 +94,7 @@ const ApproveRegistrationsPage = () => {
                 }
             );
 
-            // Creează un URL pentru blob
+            // Creeaza un URL pentru blob
             const blob = new Blob([response.data], { type: response.headers['content-type'] });
             const url = URL.createObjectURL(blob);
             setCertificateUrl(url);
@@ -184,12 +181,10 @@ const ApproveRegistrationsPage = () => {
         }
     };
 
-    // Verificare dacă utilizatorul este administrator
     const checkIsAdmin = () => {
         return localStorage.getItem('userType') === 'admin';
     };
 
-    // Afișăm un mesaj dacă utilizatorul nu este administrator
     if (!checkIsAdmin()) {
         return (
             <div className="global-admin-page">
@@ -201,7 +196,6 @@ const ApproveRegistrationsPage = () => {
         );
     }
 
-    // Determinarea textului pentru statusuri
     const getStatusText = (accountStatus) => {
         if (accountStatus === 'pending' || accountStatus === null) {
             return 'În așteptare';
@@ -210,7 +204,7 @@ const ApproveRegistrationsPage = () => {
         } else if (accountStatus === 'verified') {
             return 'Verificat';
         }
-        return accountStatus; // pentru alte statusuri posibile
+        return accountStatus;
     };
 
     return (

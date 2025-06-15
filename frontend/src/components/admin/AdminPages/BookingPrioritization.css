@@ -1,4 +1,3 @@
-/* BookingPrioritization.css - Versiunea actualizată compatibilă */
 
 .bp-booking-prioritization {
     background: #ffffff;
@@ -336,9 +335,7 @@
     border-radius: 12px;
 }
 
-/* Backward compatibility cu stilurile existente */
 .bp-result-message:not(.bp-result-container .bp-result-message) {
-    /* Pentru stilurile vechi care nu sunt în container */
     padding: 0.75rem 1.25rem;
     margin-bottom: 1rem;
     border-radius: 8px;
@@ -353,7 +350,6 @@
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Animații pentru noile elemente */
 .bp-detailed-results {
     animation: slideDown 0.3s ease;
 }
@@ -386,7 +382,6 @@
     }
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .bp-payment-info {
         flex-direction: column;

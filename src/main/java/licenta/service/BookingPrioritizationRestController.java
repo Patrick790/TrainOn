@@ -294,40 +294,83 @@ public class BookingPrioritizationRestController {
      * Șterge rezervările existente din săptămâna următoare - OPTIMIZAT
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea rezervărilor pentru săptămâna {} - {}", formatDate(startDate), formatDate(endDate));
+        logger.info("Ștergerea COMPLETĂ a rezervărilor pentru săptămâna {} - {}",
+                formatDate(startDate), formatDate(endDate));
 
         try {
-            List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
-            List<Long> idsToDelete = allReservations.stream()
-                    .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
-                    .map(Reservation::getId)
-                    .limit(500) // Limitează pentru siguranță
-                    .collect(Collectors.toList());
+            int totalDeleted = 0;
+            int round = 1;
 
-            if (!idsToDelete.isEmpty()) {
-                logger.info("Se șterg {} rezervări", idsToDelete.size());
+            // Repetă ștergerea până când nu mai există rezervări în săptămâna țintă
+            while (true) {
+                logger.info("Runda {} de ștergere...", round);
 
-                // Șterge în batch-uri mici pentru performanță
-                int batchSize = 20;
-                for (int i = 0; i < idsToDelete.size(); i += batchSize) {
-                    List<Long> batch = idsToDelete.subList(i, Math.min(i + batchSize, idsToDelete.size()));
-                    for (Long id : batch) {
-                        try {
-                            reservationRepository.deleteById(id);
-                        } catch (Exception e) {
-                            logger.debug("Nu s-a putut șterge rezervarea {}: {}", id, e.getMessage());
+                // Găsește TOATE rezervările din săptămâna țintă
+                List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
+                List<Reservation> reservationsToDelete = allReservations.stream()
+                        .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
+                        .collect(Collectors.toList());
+
+                if (reservationsToDelete.isEmpty()) {
+                    logger.info("✓ Nu mai există rezervări de șters în săptămâna țintă");
+                    break;
+                }
+
+                logger.info("Găsite {} rezervări de șters în runda {}", reservationsToDelete.size(), round);
+
+                // Șterge TOATE rezervările găsite, nu doar primele 500
+                int deletedInRound = 0;
+                for (Reservation reservation : reservationsToDelete) {
+                    try {
+                        reservationRepository.deleteById(reservation.getId());
+                        deletedInRound++;
+                        totalDeleted++;
+
+                        // Log progres la fiecare 10 rezervări șterse
+                        if (deletedInRound % 10 == 0) {
+                            logger.debug("Șterse {} rezervări în runda {}", deletedInRound, round);
                         }
+                    } catch (Exception e) {
+                        logger.warn("Nu s-a putut șterge rezervarea ID {}: {}",
+                                reservation.getId(), e.getMessage());
                     }
                 }
 
-                logger.info("Ștergerea completă pentru {} rezervări", idsToDelete.size());
+                logger.info("Runda {}: Șterse {} rezervări", round, deletedInRound);
+                round++;
+
+                // Limită de siguranță pentru a evita bucla infinită
+                if (round > 10) {
+                    logger.warn("ATENȚIE: S-au făcut 10 runde de ștergere, se oprește pentru siguranță");
+                    break;
+                }
             }
+
+            // Verificare finală
+            List<Reservation> finalCheck = (List<Reservation>) reservationRepository.findAll();
+            long remainingReservations = finalCheck.stream()
+                    .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
+                    .count();
+
+            if (remainingReservations > 0) {
+                logger.error("PROBLEMA: Încă există {} rezervări în săptămâna țintă după {} runde!",
+                        remainingReservations, round - 1);
+
+                // Listează rezervările rămase pentru debugging
+                finalCheck.stream()
+                        .filter(r -> isReservationInTargetWeek(r, startDate, endDate))
+                        .limit(5) // Doar primele 5 pentru debugging
+                        .forEach(r -> logger.error("Rezervare rămasă: ID={}, Data={}, Interval={}, Tip={}",
+                                r.getId(), formatDate(r.getDate()), r.getTimeSlot(), r.getType()));
+            } else {
+                logger.info("ȘTERGERE COMPLETĂ: {} rezervări șterse din săptămâna țintă", totalDeleted);
+            }
+
         } catch (Exception e) {
-            logger.error("Eroare la ștergerea rezervărilor", e);
-            // Nu aruncă excepție, continuă procesul
+            logger.error("Eroare critică la ștergerea rezervărilor", e);
+            throw new RuntimeException("Nu s-au putut șterge rezervările existente: " + e.getMessage());
         }
     }
-
     /**
      * Verifică dacă o rezervare este în săptămâna specificată
      */
@@ -338,13 +381,21 @@ public class BookingPrioritizationRestController {
 
         Date reservationDate = reservation.getDate();
 
-        // Verifică dacă rezervarea este de tip "reservation" (nu maintenance)
+        // IMPORTANT: Șterge DOAR rezervările de tip "reservation", nu "maintenance"
         if (!"reservation".equals(reservation.getType())) {
             return false;
         }
 
         // Verifică dacă data rezervării este în intervalul specificat
-        return !reservationDate.before(startDate) && !reservationDate.after(endDate);
+        boolean isInWeek = !reservationDate.before(startDate) && !reservationDate.after(endDate);
+
+        if (isInWeek) {
+            logger.debug("Rezervare găsită în săptămâna țintă: ID={}, Data={}, Interval={}, Status={}",
+                    reservation.getId(), formatDate(reservationDate),
+                    reservation.getTimeSlot(), reservation.getStatus());
+        }
+
+        return isInWeek;
     }
 
     /**

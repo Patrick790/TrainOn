@@ -133,17 +133,14 @@ class HallManagementModal extends Component {
             this.setState({ isSaving: true });
             const token = localStorage.getItem('jwtToken');
 
-            // Creăm FormData pentru a trimite datele în formatul așteptat de backend
             const formData = new FormData();
 
-            // Adăugăm datele sălii ca JSON string
             formData.append('sportsHall', JSON.stringify(this.state.editData));
 
             const response = await fetch(`${this.API_BASE_URL}/sportsHalls/${this.state.hall.id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`
-                    // Nu setăm Content-Type pentru FormData - browserul o va seta automat
                 },
                 body: formData
             });
@@ -163,7 +160,6 @@ class HallManagementModal extends Component {
                 error: null
             });
 
-            // Notifică componenta părinte că s-a actualizat sala
             if (this.props.onHallUpdated) {
                 this.props.onHallUpdated(updatedHall);
             }
@@ -176,8 +172,6 @@ class HallManagementModal extends Component {
             });
         }
     }
-
-    // Înlocuiește COMPLET metoda handleDeactivate din HallManagementModal.js cu aceasta:
 
     handleDeactivate = async () => {
         try {
@@ -203,7 +197,6 @@ class HallManagementModal extends Component {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
-                // NU trimitem body - endpoint-urile /activate și /deactivate nu au nevoie de date
             });
 
             console.log('Response status:', response.status);
@@ -218,7 +211,6 @@ class HallManagementModal extends Component {
             const updatedHall = await response.json();
             console.log('Updated hall:', updatedHall);
 
-            // Actualizează state-ul local
             this.setState({
                 hall: updatedHall,
                 editData: { ...updatedHall },
@@ -226,7 +218,6 @@ class HallManagementModal extends Component {
                 error: null
             });
 
-            // Notifică componenta părinte că sala a fost actualizată
             if (this.props.onHallUpdated) {
                 this.props.onHallUpdated(updatedHall);
             }

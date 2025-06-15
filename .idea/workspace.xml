@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="booking optimization">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="trying booking optimization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ApproveRegistrationsPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/HallManagementModal.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -581,7 +585,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749983796590</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="trying booking optimization">
+      <option name="closed" value="true" />
+      <created>1749986852544</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1749986852544</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -634,7 +646,8 @@
     <MESSAGE value="booking js update" />
     <MESSAGE value="booking js update 2" />
     <MESSAGE value="booking optimization" />
-    <option name="LAST_COMMIT_MESSAGE" value="booking optimization" />
+    <MESSAGE value="trying booking optimization" />
+    <option name="LAST_COMMIT_MESSAGE" value="trying booking optimization" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
