@@ -294,28 +294,45 @@ public class BookingPrioritizationRestController {
      * Șterge rezervările existente din săptămâna următoare - OPTIMIZAT
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea rezervărilor existente pentru săptămâna {} - {}", startDate, endDate);
+        logger.info("Ștergerea rezervărilor pentru săptămâna {} - {}", formatDate(startDate), formatDate(endDate));
 
-        Iterable<Reservation> existingReservations = reservationRepository.findAll();
-        List<Reservation> reservationsToDelete = new ArrayList<>();
+        try {
+            List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
+            List<Reservation> toDelete = new ArrayList<>();
 
-        for (Reservation reservation : existingReservations) {
-            Date reservationDate = reservation.getDate();
-
-            if (reservationDate != null
-                    && !reservationDate.before(startDate)
-                    && !reservationDate.after(endDate)
-                    && "reservation".equals(reservation.getType())) {
-                reservationsToDelete.add(reservation);
+            for (Reservation reservation : allReservations) {
+                if (reservation.getDate() != null &&
+                        "reservation".equals(reservation.getType()) &&
+                        !reservation.getDate().before(startDate) &&
+                        !reservation.getDate().after(endDate)) {
+                    toDelete.add(reservation);
+                }
             }
-        }
 
-        if (!reservationsToDelete.isEmpty()) {
-            logger.info("Se șterg {} rezervări existente", reservationsToDelete.size());
-            reservationRepository.deleteAll(reservationsToDelete);
+            if (!toDelete.isEmpty()) {
+                logger.info("Se șterg {} rezervări din săptămâna următoare", toDelete.size());
+                reservationRepository.deleteAll(toDelete);
+
+                // Verificare
+                Thread.sleep(200);
+                long remaining = ((List<Reservation>) reservationRepository.findAll()).stream()
+                        .filter(r -> r.getDate() != null &&
+                                "reservation".equals(r.getType()) &&
+                                !r.getDate().before(startDate) &&
+                                !r.getDate().after(endDate))
+                        .count();
+
+                if (remaining > 0) {
+                    logger.warn("Încă există {} rezervări după ștergere!", remaining);
+                } else {
+                    logger.info("✓ Toate rezervările au fost șterse cu succes");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Eroare la ștergerea rezervărilor: {}", e.getMessage());
+            throw new RuntimeException("Eroare la ștergerea rezervărilor: " + e.getMessage());
         }
     }
-
 
     /**
      * Verifică dacă o rezervare este în săptămâna specificată
