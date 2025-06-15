@@ -37,8 +37,6 @@ public class User extends BruteEntity<Long> {
     @Column(name = "team_type")
     private String teamType;
 
-    // Înlocuim @Lob cu o simplă coloană de tip byte[] fără adnotări speciale
-    // SQLite va trata acest câmp ca BLOB fără a folosi API-urile specifice care nu sunt implementate
     @Column(name = "certificate")
     private byte[] certificate;
 
@@ -54,11 +52,9 @@ public class User extends BruteEntity<Long> {
     @Column(name = "created_at")
     private Date createdAt;
 
-    // NOUVEAU: Control pentru vizibilitatea FCFS (First Come First Served)
     @Column(name = "fcfs_enabled", nullable = false)
-    private Boolean fcfsEnabled = true; // Default: activat
+    private Boolean fcfsEnabled = true;
 
-    // Adăugare relație One-to-Many către ReservationProfile
     @OneToMany(mappedBy = "user")
     @JsonManagedReference("user-profiles")
     private List<ReservationProfile> reservationProfiles = new ArrayList<>();
@@ -76,7 +72,7 @@ public class User extends BruteEntity<Long> {
         this.city = city;
         this.birthDate = birthDate;
         this.createdAt = new Date();
-        this.fcfsEnabled = true; // Default: activat
+        this.fcfsEnabled = true;
     }
 
     public User(String name, String email, String password, String userType, String address, String county, String city, String teamType, byte[] certificate) {
@@ -90,10 +86,9 @@ public class User extends BruteEntity<Long> {
         this.teamType = teamType;
         this.certificate = certificate;
         this.createdAt = new Date();
-        this.fcfsEnabled = true; // Default: activat
+        this.fcfsEnabled = true;
     }
 
-    // Getters și Setters existente
     public String getName() {
         return name;
     }
@@ -198,7 +193,6 @@ public class User extends BruteEntity<Long> {
         this.createdAt = createdAt;
     }
 
-    // NOUVEAU: Getters și Setters pentru FCFS
     public Boolean getFcfsEnabled() {
         return fcfsEnabled;
     }
@@ -207,12 +201,10 @@ public class User extends BruteEntity<Long> {
         this.fcfsEnabled = fcfsEnabled;
     }
 
-    // Metoda helper pentru a verifica dacă FCFS este activat
     public boolean isFcfsEnabled() {
         return fcfsEnabled != null && fcfsEnabled;
     }
 
-    // Getteri și setteri pentru reservationProfiles
     public List<ReservationProfile> getReservationProfiles() {
         return reservationProfiles;
     }
@@ -221,7 +213,6 @@ public class User extends BruteEntity<Long> {
         this.reservationProfiles = reservationProfiles;
     }
 
-    // Metode helper pentru adăugare/eliminare profile de rezervare
     public void addReservationProfile(ReservationProfile profile) {
         reservationProfiles.add(profile);
         profile.setUser(this);

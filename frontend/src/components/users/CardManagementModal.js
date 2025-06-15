@@ -62,22 +62,18 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
     const validateCard = () => {
         const errors = {};
 
-        // Validare număr card
         if (!newCard.number || newCard.number.replace(/\s/g, '').length < 13) {
             errors.number = 'Numărul cardului este invalid';
         }
 
-        // Validare expiry
         if (!newCard.expiry || !/^\d{2}\/\d{2}$/.test(newCard.expiry)) {
             errors.expiry = 'Data expirării trebuie să fie în formatul MM/YY';
         }
 
-        // Validare CVC
         if (!newCard.cvc || newCard.cvc.length < 3) {
             errors.cvc = 'CVC-ul trebuie să aibă cel puțin 3 cifre';
         }
 
-        // Validare nume
         if (!newCard.name.trim()) {
             errors.name = 'Numele este obligatoriu';
         }
@@ -101,7 +97,6 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
             const [month, year] = newCard.expiry.split('/');
             const cardNumber = newCard.number.replace(/\s/g, '');
 
-            // Log pentru debugging
             console.log('Token din localStorage:', localStorage.getItem('jwtToken'));
             console.log('Card number being sent:', cardNumber);
 
@@ -122,7 +117,6 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
 
             console.log('Response status:', response.status);
 
-            // Pentru 403, să nu redirectăm automat
             if (response.status === 403) {
                 console.error('403 Forbidden - posibil cardul este deja salvat');
                 setError('Nu aveți permisiunea să adăugați acest card. Posibil să fie deja salvat.');
@@ -135,7 +129,6 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
                 throw new Error(result.error || 'Eroare la salvarea cardului');
             }
 
-            // Reset form
             setNewCard({
                 number: '',
                 expiry: '',
@@ -145,7 +138,6 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
             });
             setIsAdding(false);
 
-            // Refresh cards list
             await onCardsUpdated();
 
         } catch (err) {
@@ -221,7 +213,6 @@ const CardManagementModal = ({ userCards, onClose, onCardsUpdated }) => {
         setError(null);
     };
 
-    // Handle click outside modal
     const handleOverlayClick = (e) => {
         if (e.target === e.currentTarget) {
             onClose();

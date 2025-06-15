@@ -4,7 +4,6 @@
     flex-direction: column;
 }
 
-/* Admin Navigation cu clase unice */
 .global-admin-nav {
     background-color: #f8f9fa;
     padding: 1.5rem 2rem;
@@ -98,7 +97,6 @@
     border-color: rgba(124, 58, 237, 0.5);
 }
 
-/* Custom SVG Icons */
 .view-halls-icon::before {
     content: '';
     width: 24px;
@@ -174,7 +172,6 @@
     color: #4b5563;
 }
 
-/* Admin Content */
 .global-admin-content {
     flex: 1;
     padding: 2rem 4rem;
@@ -182,7 +179,6 @@
     margin-bottom: 2rem;
 }
 
-/* Pagini Admin */
 .global-admin-page {
     max-width: 1200px;
     margin: 0 auto;
@@ -195,7 +191,6 @@
     margin-bottom: 2rem;
 }
 
-/* Lista de săli */
 .global-admin-halls-list {
     display: flex;
     flex-direction: column;
@@ -283,7 +278,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Responsive */
 @media (max-width: 1280px) {
     .global-admin-buttons-container {
         grid-template-columns: repeat(3, 1fr);

@@ -16,7 +16,7 @@ const ProfileCreationPage = () => {
         timeInterval: '7-14:30',
         weeklyBudget: '',
         city: '',
-        sport: 'fotbal', // ADĂUGAT: câmpul sport cu valoare default
+        sport: 'fotbal',
         selectedHalls: [],
         autoPaymentEnabled: false,
         autoPaymentMethod: null,
@@ -34,10 +34,8 @@ const ProfileCreationPage = () => {
     const [showCardModal, setShowCardModal] = useState(false);
     const [stripe, setStripe] = useState(null);
 
-    // URL-ul API-ului
     const API_URL = process.env.REACT_APP_API_URL || '';
 
-    // Constante pentru formulare
     const ageCategories = [
         { value: '0-14', label: '0-14 ani' },
         { value: '15-16', label: '15-16 ani' },
@@ -58,9 +56,8 @@ const ProfileCreationPage = () => {
 
     // ADĂUGAT: Lista extinsă de sporturi disponibile
     const availableSports = [
-        // Sporturi de echipă
         { value: 'fotbal', label: 'Fotbal' },
-        { value: 'fotbal-sala', label: 'Fotbal în Sală (Futsal)' },
+        { value: 'fotbal-sala', label: 'Fotbal în sală (Futsal)' },
         { value: 'baschet', label: 'Baschet' },
         { value: 'volei', label: 'Volei' },
         { value: 'handbal', label: 'Handbal' },
@@ -68,43 +65,21 @@ const ProfileCreationPage = () => {
         { value: 'hochei', label: 'Hochei pe Gheață' },
         { value: 'polo-apa', label: 'Polo pe Apă' },
 
-        // Sporturi cu rachetă
         { value: 'tenis', label: 'Tenis' },
         { value: 'tenis-masa', label: 'Tenis de Masă' },
         { value: 'badminton', label: 'Badminton' },
         { value: 'squash', label: 'Squash' },
         { value: 'padel', label: 'Padel' },
 
-        // Sporturi de luptă
         { value: 'box', label: 'Box' },
         { value: 'kickbox', label: 'Kickbox' },
         { value: 'karate', label: 'Karate' },
         { value: 'judo', label: 'Judo' },
         { value: 'taekwondo', label: 'Taekwondo' },
-        { value: 'mma', label: 'MMA (Arte Marțiale Mixte)' },
-        { value: 'wrestling', label: 'Wrestling' },
         { value: 'aikido', label: 'Aikido' },
-        { value: 'brazilian-jiu-jitsu', label: 'Brazilian Jiu-Jitsu' },
 
-        // Înot și sporturi acvatice
         { value: 'inot', label: 'Înot' },
-        { value: 'aqua-aerobic', label: 'Aqua Aerobic' },
-        { value: 'sincron', label: 'Înot Sincron' },
-        { value: 'sarituri-apa', label: 'Sărituri în Apă' },
-        { value: 'waterpolo', label: 'Waterpolo' },
 
-        // Gimnastică și fitness
-        { value: 'gimnastica', label: 'Gimnastică Artistică' },
-        { value: 'gimnastica-ritmica', label: 'Gimnastică Ritmică' },
-        { value: 'aerobic', label: 'Aerobic Sportiv' },
-        { value: 'fitness', label: 'Fitness / Culturism' },
-        { value: 'crossfit', label: 'CrossFit' },
-        { value: 'pilates', label: 'Pilates' },
-        { value: 'yoga', label: 'Yoga' },
-        { value: 'zumba', label: 'Zumba' },
-        { value: 'spinning', label: 'Spinning / Ciclism Indoor' },
-
-        // Sporturi individuale
         { value: 'atletism', label: 'Atletism' },
         { value: 'haltere', label: 'Haltere' },
         { value: 'escalada', label: 'Escaladă' },
@@ -112,28 +87,13 @@ const ProfileCreationPage = () => {
         { value: 'scrima', label: 'Scrimă' },
         { value: 'tir-cu-arcul', label: 'Tir cu Arcul' },
 
-        // Sporturi cu mingea
         { value: 'bowling', label: 'Bowling' },
-        { value: 'biliard', label: 'Biliard' },
+        { value: 'biliard', label: 'Biliard' }
 
-        // Sporturi pentru copii
-        { value: 'sport-copii', label: 'Sport pentru Copii (Multisport)' },
-        { value: 'baby-swimming', label: 'Înot pentru Bebeluși' },
-
-        // Activități de grup
-        { value: 'aqua-fitness', label: 'Aqua Fitness' },
-        { value: 'step-aerobic', label: 'Step Aerobic' },
-        { value: 'body-pump', label: 'Body Pump' },
-        { value: 'tabata', label: 'Tabata' },
-        { value: 'hiit', label: 'HIIT (High Intensity Interval Training)' },
-
-        // Opțiune generală
-        { value: 'multipla', label: 'Sală Multiplă (Toate Sporturile)' }
     ];
 
     const [availableCities, setAvailableCities] = useState([]);
 
-    // Configurare axios cu autentificare
     const api = axios.create();
     api.interceptors.request.use(function (config) {
         const token = localStorage.getItem('jwtToken');
@@ -164,7 +124,6 @@ const ProfileCreationPage = () => {
         loadStripe();
     }, []);
 
-    // Funcții pentru încărcarea datelor
     const fetchProfiles = async () => {
         setLoading(true);
         setError(null);
@@ -213,11 +172,9 @@ const ProfileCreationPage = () => {
         fetchCities();
     }, []);
 
-    // Listener pentru actualizările de carduri din modal
     useEffect(() => {
         const handleCardsUpdated = () => {
             fetchUserCards();
-            // Dacă editezi un profil, reîncarcă și profilurile pentru a avea datele actualizate
             if (editingProfileId) {
                 fetchProfiles();
             }
@@ -230,19 +187,14 @@ const ProfileCreationPage = () => {
         };
     }, [editingProfileId]);
 
-    // Încarcă sălile pe baza orașului selectat (fără filtrare pe sport)
-    // Înlocuiește useEffect-ul pentru încărcarea sălilor (în jurul liniei 180-200) cu acest cod:
 
-// Încarcă sălile pe baza orașului selectat (doar sălile ACTIVE)
     useEffect(() => {
         if (currentProfile.city) {
             setLoading(true);
             setError(null);
 
-            // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active în loc de cel general
             api.get(`${API_URL}/sportsHalls/active`)
                 .then(response => {
-                    // Filtrăm sălile ACTIVE din orașul selectat
                     const filteredHalls = response.data.filter(hall =>
                         hall.city && hall.city.toLowerCase() === currentProfile.city.toLowerCase()
                     );
@@ -261,7 +213,6 @@ const ProfileCreationPage = () => {
         }
     }, [currentProfile.city]);
 
-    // Event handlers
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setCurrentProfile({
@@ -301,7 +252,7 @@ const ProfileCreationPage = () => {
             timeInterval: '7-14:30',
             weeklyBudget: '',
             city: '',
-            sport: 'fotbal', // ADĂUGAT: resetare sport
+            sport: 'fotbal',
             selectedHalls: [],
             autoPaymentEnabled: false,
             autoPaymentMethod: null,
@@ -323,7 +274,7 @@ const ProfileCreationPage = () => {
                     timeInterval: currentProfile.timeInterval,
                     weeklyBudget: currentProfile.weeklyBudget,
                     city: currentProfile.city,
-                    sport: currentProfile.sport, // ADĂUGAT: includere sport în datele trimise
+                    sport: currentProfile.sport,
                     selectedHalls: currentProfile.selectedHalls,
                     autoPaymentEnabled: currentProfile.autoPaymentEnabled,
                     autoPaymentMethod: currentProfile.autoPaymentEnabled ? currentProfile.autoPaymentMethod : null,
@@ -333,13 +284,10 @@ const ProfileCreationPage = () => {
                 };
 
                 if (editingProfileId) {
-                    // Pentru editare, salvează și apoi reîncarcă datele
                     await api.put(`${API_URL}/reservationProfiles/${editingProfileId}`, profileData);
 
-                    // Reîncarcă profilurile pentru a obține datele actualizate
                     await fetchProfiles();
 
-                    // Găsește profilul actualizat și setează-l în formular
                     const updatedProfilesResponse = await api.get(`${API_URL}/reservationProfiles`);
                     const updatedProfile = updatedProfilesResponse.data.find(p => p.id === editingProfileId);
 
@@ -347,7 +295,7 @@ const ProfileCreationPage = () => {
                         const hallIds = updatedProfile.selectedHalls ? updatedProfile.selectedHalls.map(hall => hall.id) : [];
                         setCurrentProfile({
                             ...updatedProfile,
-                            sport: updatedProfile.sport || 'fotbal', // FIXAT: asigură-te că sportul are o valoare default
+                            sport: updatedProfile.sport || 'fotbal',
                             selectedHalls: hallIds,
                             autoPaymentEnabled: updatedProfile.autoPaymentEnabled || false,
                             autoPaymentMethod: updatedProfile.autoPaymentMethod || null,
@@ -357,7 +305,6 @@ const ProfileCreationPage = () => {
                         });
                     }
                 } else {
-                    // Pentru profil nou
                     await api.post(`${API_URL}/reservationProfiles`, profileData);
                     await fetchProfiles();
                     resetCurrentProfile();
@@ -405,7 +352,7 @@ const ProfileCreationPage = () => {
 
         setCurrentProfile({
             ...profile,
-            sport: profile.sport || 'fotbal', // FIXAT: asigură-te că sportul are o valoare default
+            sport: profile.sport || 'fotbal',
             selectedHalls: hallIds,
             autoPaymentEnabled: profile.autoPaymentEnabled || false,
             autoPaymentMethod: profile.autoPaymentMethod || null,
@@ -417,7 +364,6 @@ const ProfileCreationPage = () => {
         setIsAddingProfile(false);
         setActiveStep(1);
 
-        // Refresh cardurile când editezi un profil
         fetchUserCards();
     };
 
@@ -570,7 +516,6 @@ const ProfileCreationPage = () => {
                         {editingProfileId ? 'Editare profil' : 'Creare profil nou'}
                     </h2>
 
-                    {/* Indicator pentru pași */}
                     <div className="reserv-profile-steps-indicator">
                         <div className={`reserv-step ${activeStep >= 1 ? 'active' : ''}`}>
                             <div className="reserv-step-number">1</div>
@@ -589,7 +534,6 @@ const ProfileCreationPage = () => {
                     </div>
 
                     <div className="reserv-profile-form">
-                        {/* Pasul 1: Informații de bază */}
                         {activeStep === 1 && (
                             <div className="reserv-form-step">
                                 <div className="reserv-form-group">
@@ -687,7 +631,7 @@ const ProfileCreationPage = () => {
                             </div>
                         )}
 
-                        {/* Pasul 2: Locație și săli */}
+                        {/* Pasul 2: Locatie si sali */}
                         {activeStep === 2 && (
                             <div className="reserv-form-step">
                                 <div className="reserv-form-group">
@@ -762,7 +706,7 @@ const ProfileCreationPage = () => {
                             </div>
                         )}
 
-                        {/* Pasul 3: Plăți automate */}
+                        {/* Pasul 3: Plati automate */}
                         {activeStep === 3 && (
                             <div className="reserv-form-step">
                                 <div className="reserv-form-group">
@@ -920,7 +864,6 @@ const ProfileCreationPage = () => {
                 />
             )}
 
-            {/* Mesaje de eroare și încărcare globale */}
             {error && (
                 <div className="reserv-profile-error">
                     <AlertCircle size={16} />
@@ -935,7 +878,6 @@ const ProfileCreationPage = () => {
                 </div>
             )}
 
-            {/* Footer cu acțiuni finale */}
             <footer className="reserv-profile-page-actions">
                 <button
                     type="button"

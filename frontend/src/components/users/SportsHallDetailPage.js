@@ -6,11 +6,10 @@ import Header from './Header';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import SportsHallMap from './SportsHallMap';
-import SearchBar from './SearchBar'; // Import SearchBar component
+import SearchBar from './SearchBar';
 import Footer from '../pageComponents/Footer';
 import './SportsHallDetailPage.css';
 
-// Modal pentru rezervare - afișează opțiunile bazate pe tipul utilizatorului
 const ReservationOptionsModal = ({ isOpen, onClose }) => {
     const [userType, setUserType] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -55,7 +54,6 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    // Verificăm dacă utilizatorul este parte dintr-o echipă (are teamType setat)
     const isTeamUser = userType && userType.trim() !== '';
 
     return (
@@ -73,7 +71,6 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
 
                 {!loading && (
                     <div className="reservation-options">
-                        {/* Opțiunea pentru crearea profilului - doar pentru utilizatorii de echipă */}
                         {isTeamUser && (
                             <div
                                 className="reservation-option"
@@ -90,7 +87,6 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
                             </div>
                         )}
 
-                        {/* Opțiunea pentru rezervarea locurilor rămase - pentru toți utilizatorii */}
                         <div
                             className={`reservation-option ${!isTeamUser ? 'single-option' : ''}`}
                             onClick={() => { window.location.href = '/fcfs-reservation'; onClose(); }}
@@ -132,10 +128,8 @@ const SportsHallDetailPage = () => {
     const [error, setError] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    // State pentru modalul de opțiuni de rezervare
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
-    // State pentru header - simplificat
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -146,7 +140,6 @@ const SportsHallDetailPage = () => {
         fetchSportsHall();
     }, [id]);
 
-    // Funcție pentru încărcarea sălii de sport
     const fetchSportsHall = async () => {
         try {
             const response = await axios.get(`${API_URL}/sportsHalls/${id}`);
@@ -182,12 +175,10 @@ const SportsHallDetailPage = () => {
         setIsLoginModalOpen(false);
     };
 
-    // Funcție pentru navigarea la pagina de recenzii
     const goToReviews = () => {
         navigate(`/sportsHalls/${id}/reviews`);
     };
 
-    // Funcții pentru gestionarea modalului de rezervare
     const openReservationModal = () => {
         if (isLoggedIn) {
             setIsReservationModalOpen(true);
@@ -222,7 +213,6 @@ const SportsHallDetailPage = () => {
         setCurrentImageIndex(index);
     };
 
-    // Funcții pentru procesarea datelor sălii
     const calculateRating = (hall) => {
         if (!hall || !hall.capacity) return 3.0;
 
@@ -271,14 +261,10 @@ const SportsHallDetailPage = () => {
         return facilitiesString.split(',').map(facility => facility.trim());
     };
 
-    // Handler pentru schimbarea orașului din SearchBar
     const handleCityChange = (city) => {
-        // În pagina de detalii nu avem nevoie să facem nimic special
-        // SearchBar-ul se va ocupa de logica proprie
         console.log('City changed to:', city);
     };
 
-    // Handler pentru apelarea numărului de telefon
     const handlePhoneCall = (phoneNumber) => {
         if (phoneNumber && phoneNumber !== 'Nu este disponibil') {
             window.location.href = `tel:${phoneNumber.replace(/\s/g, '')}`;
@@ -310,12 +296,10 @@ const SportsHallDetailPage = () => {
                 onLogout={handleLogout}
             />
 
-            {/* Main content cu SearchBar component */}
             <main className="main-content">
                 <SearchBar onCityChange={handleCityChange} />
             </main>
 
-            {/* Conținutul paginii de detalii */}
             <div className="detail-page-wrapper">
                 <div className="detail-page-container">
                     {/* Buton înapoi */}
@@ -326,7 +310,6 @@ const SportsHallDetailPage = () => {
                         </Link>
                     </div>
 
-                    {/* Header sala */}
                     <div className="detail-page-header">
                         <h1 className="detail-page-title">{sportsHall.name}</h1>
                         <div className="detail-page-meta">
@@ -344,7 +327,6 @@ const SportsHallDetailPage = () => {
                         {sportsHall.type && <div className="detail-page-badge">{sportsHall.type}</div>}
                     </div>
 
-                    {/* Galerie imagini */}
                     <div className="detail-image-gallery">
                         <div className="detail-main-image-container">
                             {sportsHall.images && sportsHall.images.length > 0 ? (
@@ -392,7 +374,6 @@ const SportsHallDetailPage = () => {
                         )}
                     </div>
 
-                    {/* Conținut detalii */}
                     <div className="detail-page-content">
                         <div className="detail-page-columns">
                             <div className="detail-page-left-column">
@@ -448,7 +429,6 @@ const SportsHallDetailPage = () => {
                                     </p>
                                 </div>
 
-                                {/* Harta cu locația sălii */}
                                 <SportsHallMap
                                     address={sportsHall.address}
                                     city={sportsHall.city}
@@ -499,10 +479,8 @@ const SportsHallDetailPage = () => {
                 </div>
             </div>
 
-            {/* Footer Global */}
             <Footer />
 
-            {/* Modals */}
             {!isLoggedIn && (
                 <>
                     <LoginModal
@@ -518,7 +496,6 @@ const SportsHallDetailPage = () => {
                 </>
             )}
 
-            {/* Modal simplificat pentru opțiuni de rezervare */}
             <ReservationOptionsModal
                 isOpen={isReservationModalOpen}
                 onClose={closeReservationModal}

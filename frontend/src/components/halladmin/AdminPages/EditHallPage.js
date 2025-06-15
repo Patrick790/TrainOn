@@ -41,7 +41,6 @@ const IMAGE_TYPES = [
 ];
 
 
-// Wrapper pentru a folosi hooks in component class
 function withRouter(Component) {
     function ComponentWithRouterProp(props) {
         let params = useParams();
@@ -143,7 +142,6 @@ class EditHallPage extends Component {
                 });
             }
 
-            // Actualizam starea cu datele incarcate
             this.setState({
                 hallData: {
                     name: hallData.name || '',
@@ -268,14 +266,12 @@ class EditHallPage extends Component {
         const { hallData } = this.state;
         const { existingImages, newImages } = this.state;
 
-        // Verificăm dacă toate câmpurile obligatorii sunt completate
         if (!hallData.name || !hallData.county || !hallData.city ||
             !hallData.address || !hallData.capacity || !hallData.type || !hallData.tariff) {
             this.setState({ submitError: 'Toate câmpurile marcate cu * sunt obligatorii' });
             return false;
         }
 
-        // Verificăm dacă avem cel puțin o imagine de copertă (existentă sau nouă)
         if (existingImages.cover.length === 0 && newImages.cover.length === 0) {
             this.setState({ submitError: 'Trebuie să existe cel puțin o imagine de copertă' });
             return false;
@@ -287,26 +283,21 @@ class EditHallPage extends Component {
     prepareFormData = () => {
         const { hallData, newImages, imageIdsToDelete, hallId } = this.state;
 
-        // Asigură-te că valorile numerice sunt numere, nu string-uri
         const processedHallData = {
             ...hallData,
-            id: hallId, // Includem explicit ID-ul sălii
+            id: hallId,
             capacity: hallData.capacity ? parseInt(hallData.capacity, 10) : 0,
             tariff: hallData.tariff ? parseFloat(hallData.tariff) : 0
         };
 
-        // Creăm un FormData pentru a trimite date multipart
         const formData = new FormData();
 
-        // Adăugăm datele sălii ca JSON
         formData.append('sportsHall', JSON.stringify(processedHallData));
 
-        // Adăugăm IDs imaginilor de șters DOAR dacă există cel puțin una
         if (imageIdsToDelete && imageIdsToDelete.length > 0) {
             formData.append('deleteImageIds', JSON.stringify(imageIdsToDelete));
         }
 
-        // Verificăm dacă există imagini noi pentru a le adăuga
         let hasNewImages = false;
         Object.values(newImages).forEach(imagesList => {
             if (imagesList.length > 0) {
@@ -314,7 +305,6 @@ class EditHallPage extends Component {
             }
         });
 
-        // Adăugăm imaginile noi și tipurile lor DOAR dacă există cel puțin una
         if (hasNewImages) {
             let imageIndex = 0;
             Object.entries(newImages).forEach(([type, imagesList]) => {
@@ -352,7 +342,6 @@ class EditHallPage extends Component {
                 return;
             }
 
-            // Pentru debugging - verifică ce conține FormData
             console.log("FormData entries:");
             for (let entry of formData.entries()) {
                 console.log(entry[0], entry[1]);
@@ -370,7 +359,6 @@ class EditHallPage extends Component {
                 const data = await response.json();
                 console.log('Hall updated successfully:', data);
 
-                // Salvăm datele actualizate direct în stare
                 const existingImages = {
                     cover: [],
                     exterior: [],
@@ -384,13 +372,13 @@ class EditHallPage extends Component {
                         if (existingImages[type]) {
                             existingImages[type].push({
                                 id: img.id,
-                                url: `${this.API_BASE_URL}/images/${img.id}`,                                type: img.description
+                                url: `${this.API_BASE_URL}/images/${img.id}`,
+                                type: img.description
                             });
                         }
                     });
                 }
 
-                // Actualizăm starea cu datele noi și resetăm listele de imagini
                 this.setState({
                     hallData: {
                         name: data.name || '',
@@ -403,9 +391,9 @@ class EditHallPage extends Component {
                         description: data.description || '',
                         facilities: data.facilities || ''
                     },
-                    existingImages,  // Actualizăm direct cu imaginile noi
-                    imageIdsToDelete: [], // Resetăm lista de imagini de șters
-                    newImages: {  // Resetăm lista de imagini noi
+                    existingImages,
+                    imageIdsToDelete: [],
+                    newImages: {
                         cover: [],
                         exterior: [],
                         interior: [],
@@ -415,7 +403,6 @@ class EditHallPage extends Component {
                     submitSuccess: true
                 });
             } else {
-                // Gestionăm eroarea
                 const errorText = await response.text();
                 console.error('Error updating hall:', errorText);
                 console.error('Response status:', response.status);
@@ -472,7 +459,6 @@ class EditHallPage extends Component {
                                     </div>
                                 ))}
 
-                                {/* Imagini noi */}
                                 {newImages[type.type].map((img, index) => (
                                     <div key={`new-${index}`} className="image-item">
                                         <div className="image-preview">
@@ -492,7 +478,6 @@ class EditHallPage extends Component {
                                     </div>
                                 ))}
 
-                                {/* Buton adăugare imagine nouă */}
                                 {(existingImages[type.type].length + newImages[type.type].length) < type.max && (
                                     <div className="add-image-container">
                                         <label htmlFor={`add-${type.type}`} className="add-image-label">
@@ -617,10 +602,8 @@ class EditHallPage extends Component {
                 )}
 
                 <form onSubmit={this.handleSubmit} className="edit-hall-form">
-                    {/* Secțiunea de imagini */}
                     {this.renderImageSection()}
 
-                    {/* Secțiunea de informații */}
                     <div className="hall-info-section">
                         <h2 className="section-title">Informații despre sală</h2>
 

@@ -29,7 +29,6 @@
     transform: none;
 }
 
-/* Size variants */
 .star-rating.small .star {
     font-size: 1rem;
 }

@@ -9,7 +9,6 @@
     flex-direction: column;
 }
 
-/* Resetări și Fundal General */
 .fcfs-slots-list-for-day.loading {
     opacity: 0;
     transform: translateY(15px);
@@ -84,7 +83,6 @@
     color: #047857;
 }
 
-/* Lipsa Sloturi */
 .fcfs-no-slots {
     text-align: center;
     padding: 3rem 2rem;
@@ -100,7 +98,6 @@
     border: 1px dashed #d1d5db;
 }
 
-/* Acțiuni (Butoane Confirmare/Anulare) */
 .fcfs-actions {
     display: flex;
     justify-content: center;
@@ -156,7 +153,6 @@
     cursor: not-allowed;
 }
 
-/* Stare Golă */
 .fcfs-empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -176,7 +172,6 @@
     margin: 0 auto;
 }
 
-/* Animații pentru efectele spectaculoase */
 @keyframes gradientBackground {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -188,7 +183,6 @@
     100% { left: 100%; }
 }
 
-/* Hero Section - Fundal Spectaculos ca la Header */
 .fcfs-hero-section {
     padding: 3rem 0 4rem 0;
     position: relative;
@@ -196,7 +190,6 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Fundal cu gradient animat identic cu headerul */
 .fcfs-hero-section::before {
     content: "";
     position: absolute;
@@ -210,7 +203,6 @@
     z-index: -2;
 }
 
-/* Overlay cu pattern și efect de noise pentru profunzime */
 .fcfs-hero-section::after {
     content: "";
     position: absolute;
@@ -224,7 +216,6 @@
     z-index: -1;
 }
 
-/* Linii de lumină animate în fundal */
 .fcfs-hero-section .light-line {
     position: absolute;
     background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), transparent);
@@ -265,7 +256,6 @@
     z-index: 1;
 }
 
-/* Antet Pagina - stiluri profesionale */
 .fcfs-header {
     text-align: center;
     margin-bottom: 3rem;
@@ -315,7 +305,6 @@
     margin: 0 auto;
 }
 
-/* Container pentru Filtre - Design profesional */
 .fcfs-filters-container {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
@@ -389,7 +378,6 @@
     border-color: #e5e7eb;
 }
 
-/* Container principal pentru conținutul de jos */
 .fcfs-content-container {
     background-color: #f8fafc;
     flex: 1;
@@ -407,7 +395,6 @@
     min-height: 60vh;
 }
 
-/* Navigare Săptămână cu Tranziții */
 .fcfs-week-navigation {
     display: flex;
     align-items: center;
@@ -480,7 +467,6 @@
     transform: translateX(10px);
 }
 
-/* Informații Sală */
 .fcfs-hall-info {
     text-align: center;
     margin-bottom: 2rem;
@@ -497,7 +483,6 @@
     margin: 0;
 }
 
-/* Stare de Încărcare cu Animație */
 .fcfs-loading {
     text-align: center;
     padding: 3rem;
@@ -526,7 +511,6 @@
     100% { left: 100%; }
 }
 
-/* Selectorul de Zile cu Animații Fluide */
 .fcfs-day-selector-container {
     margin-bottom: 2.5rem;
     background: #ffffff;
@@ -641,7 +625,6 @@
     font-size: 0.75rem;
 }
 
-/* Secțiunea Sloturilor Orare cu Animații */
 .fcfs-time-slots-section {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -691,7 +674,6 @@
     transition: all 0.4s ease 0.3s;
 }
 
-/* Media Queries */
 @media (max-width: 1024px) {
     .fcfs-title {
         font-size: 2.25rem;

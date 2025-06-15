@@ -4,14 +4,12 @@ import './StripePaymentPage.css';
 
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51RUSNJB90iMxhg7K13VbDV4YNESfylJS8mNsenCauFMwbo2t9rDEptGatnEwR2lzQrgb7liaFKyFTjfyMkq2ooT900FSp78Ooy';
 
-// Funcție pentru a obține token-ul de autentificare
 const getAuthToken = () => {
     return localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
 };
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-// Funcție pentru header-uri cu autentificare
 const getAuthHeaders = () => {
     const token = getAuthToken();
     return {
@@ -20,7 +18,6 @@ const getAuthHeaders = () => {
     };
 };
 
-// Componenta pentru plata cu card
 const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcessing, onPaymentSuccess, onPaymentError }) => {
     const [stripe, setStripe] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -35,14 +32,12 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
     useEffect(() => {
         const loadStripe = async () => {
             try {
-                // Verifică dacă Stripe este deja încărcat
                 if (window.Stripe) {
                     const stripeInstance = window.Stripe(STRIPE_PUBLISHABLE_KEY);
                     setStripe(stripeInstance);
                     return;
                 }
 
-                // Verifică dacă scriptul există deja
                 const existingScript = document.querySelector('script[src="https://js.stripe.com/v3/"]');
                 if (existingScript) {
                     existingScript.onload = () => {
@@ -54,7 +49,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
                     return;
                 }
 
-                // Încarcă scriptul Stripe
                 const script = document.createElement('script');
                 script.src = 'https://js.stripe.com/v3/';
                 script.onload = () => {
@@ -80,22 +74,18 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
     const validateCard = () => {
         const errors = {};
 
-        // Validare număr card
         if (!cardDetails.number || cardDetails.number.replace(/\s/g, '').length < 13) {
             errors.number = 'Numărul cardului este invalid';
         }
 
-        // Validare expiry
         if (!cardDetails.expiry || !/^\d{2}\/\d{2}$/.test(cardDetails.expiry)) {
             errors.expiry = 'Data expirării trebuie să fie în formatul MM/YY';
         }
 
-        // Validare CVC
         if (!cardDetails.cvc || cardDetails.cvc.length < 3) {
             errors.cvc = 'CVC-ul trebuie să aibă cel puțin 3 cifre';
         }
 
-        // Validare nume
         if (!cardDetails.name.trim()) {
             errors.name = 'Numele este obligatoriu';
         }
@@ -143,7 +133,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
             [field]: formattedValue
         }));
 
-        // Șterge eroarea pentru câmpul modificat
         if (cardErrors[field]) {
             setCardErrors(prev => ({
                 ...prev,
@@ -175,7 +164,7 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
         onPaymentProcessing(true);
 
         try {
-            // Pas 1: Creează PaymentIntent pe backend
+            // Pas 1: Creeaza PaymentIntent pe backend
             const intentResponse = await fetch(`${API_BASE_URL}/payment/stripe/create-payment-intent`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
@@ -197,23 +186,18 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
 
             const { clientSecret } = intentResult;
 
-            // Pas 2: Folosește test token în loc de date raw pentru siguranță
+            // Pas 2: Foloseste test token in loc de date raw pentru siguranță
             const [month, year] = cardDetails.expiry.split('/');
 
-            // Pentru testare, folosim token-uri predefinite în loc de date raw
             let paymentMethodId;
 
-            // Verifică dacă este un card de test cunoscut și folosește token-ul corespunzător
             const cardNumber = cardDetails.number.replace(/\s/g, '');
 
             if (cardNumber === '4242424242424242') {
-                // Visa test card - folosește token predefinit
                 paymentMethodId = 'pm_card_visa';
             } else if (cardNumber === '5555555555554444') {
-                // Mastercard test card - folosește token predefinit
                 paymentMethodId = 'pm_card_mastercard';
             } else {
-                // Pentru alte carduri, încercăm să creăm PaymentMethod prin Stripe
                 try {
                     const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
                         type: 'card',
@@ -233,7 +217,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
                     }
                     paymentMethodId = paymentMethod.id;
                 } catch (pmErr) {
-                    // Dacă crearea PaymentMethod-ului eșuează, folosim backend-ul
                     const confirmResponse = await fetch(`${API_BASE_URL}/payment/stripe/confirm-payment-with-card`, {
                         method: 'POST',
                         headers: getAuthHeaders(),
@@ -262,7 +245,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
                     const paymentIntent = confirmResult.paymentIntent;
 
                     if (paymentIntent && paymentIntent.status === 'succeeded') {
-                        // Continuă cu finalizarea
                         const finalizeResponse = await fetch(`${API_BASE_URL}/payment/stripe/finalize-payment-and-create-reservations`, {
                             method: 'POST',
                             headers: getAuthHeaders(),
@@ -290,7 +272,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
                 }
             }
 
-            // Confirmă plata cu PaymentMethod (pentru token-uri predefinite sau PaymentMethod creat cu succes)
             const { error: stripePaymentError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: paymentMethodId
             });
@@ -300,7 +281,6 @@ const StripePaymentMethodCheckout = ({ amount, reservationData, onPaymentProcess
             }
 
             if (paymentIntent && paymentIntent.status === 'succeeded') {
-                // Pas 3: Finalizează comanda pe backend - CORECTAT pentru a folosi API_BASE_URL
                 const finalizeResponse = await fetch(`${API_BASE_URL}/payment/stripe/finalize-payment-and-create-reservations`, {
                     method: 'POST',
                     headers: getAuthHeaders(),
@@ -425,7 +405,6 @@ const StripePaymentPage = () => {
         }
     }, [navigate]);
 
-    // Funcție pentru a obține detaliile sălii și prețul
     const fetchHallDetails = useCallback(async () => {
         if (reservationData.length === 0) return;
 
@@ -461,7 +440,6 @@ const StripePaymentPage = () => {
         }
     }, [reservationData, navigate, location.pathname, fetchHallDetails]);
 
-    // Calculăm prețul total bazat pe tarifele reale ale sălilor
     const calculateTotalPrice = () => {
         if (Object.keys(hallDetails).length === 0) {
             return 0;

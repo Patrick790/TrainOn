@@ -48,7 +48,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Endpoint principal pentru generarea automată a rezervărilor
+     * Endpoint principal pentru generarea automata a rezervărilor
      */
     @PostMapping("/generate")
     public ResponseEntity<Map<String, Object>> generateBookings() {
@@ -57,15 +57,11 @@ public class BookingPrioritizationRestController {
 
             GenerationResult result = generateAutomatedBookings();
 
-            // OPTIMIZARE CRITICĂ: Response minimalist pentru a evita crash-ul browser-ului
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Rezervările au fost generate cu succes.");
             response.put("count", result.getTotalReservations());
             response.put("successfulProfiles", result.getSuccessfulProfiles());
-
-            // NU trimite lista completă de rezervări - prea mare pentru browser
-            // response.put("reservations", result.getReservations()); // COMENTAT
 
             // Trimite doar un sumar compact
             List<Map<String, Object>> profileSummary = result.getProfileResults().stream()
@@ -98,7 +94,6 @@ public class BookingPrioritizationRestController {
             summary.put("error", profileResult.getError());
         }
 
-        // Doar primele 3 rezervări pentru sumar
         if (!profileResult.getReservations().isEmpty()) {
             List<Map<String, Object>> reservationSummary = profileResult.getReservations().stream()
                     .limit(3) // Doar primele 3 pentru sumar
@@ -152,7 +147,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Metoda principală de generare a rezervărilor - ÎMBUNĂTĂȚITĂ CU ALOCARE ECHITABILĂ
+     * Metoda principală de generare a rezervărilor
      */
     private GenerationResult generateAutomatedBookings() {
         GenerationResult result = new GenerationResult();
@@ -161,17 +156,15 @@ public class BookingPrioritizationRestController {
         try {
             logger.info("=== ÎNCEPEREA GENERĂRII AUTOMATE CU ALOCARE ECHITABILĂ ===");
 
-            // 1. Calculează perioada pentru săptămâna următoare
+            // Calculeaza perioada pentru saptamana urmatoare
             Date nextMonday = calculateNextWeekStart();
             Date nextSunday = calculateWeekEnd(nextMonday);
 
             logger.info("=== GENERARE PENTRU SĂPTĂMÂNA: {} - {} ===",
                     formatDate(nextMonday), formatDate(nextSunday));
 
-            // 2. Șterge rezervările existente - OPTIMIZAT
             deleteExistingReservationsForNextWeek(nextMonday, nextSunday);
 
-            // 3. Obține și prioritizează profilurile - LIMITAT
             List<ReservationProfile> eligibleProfiles = getEligibleProfiles();
 
             if (eligibleProfiles.isEmpty()) {
@@ -179,7 +172,7 @@ public class BookingPrioritizationRestController {
                 return result;
             }
 
-            // LIMITARE CRITICĂ: Max 30 de profiluri pentru a evita timeout-ul
+            // Max 30 de profiluri pentru a evita timeout-ul
             if (eligibleProfiles.size() > 30) {
                 logger.warn("Se limitează la 30 profiluri din {} disponibile", eligibleProfiles.size());
                 eligibleProfiles = eligibleProfiles.subList(0, 30);
@@ -188,10 +181,10 @@ public class BookingPrioritizationRestController {
             List<ReservationProfile> prioritizedProfiles = prioritizeProfiles(eligibleProfiles);
             logger.info("Profiluri eligibile procesate: {}", prioritizedProfiles.size());
 
-            // 4. Creează programul disponibil - OPTIMIZAT
+            // 4. Creeaza programul disponibil
             WeeklySchedule weeklySchedule = createWeeklySchedule(nextMonday);
 
-            // 5. ALOCARE ECHITABILĂ ÎN 3 FAZE
+            // 5. ALOCARE ECHITABILA IN 3 FAZE
             result = allocateReservationsFairly(prioritizedProfiles, weeklySchedule, nextMonday, startTime);
 
             long totalTime = System.currentTimeMillis() - startTime;
@@ -218,27 +211,25 @@ public class BookingPrioritizationRestController {
         GenerationResult result = new GenerationResult();
 
         try {
-            // FAZA 1: Alocare minimă garantată (1 rezervare per echipă)
+            // FAZA 1: Alocare minima garantata (1 rezervare per echipa)
             logger.info("=== FAZA 1: Alocare minimă garantată pentru {} echipe ===", profiles.size());
             result = allocateMinimumReservations(profiles, schedule, startDate, result, globalStartTime);
 
-            // Verifică timeout global
             if (System.currentTimeMillis() - globalStartTime > 75000) { // 75s limit
                 logger.warn("Timeout global - se oprește după faza 1");
                 return result;
             }
 
-            // FAZA 2: Distribuție suplimentară în funcție de prioritate și buget
+            // FAZA 2: Distributie suplimentara in functie de prioritate si buget
             logger.info("=== FAZA 2: Distribuție suplimentară ===");
             result = allocateAdditionalReservations(profiles, schedule, startDate, result, globalStartTime);
 
-            // Verifică timeout global
             if (System.currentTimeMillis() - globalStartTime > 85000) { // 85s limit
                 logger.warn("Timeout global - se oprește după faza 2");
                 return result;
             }
 
-            // FAZA 3: Optimizare finală cu slot-urile rămase
+            // FAZA 3: Optimizare finala cu slot-urile ramase
             logger.info("=== FAZA 3: Optimizare finală ===");
             result = optimizeFinalAllocation(profiles, schedule, startDate, result, globalStartTime);
 
@@ -250,7 +241,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * FAZA 1: Asigură că fiecare echipă primește măcar o rezervare
+     * FAZA 1: Asigura ca fiecare echipa primeste macar o rezervare
      */
     private GenerationResult allocateMinimumReservations(
             List<ReservationProfile> profiles,
@@ -259,7 +250,7 @@ public class BookingPrioritizationRestController {
             GenerationResult result,
             long globalStartTime) {
 
-        logger.info("Alocând minimum 1 rezervare pentru {} echipe", profiles.size());
+        logger.info("Alocand minimum 1 rezervare pentru {} echipe", profiles.size());
         int successCount = 0;
 
         for (ReservationProfile profile : profiles) {
@@ -331,15 +322,15 @@ public class BookingPrioritizationRestController {
 
         logger.info("Alocând rezervări suplimentare pentru echipele cu buget și prioritate mare");
 
-        // Sortează echipele care au deja o rezervare după prioritate și buget rămas
+        // Sorteaza echipele care au deja o rezervare dupa prioritate si buget ramas
         List<ProfileResult> successfulProfiles = result.getProfileResults().stream()
                 .filter(ProfileResult::isSuccess)
                 .sorted((p1, p2) -> {
-                    // Calculează bugetul rămas
+                    // Calculeaza bugetul ramas
                     BigDecimal budget1 = calculateRemainingBudget(p1.getProfile(), p1.getReservations());
                     BigDecimal budget2 = calculateRemainingBudget(p2.getProfile(), p2.getReservations());
 
-                    // Prioritate după categoria de vârstă, apoi după buget rămas
+                    // Prioritate dupa categoria de varsta, apoi dupa buget ramas
                     int agePriority1 = getAgePriority(p1.getProfile().getAgeCategory());
                     int agePriority2 = getAgePriority(p2.getProfile().getAgeCategory());
 
@@ -353,10 +344,8 @@ public class BookingPrioritizationRestController {
 
         int additionalCount = 0;
 
-        // Pentru fiecare echipă cu succes, încearcă să adaugi rezervări suplimentare
         for (ProfileResult profileResult : successfulProfiles) {
             try {
-                // Verifică timeout
                 if (System.currentTimeMillis() - globalStartTime > 75000) { // 75s pentru faza 2
                     logger.warn("Timeout în faza 2 după {} rezervări suplimentare", additionalCount);
                     break;
@@ -380,12 +369,12 @@ public class BookingPrioritizationRestController {
                             List<Reservation> additionalReservations = createReservationsFromSelected(
                                     selectedAdditional, profile.getUser());
 
-                            // Adaugă la rezervările existente
+                            // Adauga la rezervarile existente
                             List<Reservation> allReservations = new ArrayList<>(profileResult.getReservations());
                             allReservations.addAll(additionalReservations);
                             profileResult.setReservations(allReservations);
 
-                            // Actualizează programul
+                            // Actualizeaza programul
                             updateScheduleWithReservations(schedule, additionalReservations);
 
                             additionalCount += additionalReservations.size();
@@ -417,7 +406,7 @@ public class BookingPrioritizationRestController {
 
         logger.info("Optimizare finală - distribuind slot-urile rămase");
 
-        // Găsește toate slot-urile încă disponibile
+        // Gaseste toate slot-urile inca disponibile
         List<AvailableSlot> remainingSlots = findAllRemainingSlots(schedule, startDate);
 
         if (remainingSlots.isEmpty()) {
@@ -425,15 +414,15 @@ public class BookingPrioritizationRestController {
             return result;
         }
 
-        // Limitează pentru performanță
+        // Limiteaza pentru performanta
         if (remainingSlots.size() > 50) {
             Collections.shuffle(remainingSlots, new Random());
             remainingSlots = remainingSlots.subList(0, 50);
         }
 
-        logger.info("Slot-uri rămase pentru optimizare: {}", remainingSlots.size());
+        logger.info("Slot-uri ramase pentru optimizare: {}", remainingSlots.size());
 
-        // Distribuie slot-urile rămase echipelor care încă au buget
+        // Distribuie slot-urile ramase echipelor care inca au buget
         List<ProfileResult> profilesWithBudget = result.getProfileResults().stream()
                 .filter(ProfileResult::isSuccess)
                 .filter(pr -> {
@@ -443,14 +432,14 @@ public class BookingPrioritizationRestController {
                             pr.getReservations().size() < maxBookings;
                 })
                 .sorted((p1, p2) -> {
-                    // Prioritate pentru echipele cu mai puține rezervări
+                    // Prioritate pentru echipele cu mai putine rezervari
                     int bookings1 = p1.getReservations().size();
                     int bookings2 = p2.getReservations().size();
                     return Integer.compare(bookings1, bookings2);
                 })
                 .collect(Collectors.toList());
 
-        // Distribuie în mod rotativ
+        // Distribuie in mod rotativ
         int slotIndex = 0;
         int optimizedCount = 0;
         boolean anyAllocation = true;
@@ -510,7 +499,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Găsește cel mai bun slot disponibil pentru o echipă (pentru rezervarea minimă)
+     * Gaseste cel mai bun slot disponibil pentru o echipa (pentru rezervarea minima)
      */
     private AvailableSlot findBestAvailableSlotForProfile(
             ReservationProfile profile, WeeklySchedule schedule, Date startDate) {
@@ -525,7 +514,7 @@ public class BookingPrioritizationRestController {
 
         List<AvailableSlot> candidateSlots = new ArrayList<>();
 
-        // Caută în toate zilele săptămânii (cu limitări pentru performanță)
+        // Cauta in toate zilele saptamanii (cu limitari pentru performanta)
         int slotsFound = 0;
         for (Map.Entry<String, DaySchedule> dayEntry : schedule.getDaySchedules().entrySet()) {
             Date currentDate = parseDate(dayEntry.getKey());
@@ -546,7 +535,6 @@ public class BookingPrioritizationRestController {
                         candidateSlots.add(availableSlot);
 
                         slotsFound++;
-                        // Limitează căutarea pentru performanță
                         if (slotsFound >= 30) break;
                     }
                 }
@@ -559,7 +547,7 @@ public class BookingPrioritizationRestController {
             return null;
         }
 
-        // Returnează slot-ul cu cea mai mare prioritate și care încape în buget
+        // Returnează slot-ul cu cea mai mare prioritate si care incape in buget
         return candidateSlots.stream()
                 .filter(slot -> profile.getWeeklyBudget().compareTo(slot.getPrice()) >= 0)
                 .max(Comparator.comparingInt(AvailableSlot::getPriority))
@@ -589,7 +577,6 @@ public class BookingPrioritizationRestController {
 
         List<AvailableSlot> availableSlots = new ArrayList<>();
 
-        // Similar cu findBestAvailableSlotForProfile dar returnează o listă limitată
         int slotsFound = 0;
         for (Map.Entry<String, DaySchedule> dayEntry : schedule.getDaySchedules().entrySet()) {
             Date currentDate = parseDate(dayEntry.getKey());
@@ -610,7 +597,6 @@ public class BookingPrioritizationRestController {
                         availableSlots.add(availableSlot);
 
                         slotsFound++;
-                        // Limitează pentru performanță
                         if (slotsFound >= maxAdditional * 8) break;
                     }
                 }
@@ -619,7 +605,7 @@ public class BookingPrioritizationRestController {
             if (slotsFound >= maxAdditional * 8) break;
         }
 
-        // Sortează și limitează
+        // Sorteaza si limiteaza
         Collections.shuffle(availableSlots, new Random());
         return availableSlots.stream()
                 .limit(maxAdditional * 3)
@@ -671,13 +657,13 @@ public class BookingPrioritizationRestController {
         TimeInterval preferredInterval = getPreferredTimeInterval(profile.getTimeInterval());
         boolean isSenior = isSeniorCategory(profile.getAgeCategory());
 
-        // Verifică dacă sala este în lista echipei
+        // Verifica daca sala este in lista echipei
         boolean hallMatch = getProfileHalls(profile).stream()
                 .anyMatch(h -> h.getId().equals(slot.getHall().getId()));
 
         if (!hallMatch) return false;
 
-        // Creează un TimeSlot temporar pentru verificare
+        // Creeaza un TimeSlot temporar pentru verificare
         TimeSlot tempSlot = new TimeSlot(slot.getTimeSlot(), SlotStatus.AVAILABLE, slot.getHall().getTariff());
 
         return isSlotSuitableForProfile(tempSlot, preferredInterval, isSenior);
@@ -689,11 +675,11 @@ public class BookingPrioritizationRestController {
     private List<SelectedReservation> selectReservationsWithinBudgetLimited(
             List<AvailableSlot> availableSlots, int maxBookings, BigDecimal budget) {
 
-        // Pentru rezervări suplimentare, folosește o versiune simplificată
+        // Pentru rezervari suplimentare, foloseste o versiune simplificata
         List<SelectedReservation> selected = new ArrayList<>();
         BigDecimal remainingBudget = budget;
 
-        // Limitează lista pentru performanță
+        // Limiteaza lista pentru performanta
         List<AvailableSlot> limitedSlots = availableSlots.stream()
                 .limit(maxBookings * 5)
                 .collect(Collectors.toList());
@@ -703,7 +689,7 @@ public class BookingPrioritizationRestController {
         for (AvailableSlot slot : limitedSlots) {
             if (selected.size() >= maxBookings) break;
 
-            // Verifică dacă bugetul permite
+            // Verifica daca bugetul permite
             if (remainingBudget.compareTo(slot.getPrice()) >= 0) {
                 SelectedReservation reservation = new SelectedReservation(
                         slot.getHall(), slot.getDate(), slot.getTimeSlot(), slot.getPrice());
@@ -723,7 +709,7 @@ public class BookingPrioritizationRestController {
         int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         if (currentDayOfWeek == Calendar.SUNDAY) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1); // Dacă e duminică, următoarea zi e luni
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
         } else {
             int daysUntilNextMonday = Calendar.MONDAY - currentDayOfWeek + 7;
             calendar.add(Calendar.DAY_OF_YEAR, daysUntilNextMonday);
@@ -782,7 +768,7 @@ public class BookingPrioritizationRestController {
                 if (remaining > 0) {
                     logger.warn("Încă există {} rezervări după ștergere!", remaining);
                 } else {
-                    logger.info("✓ Toate rezervările au fost șterse cu succes");
+                    logger.info("Toate rezervările au fost șterse cu succes");
                 }
             }
         } catch (Exception e) {
@@ -799,7 +785,7 @@ public class BookingPrioritizationRestController {
 
         return allProfiles.stream()
                 .filter(this::isProfileEligible)
-                .limit(30) // Limitează din start
+                .limit(30) // Limiteaza din start
                 .collect(Collectors.toList());
     }
 
@@ -864,12 +850,12 @@ public class BookingPrioritizationRestController {
         WeeklySchedule schedule = new WeeklySchedule();
         List<SportsHall> activeHalls = getActiveHalls();
 
-        // Limitează numărul de săli pentru performanță
+        // Limiteaza nr de sali pentru performanta
         if (activeHalls.size() > 15) {
             activeHalls = activeHalls.subList(0, 15);
         }
 
-        // Pentru fiecare zi din săptămână (luni - duminică)
+        // Pentru fiecare zi din saptamana (luni - duminica)
         for (int dayOffset = 0; dayOffset < 7; dayOffset++) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(startDate);
@@ -880,7 +866,7 @@ public class BookingPrioritizationRestController {
             schedule.addDaySchedule(formatDate(currentDate), daySchedule);
         }
 
-        // Marchează sloturile deja ocupate
+        // Marcheaza sloturile deja ocupate
         markExistingReservations(schedule, startDate);
 
         return schedule;
@@ -912,7 +898,7 @@ public class BookingPrioritizationRestController {
         HallDaySchedule hallSchedule = new HallDaySchedule();
 
         try {
-            // Găsește programul sălii pentru această zi
+            // Gaseste programul salii pentru aceasta zi
             List<Schedule> hallSchedules = scheduleRepository.findBySportsHallIdAndIsActiveOrderByDayOfWeek(hall.getId(), true);
             Optional<Schedule> dayScheduleOpt = hallSchedules.stream()
                     .filter(s -> s.getDayOfWeek().equals(dayOfWeek))
@@ -932,7 +918,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Determină statusul unui slot - OPTIMIZAT
+     * Determina statusul unui slot
      */
     private SlotStatus determineSlotStatus(String timeSlot, Optional<Schedule> daySchedule) {
         if (daySchedule.isEmpty()) {
@@ -952,7 +938,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Verifică dacă un slot este în orele de funcționare - OPTIMIZAT
+     * Verifică dacă un slot este în orele de funcționare
      */
     private boolean isSlotInWorkingHours(String timeSlot, String startTime, String endTime) {
         try {
@@ -968,7 +954,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Convertește ora în minute - OPTIMIZAT
+     * Convertește ora în minute
      */
     private int timeToMinutes(String timeString) {
         try {
@@ -980,7 +966,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Generează rezervări pentru un profil - PĂSTRAT PENTRU COMPATIBILITATE (NU SE MAI FOLOSEȘTE)
+     * Generează rezervări pentru un profil
      */
     private ProfileResult generateReservationsForProfile(ReservationProfile profile, WeeklySchedule weeklySchedule, Date startDate) {
         ProfileResult result = new ProfileResult(profile);
@@ -1038,7 +1024,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Găsește sloturile disponibile pentru un profil - ULTRA OPTIMIZAT
+     * Găsește sloturile disponibile pentru un profil
      */
     private List<AvailableSlot> findAvailableSlotsForProfile(
             ReservationProfile profile, WeeklySchedule weeklySchedule, Date startDate,
@@ -1051,9 +1037,9 @@ public class BookingPrioritizationRestController {
             return availableSlots;
         }
 
-        int maxSlots = getMaxBookingsForProfile(profile) * 15; // Limitează căutarea
+        int maxSlots = getMaxBookingsForProfile(profile) * 15; // Limiteaza cautarea
 
-        // Colectează toate slot-urile disponibile
+        // Colecteaza toate slot-urile disponibile
         outerLoop:
         for (Map.Entry<String, DaySchedule> dayEntry : weeklySchedule.getDaySchedules().entrySet()) {
             Date currentDate = parseDate(dayEntry.getKey());
@@ -1073,7 +1059,7 @@ public class BookingPrioritizationRestController {
                         availableSlot.setPriority(calculateSlotPriority(timeSlot, preferredInterval));
                         availableSlots.add(availableSlot);
 
-                        // EARLY EXIT pentru performanță
+                        // EARLY EXIT pentru performanta
                         if (availableSlots.size() >= maxSlots) {
                             break outerLoop;
                         }
@@ -1082,49 +1068,47 @@ public class BookingPrioritizationRestController {
             }
         }
 
-        // Aplică diversificarea DOAR dacă avem suficiente slot-uri
+        // Aplica diversificarea doar daca avem suficiente slot-uri
         if (availableSlots.size() > getMaxBookingsForProfile(profile) * 4) {
             return diversifySlotSelection(availableSlots);
         } else {
-            // Pentru liste mici, doar amestecă
+            // Pentru liste mici, doar amesteca
             Collections.shuffle(availableSlots, new Random());
             return availableSlots;
         }
     }
 
     /**
-     * Diversifică selecția de slot-uri - OPTIMIZAT
+     * Diversifică selecția de slot-uri
      */
     private List<AvailableSlot> diversifySlotSelection(List<AvailableSlot> availableSlots) {
         if (availableSlots.isEmpty()) {
             return availableSlots;
         }
 
-        // LIMITARE CRITICĂ: Nu procesa liste foarte mari
         if (availableSlots.size() > 200) {
             Collections.shuffle(availableSlots, new Random());
             return availableSlots.subList(0, 200);
         }
 
         try {
-            // Grupează slot-urile după prioritate
+            // Grupeaza slot-urile dupa prioritate
             Map<Integer, List<AvailableSlot>> priorityGroups = availableSlots.stream()
                     .collect(Collectors.groupingBy(AvailableSlot::getPriority));
 
             List<AvailableSlot> diversifiedSlots = new ArrayList<>();
             Random random = new Random();
 
-            // Limitează numărul de grupuri procesate
+            // Limiteaza nr de grupuri procesate
             List<Integer> sortedPriorities = priorityGroups.keySet().stream()
                     .sorted((a, b) -> Integer.compare(b, a))
-                    .limit(8) // LIMITARE: Procesează doar top 8 grupuri de prioritate
+                    .limit(8) // LIMITARE: Proceseaza doar top 8 grupuri de prioritate
                     .collect(Collectors.toList());
 
-            // Pentru fiecare nivel de prioritate, amestecă slot-urile
+            // Pentru fiecare nivel de prioritate, amesteca slot-urile
             for (Integer priority : sortedPriorities) {
                 List<AvailableSlot> groupSlots = new ArrayList<>(priorityGroups.get(priority));
 
-                // OPTIMIZARE: Limitează mărimea grupului
                 if (groupSlots.size() > 30) {
                     Collections.shuffle(groupSlots, random);
                     groupSlots = groupSlots.subList(0, 30);
@@ -1132,20 +1116,20 @@ public class BookingPrioritizationRestController {
 
                 Collections.shuffle(groupSlots, random);
 
-                // Adaugă o parte din slot-uri pentru diversitate
+                // Adauga o parte din slot-uri pentru diversitate
                 int maxSlotsFromGroup = Math.min(15, Math.max(1, groupSlots.size() / 2));
                 diversifiedSlots.addAll(groupSlots.subList(0, Math.min(maxSlotsFromGroup, groupSlots.size())));
 
-                // LIMITARE CRITICĂ: Nu depăși 100 de slot-uri
+                // LIMITARE CRITICA: Nu depăși 100 de slot-uri
                 if (diversifiedSlots.size() > 100) {
                     break;
                 }
             }
 
-            // Amestecă rezultatul final
+            // Amesteca rezultatul final
             Collections.shuffle(diversifiedSlots, random);
 
-            // LIMITARE FINALĂ
+            // LIMITARE FINALA
             if (diversifiedSlots.size() > 80) {
                 diversifiedSlots = diversifiedSlots.subList(0, 80);
             }
@@ -1179,7 +1163,7 @@ public class BookingPrioritizationRestController {
                 return false;
             }
 
-            // Aplică regula pentru seniori/juniori la ora 14:30
+            // Aplica regula pentru seniori/juniori la ora 14:30
             if (isSenior) {
                 return hour < 14 || (hour == 14 && minute == 0);
             } else {
@@ -1203,16 +1187,16 @@ public class BookingPrioritizationRestController {
             int intervalCenter = (preferredInterval.getStartMinutes() + preferredInterval.getEndMinutes()) / 2;
             int distance = Math.abs(totalMinutes - intervalCenter);
 
-            // Calculează prioritatea de bază
+            // Calculeaza prioritatea de baza
             int basePriority = 1000 - distance;
 
-            // Adaugă o componentă aleatorie pentru diversitate (±10% din prioritate)
+            // Adauga o componenta aleatorie pentru diversitate (±10% din prioritate)
             Random random = new Random(timeSlot.hashCode()); // Seed consistent pentru același slot
             int randomVariation = (int)(basePriority * 0.1 * (random.nextDouble() - 0.5) * 2);
 
             return basePriority + randomVariation;
         } catch (Exception e) {
-            return new Random().nextInt(100); // Prioritate aleatorie în caz de eroare
+            return new Random().nextInt(100); // Prioritate aleatorie in caz de eroare
         }
     }
 
@@ -1225,14 +1209,14 @@ public class BookingPrioritizationRestController {
         List<SelectedReservation> selected = new ArrayList<>();
         BigDecimal remainingBudget = budget;
 
-        // Constrângeri pentru diversitate
+        // Constrangeri pentru diversitate
         Set<String> usedDateSlots = new HashSet<>();
-        Map<Long, Integer> hallUsageCount = new HashMap<>();  // Limitează rezervările per sală
-        Map<String, Integer> timeSlotUsageCount = new HashMap<>();  // Limitează slot-urile identice
+        Map<Long, Integer> hallUsageCount = new HashMap<>();  // Limiteaza rezervarile per sala
+        Map<String, Integer> timeSlotUsageCount = new HashMap<>();  // Limiteaza slot-urile identice
 
         Random random = new Random();
 
-        // Amestecă slot-urile pentru selecție aleatorie
+        // Amesteca slot-urile pentru selectie aleatorie
         List<AvailableSlot> shuffledSlots = new ArrayList<>(availableSlots);
         Collections.shuffle(shuffledSlots, random);
 
@@ -1242,10 +1226,10 @@ public class BookingPrioritizationRestController {
             String dateSlotKey = formatDate(slot.getDate()) + "_" + slot.getTimeSlot();
             if (usedDateSlots.contains(dateSlotKey)) continue;
 
-            // Verifică dacă bugetul permite
+            // Verifica dacă bugetul permite
             if (remainingBudget.compareTo(slot.getPrice()) < 0) continue;
 
-            // CONSTRÂNGERI DE DIVERSITATE
+            // CONSTRANGERI DE DIVERSITATE
 
             // 1. Limitează numărul de rezervări per sală (max 60% din total)
             int maxPerHall = Math.max(1, maxBookings * 60 / 100);
@@ -1280,7 +1264,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Creează rezervările din selecția făcută (fără plăți)
+     * Creează rezervările din selecția făcută (fara plata)
      */
     private List<Reservation> createReservationsFromSelected(List<SelectedReservation> selectedReservations, User user) {
         List<Reservation> reservations = new ArrayList<>();
@@ -1307,7 +1291,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Trimite email de confirmare (fără plăți)
+     * Trimite email de confirmare (fara plata)
      */
     private void sendConfirmationEmail(User user, List<Reservation> reservations) {
         try {
@@ -1318,7 +1302,7 @@ public class BookingPrioritizationRestController {
         }
     }
 
-    // Metode helper - OPTIMIZATE
+    // Metode helper
 
     private List<SportsHall> getActiveHalls() {
         return ((List<SportsHall>) sportsHallRepository.findAll()).stream()
@@ -1369,7 +1353,6 @@ public class BookingPrioritizationRestController {
     }
 
     private List<String> generateTimeSlots() {
-        // Slot-uri optimizate pentru performanță
         return Arrays.asList(
                 "08:30 - 10:00", "10:00 - 11:30", "11:30 - 13:00",
                 "13:00 - 14:30", "14:30 - 16:00", "16:00 - 17:30",
@@ -1460,7 +1443,7 @@ public class BookingPrioritizationRestController {
     }
 
     /**
-     * Distribuție echilibrată - OPTIMIZATĂ
+     * Distribuție echilibrată
      */
     private List<AvailableSlot> balanceDistribution(List<AvailableSlot> availableSlots, int maxBookings) {
         if (availableSlots.isEmpty() || availableSlots.size() <= maxBookings) {
@@ -1480,7 +1463,7 @@ public class BookingPrioritizationRestController {
             List<AvailableSlot> balancedSlots = new ArrayList<>();
             Random random = new Random();
 
-            // Încearcă să distribuie uniform pe zile
+            // Încearca sa distribuie uniform pe zile
             int slotsPerDay = Math.max(1, maxBookings / 7);
 
             for (Map.Entry<String, List<AvailableSlot>> dayEntry : slotsByDay.entrySet()) {
@@ -1490,17 +1473,17 @@ public class BookingPrioritizationRestController {
                 int slotsToTake = Math.min(slotsPerDay, daySlots.size());
                 balancedSlots.addAll(daySlots.subList(0, slotsToTake));
 
-                // LIMITARE: Nu depăși capacitatea
+                // LIMITARE: Nu depasi capacitatea
                 if (balancedSlots.size() >= maxBookings * 2) {
                     break;
                 }
             }
 
-            // Completează cu slot-uri rămase DOAR dacă e necesar
+            // Completeaza cu slot-uri ramase DOAR daca e necesar
             if (balancedSlots.size() < maxBookings && balancedSlots.size() < availableSlots.size()) {
                 List<AvailableSlot> remainingSlots = availableSlots.stream()
                         .filter(slot -> !balancedSlots.contains(slot))
-                        .limit(maxBookings) // LIMITARE
+                        .limit(maxBookings)
                         .collect(Collectors.toList());
 
                 Collections.shuffle(remainingSlots, random);
@@ -1520,7 +1503,7 @@ public class BookingPrioritizationRestController {
         }
     }
 
-    // Clase pentru gestionarea programului și rezultatelor
+    // Clase pentru gestionarea programului si rezultatelor
 
     public static class WeeklySchedule {
         private Map<String, DaySchedule> daySchedules = new HashMap<>();
@@ -1604,7 +1587,6 @@ public class BookingPrioritizationRestController {
             this.price = price;
         }
 
-        // Getters and setters
         public SportsHall getHall() { return hall; }
         public void setHall(SportsHall hall) { this.hall = hall; }
         public Date getDate() { return date; }
@@ -1630,7 +1612,6 @@ public class BookingPrioritizationRestController {
             this.price = price;
         }
 
-        // Getters and setters
         public SportsHall getHall() { return hall; }
         public void setHall(SportsHall hall) { this.hall = hall; }
         public Date getDate() { return date; }
@@ -1673,7 +1654,6 @@ public class BookingPrioritizationRestController {
             errors.add("Profil '" + profile.getName() + "': " + error);
         }
 
-        // Getters
         public List<Reservation> getReservations() { return reservations; }
         public List<ProfileResult> getProfileResults() { return profileResults; }
         public int getTotalReservations() { return reservations.size(); }
@@ -1695,7 +1675,6 @@ public class BookingPrioritizationRestController {
             this.profile = profile;
         }
 
-        // Getters and setters
         public ReservationProfile getProfile() { return profile; }
         public void setProfile(ReservationProfile profile) { this.profile = profile; }
         public List<Reservation> getReservations() { return reservations; }

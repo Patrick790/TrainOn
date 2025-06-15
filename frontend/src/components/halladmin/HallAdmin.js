@@ -22,13 +22,11 @@ class HallAdmin extends Component {
     }
 
     handleLogout = () => {
-        // Clear localStorage items related to authentication
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('userType');
 
-        // Redirect to home page
         window.location.href = '/';
     }
 

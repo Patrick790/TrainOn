@@ -38,20 +38,16 @@ public class AdminRestController {
         List<User> filteredUsers = StreamSupport.stream(allUsers.spliterator(), false)
                 .filter(user -> user.getTeamType() != null && !user.getTeamType().isEmpty())
                 .filter(user -> {
-                    // Verificăm explicit statusul cerut
                     if (status == null) {
-                        return true; // Include toate înregistrările dacă nu este specificat un status
+                        return true;
                     }
 
                     String accountStatus = user.getAccountStatus();
 
-                    // Doar dacă statusul solicitat este "pending" și accountStatus este null
-                    // vom trata acei utilizatori ca fiind "pending" (pentru compatibilitate)
                     if ("pending".equals(status) && accountStatus == null) {
                         return true;
                     }
 
-                    // Altfel, verificăm exact potrivirea statusului
                     return status.equals(accountStatus);
                 })
                 .collect(Collectors.toList());
@@ -68,7 +64,6 @@ public class AdminRestController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
-            // Verify this is a team registration
             if (user.getTeamType() == null || user.getTeamType().isEmpty()) {
                 return ResponseEntity.badRequest().body("This user is not a team");
             }
@@ -100,7 +95,6 @@ public class AdminRestController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
-            // Verify this is a team registration
             if (user.getTeamType() == null || user.getTeamType().isEmpty()) {
                 return ResponseEntity.badRequest().body("This user is not a team");
             }
@@ -115,11 +109,10 @@ public class AdminRestController {
         return ResponseEntity.notFound().build();
     }
 
-    // FCFS: Get FCFS status - verifică primul utilizator normal
+    // FCFS: Get FCFS status - verifica primul utilizator normal
     @GetMapping("/fcfs-status")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Map<String, Object>> getFcfsStatus() {
-        // Verificăm statusul FCFS prin primul utilizator normal găsit
         Optional<User> normalUser = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                 .filter(user -> "user".equals(user.getUserType()))
                 .findFirst();
@@ -127,7 +120,6 @@ public class AdminRestController {
         if (normalUser.isPresent()) {
             boolean fcfsEnabled = normalUser.get().isFcfsEnabled();
 
-            // Contorizăm câți utilizatori au FCFS activat/dezactivat
             long totalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                     .filter(user -> "user".equals(user.getUserType()))
                     .count();
@@ -147,7 +139,6 @@ public class AdminRestController {
             ));
         }
 
-        // Dacă nu avem utilizatori normali, returnăm statusul default
         return ResponseEntity.ok(Map.of(
                 "fcfsEnabled", true,
                 "message", "Nu există utilizatori normali în sistem",
@@ -157,12 +148,10 @@ public class AdminRestController {
         ));
     }
 
-    // FCFS: Toggle FCFS pentru TOȚI utilizatorii normali
     @PostMapping("/fcfs-toggle")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Map<String, Object>> toggleFcfsVisibility() {
         try {
-            // Găsim toți utilizatorii cu userType = "user"
             List<User> normalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                     .filter(user -> "user".equals(user.getUserType()))
                     .collect(Collectors.toList());
@@ -173,11 +162,9 @@ public class AdminRestController {
                 ));
             }
 
-            // Determinăm statusul curent (din primul utilizator)
             boolean currentStatus = normalUsers.get(0).isFcfsEnabled();
             boolean newStatus = !currentStatus;
 
-            // Actualizăm TOȚI utilizatorii normali cu noul status
             normalUsers.forEach(user -> user.setFcfsEnabled(newStatus));
             userSpringRepository.saveAll(normalUsers);
 
@@ -201,7 +188,6 @@ public class AdminRestController {
         }
     }
 
-    // FCFS: Set FCFS status explicit pentru TOȚI utilizatorii normali
     @PostMapping("/fcfs-status")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Map<String, Object>> setFcfsStatus(@RequestBody Map<String, Boolean> payload) {
@@ -213,7 +199,6 @@ public class AdminRestController {
                 ));
             }
 
-            // Găsim toți utilizatorii cu userType = "user"
             List<User> normalUsers = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                     .filter(user -> "user".equals(user.getUserType()))
                     .collect(Collectors.toList());
@@ -224,10 +209,8 @@ public class AdminRestController {
                 ));
             }
 
-            // Determinăm statusul curent
             boolean previousStatus = normalUsers.get(0).isFcfsEnabled();
 
-            // Actualizăm TOȚI utilizatorii normali cu statusul specificat
             normalUsers.forEach(user -> user.setFcfsEnabled(enabled));
             userSpringRepository.saveAll(normalUsers);
 
@@ -235,7 +218,6 @@ public class AdminRestController {
                     "FCFS (Rezervarea locurilor rămase) a fost ACTIVAT pentru toți utilizatorii" :
                     "FCFS (Rezervarea locurilor rămase) a fost DEZACTIVAT pentru toți utilizatorii";
 
-            // Calculăm dacă s-a schimbat ceva
             boolean changed = previousStatus != enabled;
 
             return ResponseEntity.ok(Map.of(
@@ -255,7 +237,7 @@ public class AdminRestController {
         }
     }
 
-    // FCFS: Endpoint pentru a obține statistici detaliate
+    // FCFS: Endpoint pentru a obtine statistici detaliate
     @GetMapping("/fcfs-statistics")
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<Map<String, Object>> getFcfsStatistics() {
@@ -303,7 +285,6 @@ public class AdminRestController {
             @PathVariable Long id,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        // Verifică autorizarea
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -329,22 +310,19 @@ public class AdminRestController {
         return new ResponseEntity<>(certificateData, headers, HttpStatus.OK);
     }
 
-    // Metodă pentru a detecta tipul de conținut
+    // Metoda pentru a detecta tipul de continut
     private String detectContentType(byte[] data) {
         if (data.length > 4) {
-            // JPEG file magic number
             if (data[0] == (byte) 0xFF && data[1] == (byte) 0xD8) {
                 return "image/jpeg";
             }
-            // PNG file magic number
             if (data[0] == (byte) 0x89 && data[1] == 'P' && data[2] == 'N' && data[3] == 'G') {
                 return "image/png";
             }
-            // PDF file signature
             if (data[0] == '%' && data[1] == 'P' && data[2] == 'D' && data[3] == 'F') {
                 return "application/pdf";
             }
         }
-        return "application/octet-stream"; // Default fallback
+        return "application/octet-stream";
     }
 }

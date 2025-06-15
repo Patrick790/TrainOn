@@ -16,55 +16,45 @@ class SearchBar extends Component {
             loadingCities: true,
             isLocationDropdownOpen: false,
             isActivityDropdownOpen: false,
-            // STATE-URI PENTRU AUTOCOMPLETE
             hallSuggestions: [],
             showHallSuggestions: false,
             loadingSuggestions: false
         };
 
-        // Debounce pentru autocomplete
         this.suggestionTimeout = null;
     }
 
     componentDidMount() {
         this.fetchCities();
-        // Adăugăm event listener pentru click outside
         document.addEventListener('click', this.handleClickOutside);
 
-        // Setăm valorile din URL după ce componentele se încarcă
         this.setValuesFromURL();
     }
 
     componentWillUnmount() {
-        // Curățăm event listener-ul
         document.removeEventListener('click', this.handleClickOutside);
-        // Curățăm timeout-ul pentru suggestions
         if (this.suggestionTimeout) {
             clearTimeout(this.suggestionTimeout);
         }
     }
 
-    // METODĂ NOUĂ: Citește parametrii din URL și setează starea
     setValuesFromURL = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const cityFromURL = urlParams.get('city');
         const sportFromURL = urlParams.get('sport');
         const queryFromURL = urlParams.get('query');
 
-        // Actualizăm starea cu valorile din URL (dacă există)
         this.setState({
             location: cityFromURL || this.state.location,
             activity: sportFromURL || 'Sport',
             searchQuery: queryFromURL || ''
         });
 
-        // Notifică componenta părinte despre orașul din URL
         if (this.props.onCityChange && cityFromURL) {
             this.props.onCityChange(cityFromURL);
         }
     };
 
-    // Handler pentru click outside pentru a închide dropdown-urile
     handleClickOutside = (event) => {
         if (!event.target.closest('.search-bar')) {
             this.setState({
@@ -75,7 +65,6 @@ class SearchBar extends Component {
         }
     };
 
-    // Metodă pentru încărcarea orașelor din baza de date
     fetchCities = async () => {
         this.setState({ loadingCities: true });
         try {
@@ -84,11 +73,9 @@ class SearchBar extends Component {
                 const citiesData = await response.json();
                 const cities = Array.isArray(citiesData) ? citiesData : [];
 
-                // Verificăm dacă avem un oraș din URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const cityFromURL = urlParams.get('city');
 
-                // Setăm orașul din URL sau primul oraș disponibil
                 const defaultCity = cityFromURL || (cities.length > 0 ? cities[0] : '');
 
                 this.setState({
@@ -96,7 +83,6 @@ class SearchBar extends Component {
                     loadingCities: false,
                     location: defaultCity
                 }, () => {
-                    // Notifică componenta părinte despre orașul selectat
                     if (this.props.onCityChange && this.state.location) {
                         this.props.onCityChange(this.state.location);
                     }
@@ -125,7 +111,6 @@ class SearchBar extends Component {
             isLocationDropdownOpen: false
         });
 
-        // Notifică componenta părinte despre schimbarea orașului
         if (this.props.onCityChange) {
             this.props.onCityChange(location);
         }
@@ -158,10 +143,9 @@ class SearchBar extends Component {
         const query = e.target.value;
         this.setState({
             searchQuery: query,
-            showHallSuggestions: query.length >= 2 // Arată sugestiile doar pentru query-uri de minim 2 caractere
+            showHallSuggestions: query.length >= 2
         });
 
-        // Debounce pentru autocomplete - așteaptă 300ms după ce utilizatorul se oprește din tastare
         if (this.suggestionTimeout) {
             clearTimeout(this.suggestionTimeout);
         }
@@ -178,7 +162,6 @@ class SearchBar extends Component {
         }
     }
 
-    // Metodă pentru a încărca sugestiile de nume săli
     fetchHallSuggestions = async (query) => {
         this.setState({ loadingSuggestions: true });
         try {
@@ -205,7 +188,6 @@ class SearchBar extends Component {
         }
     };
 
-    // Handler pentru selectarea unei sugestii
     handleSuggestionSelect = (suggestion) => {
         this.setState({
             searchQuery: suggestion,
@@ -219,30 +201,23 @@ class SearchBar extends Component {
 
         const searchParams = new URLSearchParams();
 
-        // Construim parametrii de căutare în funcție de ce a completat utilizatorul
-
-        // Adăugăm numele sălii dacă există
         if (this.state.searchQuery && this.state.searchQuery.trim().length > 0) {
             searchParams.append('query', this.state.searchQuery.trim());
         }
 
-        // Adăugăm orașul dacă este selectat
         if (this.state.location && this.state.location.trim().length > 0) {
             searchParams.append('city', this.state.location.trim());
         }
 
-        // Adăugăm sportul (doar dacă nu este "Sport" - valoarea default)
         if (this.state.activity && this.state.activity !== 'Sport') {
             searchParams.append('sport', this.state.activity);
         }
 
-        // Validăm că avem cel puțin un criteriu de căutare
         if (!this.state.searchQuery?.trim() && !this.state.location?.trim() && this.state.activity === 'Sport') {
             alert('Vă rugăm să introduceți cel puțin un criteriu de căutare: numele sălii, orașul sau sportul.');
             return;
         }
 
-        // Redirecționăm către pagina de search cu noii parametri (comportamentul original)
         window.location.href = `/search?${searchParams.toString()}`;
     }
 
@@ -323,7 +298,6 @@ class SearchBar extends Component {
                             autoComplete="off"
                         />
 
-                        {/* Dropdown pentru sugestiile de săli */}
                         {showHallSuggestions && (
                             <div className="suggestions-list">
                                 {loadingSuggestions ? (

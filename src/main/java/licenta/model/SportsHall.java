@@ -42,7 +42,6 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    // CÂMP NOU PENTRU STATUS
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private HallStatus status = HallStatus.ACTIVE;
@@ -54,17 +53,14 @@ public class SportsHall extends BruteEntity<Long> {
     @Column(name = "admin_id")
     private Long adminId;
 
-    // Adăugare relație Many-to-Many către ReservationProfile
     @ManyToMany(mappedBy = "selectedHalls")
     @JsonIgnoreProperties("selectedHalls")
     private List<ReservationProfile> reservationProfiles = new ArrayList<>();
 
-    // NOUĂ relație One-to-Many către Schedule
     @OneToMany(mappedBy = "sportsHall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Schedule> schedules = new ArrayList<>();
 
-    // ENUM PENTRU STATUS
     public enum HallStatus {
         ACTIVE("Activ"),
         INACTIVE("Inactiv");
@@ -115,7 +111,6 @@ public class SportsHall extends BruteEntity<Long> {
         image.setSportsHall(null);
     }
 
-    // Metode helper pentru Schedule
     public void addSchedule(Schedule schedule) {
         schedules.add(schedule);
         schedule.setSportsHall(this);
@@ -136,12 +131,12 @@ public class SportsHall extends BruteEntity<Long> {
         this.status = HallStatus.INACTIVE;
     }
 
-    // Metoda pentru a verifica dacă sala este activă
+    // Metoda pentru a verifica dacă sala este activa
     public boolean isActive() {
         return this.status == HallStatus.ACTIVE;
     }
 
-    // Metoda pentru a obține programul formatat
+    // Metoda pentru a obtine programul formatat
     public String getFormattedSchedule() {
         if (schedules == null || schedules.isEmpty()) {
             return "Program: Nu este definit";
@@ -163,7 +158,6 @@ public class SportsHall extends BruteEntity<Long> {
         return sb.toString();
     }
 
-    // Getters și Setters
     public List<ReservationProfile> getReservationProfiles() {
         return reservationProfiles;
     }

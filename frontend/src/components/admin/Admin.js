@@ -23,16 +23,13 @@ class Admin extends Component {
     }
 
     handleLogout = () => {
-        // Clear localStorage items related to authentication
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
         localStorage.removeItem('userType');
 
-        // Update state
         this.setState({ isLoggedIn: false });
 
-        // Redirect to home page
         window.location.href = '/';
     }
 

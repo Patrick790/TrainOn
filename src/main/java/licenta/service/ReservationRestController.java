@@ -35,7 +35,7 @@ public class ReservationRestController {
         return reservationSpringRepository.findById(id).orElse(null);
     }
 
-    // ENDPOINT pentru a obține rezervările unui utilizator
+    // ENDPOINT pentru a obtine rezervarile unui utilizator
     @GetMapping("/user/{userId}")
     public List<Reservation> getReservationsByUser(@PathVariable Long userId) {
         return StreamSupport.stream(reservationSpringRepository.findAll().spliterator(), false)
@@ -51,12 +51,10 @@ public class ReservationRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
             @RequestParam(required = false) String type) {
 
-        // Dacă nu avem parametri, returnăm toate rezervările
         if (hallId == null && date == null && type == null) {
             return reservationSpringRepository.findAll();
         }
 
-        // Filtrăm rezervările în funcție de parametrii furnizați
         Iterable<Reservation> allReservations = reservationSpringRepository.findAll();
 
         return StreamSupport.stream(allReservations.spliterator(), false)
@@ -66,7 +64,7 @@ public class ReservationRestController {
                 .collect(Collectors.toList());
     }
 
-    // ENDPOINT pentru anularea unei rezervări
+    // ENDPOINT pentru anularea unei rezervari
     @PutMapping("/{id}/cancel")
     public ResponseEntity<Reservation> cancelReservation(@PathVariable Long id) {
         try {
@@ -75,7 +73,6 @@ public class ReservationRestController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            // Setăm statusul la CANCELLED în loc să ștergem rezervarea
             reservation.setStatus("CANCELLED");
             Reservation updatedReservation = reservationSpringRepository.save(reservation);
 
@@ -85,13 +82,11 @@ public class ReservationRestController {
         }
     }
 
-    // Metodă utilitară pentru a compara doar data (fără oră)
     private boolean dateEquals(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
             return false;
         }
 
-        // Convertim la LocalDate pentru comparare exactă fără timp
         LocalDate localDate1 = new java.sql.Date(date1.getTime()).toLocalDate();
         LocalDate localDate2 = new java.sql.Date(date2.getTime()).toLocalDate();
 
@@ -101,14 +96,12 @@ public class ReservationRestController {
     @PostMapping
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
         try {
-            // Verificăm dacă este completă
             if (reservation.getHall() == null || reservation.getHall().getId() == null ||
                     reservation.getDate() == null || reservation.getTimeSlot() == null ||
                     reservation.getType() == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            // Verificăm dacă există deja o rezervare pentru această dată, slot și sală
             boolean slotExists = StreamSupport.stream(reservationSpringRepository.findAll().spliterator(), false)
                     .anyMatch(r -> r.getHall() != null &&
                             r.getHall().getId().equals(reservation.getHall().getId()) &&
@@ -120,7 +113,6 @@ public class ReservationRestController {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
 
-            // Salvăm rezervarea
             Reservation savedReservation = reservationSpringRepository.save(reservation);
             return new ResponseEntity<>(savedReservation, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -150,7 +142,7 @@ public class ReservationRestController {
             @RequestParam Long hallId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date weekStart) {
 
-        // Calculăm sfârșitul săptămânii
+        // Calculam sfarsitul saptamanii
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTime(weekStart);
         cal.add(java.util.Calendar.DAY_OF_WEEK, 6);
@@ -161,7 +153,6 @@ public class ReservationRestController {
                         reservation.getHall().getId().equals(hallId))
                 .filter(reservation -> "maintenance".equals(reservation.getType()))
                 .filter(reservation -> {
-                    // Verificăm dacă data rezervării este în intervalul săptămânii
                     if (reservation.getDate() == null) {
                         return false;
                     }

@@ -9,7 +9,6 @@ const FCFS_LOCAL_STORAGE_HALL_KEY = 'fcfsSelectedHall';
 const FCFSReservationPage = () => {
     const navigate = useNavigate();
 
-    // State pentru verificarea accesului FCFS
     const [fcfsAccess, setFcfsAccess] = useState({
         canAccess: false,
         loading: true,
@@ -20,7 +19,6 @@ const FCFSReservationPage = () => {
 
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-    // State-urile existente
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedHall, setSelectedHall] = useState('');
     const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -32,12 +30,10 @@ const FCFSReservationPage = () => {
     const [loading, setLoading] = useState(false);
     const [selectedHallDetails, setSelectedHallDetails] = useState(null);
 
-    // Verifică accesul FCFS la montarea componentei
     useEffect(() => {
         checkFcfsAccess();
     }, []);
 
-    // Funcție pentru verificarea accesului FCFS
     const checkFcfsAccess = async () => {
         try {
             setFcfsAccess(prev => ({ ...prev, loading: true }));
@@ -51,7 +47,6 @@ const FCFSReservationPage = () => {
                     userType: null,
                     globalEnabled: false
                 });
-                // Încărcăm oricum orașele pentru a permite navigarea
                 fetchCities();
                 return;
             }
@@ -83,7 +78,6 @@ const FCFSReservationPage = () => {
                 });
             }
 
-            // Încărcăm orașele în orice caz pentru a permite navigarea
             fetchCities();
         } catch (error) {
             console.error('Eroare la verificarea accesului FCFS:', error);
@@ -94,7 +88,6 @@ const FCFSReservationPage = () => {
                 userType: null,
                 globalEnabled: false
             });
-            // Încărcăm orașele chiar și în caz de eroare
             fetchCities();
         }
     };
@@ -121,7 +114,6 @@ const FCFSReservationPage = () => {
         return d;
     }, []);
 
-    // LocalStorage persistence
     useEffect(() => {
         const storedCity = localStorage.getItem(FCFS_LOCAL_STORAGE_CITY_KEY);
         if (storedCity && cities.length > 0) {
@@ -172,14 +164,13 @@ const FCFSReservationPage = () => {
             setAvailableSlots([]);
             setSelectedDate(null);
             if (selectedHall) {
-                fetchHallDetails(); // Încărcăm detaliile sălii chiar dacă nu avem acces FCFS
+                fetchHallDetails();
             } else {
                 setSelectedHallDetails(null);
             }
         }
     }, [selectedHall, currentWeek, fcfsAccess.canAccess]);
 
-    // Auto-select first valid day
     useEffect(() => {
         if (availableSlots.length > 0) {
             const currentSelectedDateStillValid = selectedDate && availableSlots.some(slot => isSameDay(slot.date, selectedDate));
@@ -219,7 +210,6 @@ const FCFSReservationPage = () => {
     const fetchSportsHalls = async () => {
         setLoading(true);
         try {
-            // SCHIMBAREA PRINCIPALĂ: folosim endpoint-ul /active și filtrăm pe oraș
             const response = await fetch(`${API_BASE_URL}/sportsHalls/active`);
 
             if (response.ok) {
@@ -513,7 +503,6 @@ const FCFSReservationPage = () => {
         return Number(price).toFixed(2);
     };
 
-    // Verificăm dacă sunt disponibile intervalele generale
     const hasAnyAvailableSlots = availableSlots.length > 0;
     const shouldShowNoSlotsMessage = selectedHall && !fcfsAccess.loading && (!fcfsAccess.canAccess || (!loading && !hasAnyAvailableSlots));
 
@@ -568,7 +557,6 @@ const FCFSReservationPage = () => {
                 </div>
             </div>
 
-            {/* Container pentru Conținutul Principal */}
             <div className="fcfs-content-container">
                 <div className="fcfs-main-container">
                     {selectedHall && (
@@ -594,7 +582,6 @@ const FCFSReservationPage = () => {
                                 </h3>
                             </div>
 
-                            {/* Mesaj când intervalele nu sunt disponibile */}
                             {shouldShowNoSlotsMessage && (
                                 <div className="fcfs-no-slots">
                                     <p>Nu au fost postate încă intervalele orare disponibile pentru această săptămână.</p>
@@ -602,7 +589,6 @@ const FCFSReservationPage = () => {
                                 </div>
                             )}
 
-                            {/* Afișarea normală când sunt disponibile intervale și utilizatorul are acces */}
                             {!shouldShowNoSlotsMessage && fcfsAccess.canAccess && (
                                 <>
                                     <div className="fcfs-day-selector-container">
@@ -709,7 +695,6 @@ const FCFSReservationPage = () => {
                 </div>
             </div>
 
-            {/* Footer Component */}
             <Footer />
         </div>
     );

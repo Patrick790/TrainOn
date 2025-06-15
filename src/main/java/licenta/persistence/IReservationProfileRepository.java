@@ -13,7 +13,7 @@ import java.util.List;
 public interface IReservationProfileRepository extends CrudRepository<ReservationProfile, Long> {
 
     /**
-     * Găsește toate profilurile care aparțin unui utilizator specific
+     * Gaseste toate profilurile care apartin unui utilizator specific
      * @param userId ID-ul utilizatorului
      * @return Lista de profiluri de rezervare
      */

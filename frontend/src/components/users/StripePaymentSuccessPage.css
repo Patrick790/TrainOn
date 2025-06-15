@@ -1,4 +1,3 @@
-/* Professional Payment Success Page Styles */
 .payment-success-page {
     min-height: 100vh;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -20,7 +19,6 @@
     overflow: hidden;
 }
 
-/* Document Header */
 .document-header {
     display: flex;
     justify-content: space-between;
@@ -69,7 +67,6 @@
     opacity: 0.9;
 }
 
-/* Status Section */
 .status-section {
     padding: 2rem;
     background-color: #f8fafc;
@@ -145,7 +142,6 @@
     display: inline-block;
 }
 
-/* Details Table */
 .details-table {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -202,7 +198,6 @@
     font-size: 1.3rem;
 }
 
-/* Info Grid */
 .info-grid {
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -251,7 +246,6 @@
     letter-spacing: 0.05em;
 }
 
-/* Instructions List */
 .instructions-list {
     background-color: #f7fafc;
     border-left: 4px solid #7c3aed;
@@ -295,7 +289,6 @@
     padding-top: 0.25rem;
 }
 
-/* Contact Info */
 .contact-info {
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -320,7 +313,6 @@
     line-height: 1.6;
 }
 
-/* Action Section */
 .action-section {
     padding: 2rem;
     background-color: #f8fafc;
@@ -366,7 +358,6 @@
     transform: translateY(-1px);
 }
 
-/* Document Footer */
 .document-footer {
     padding: 1.5rem 2rem;
     background-color: #f8fafc;
@@ -394,7 +385,6 @@
     font-style: italic;
 }
 
-/* Loading Section */
 .loading-section {
     text-align: center;
     padding: 4rem 2rem;
@@ -402,7 +392,6 @@
     font-size: 1.1rem;
 }
 
-/* Print Styles */
 @media print {
     .payment-success-page {
         background: white;
@@ -463,7 +452,6 @@
         background: #000 !important;
     }
 
-    /* Ensure proper page breaks */
     .section-block {
         page-break-inside: avoid;
     }
@@ -473,7 +461,6 @@
     }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .payment-success-page {
         padding: 1rem;
@@ -589,7 +576,6 @@
     }
 }
 
-/* Smooth animations for better UX */
 .success-container {
     animation: slideInUp 0.6s ease-out;
 }
@@ -633,13 +619,11 @@
     }
 }
 
-/* Enhanced focus states for accessibility */
 .btn:focus {
     outline: 2px solid #7c3aed;
     outline-offset: 2px;
 }
 
-/* Custom scrollbar for webkit browsers */
 .payment-success-page::-webkit-scrollbar {
     width: 8px;
 }

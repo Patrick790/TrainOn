@@ -1,6 +1,4 @@
-/* SearchResultsPage.css - Versiunea actualizată fără stilurile SearchBar */
 
-/* Container pentru SearchBar-ul extern */
 .srp-search-container {
     background-color: #f8f9fa;
     padding: 1rem 0;
@@ -13,18 +11,16 @@
     padding: 0 1rem;
 }
 
-/* Adaptăm SearchBar pentru SearchResults */
 .srp-search-container .search-container {
-    transform: none !important; /* Resetăm transform-ul de pe MainPage */
+    transform: none !important;
     z-index: 10;
 }
 
 .srp-search-container .search-hint {
-    color: #666 !important; /* Schimbăm culoarea pentru background alb */
+    color: #666 !important;
     background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Stiluri pentru conținutul rezultatelor căutării */
 .srp-results-content {
     flex: 1;
     max-width: 1200px;
@@ -46,7 +42,6 @@
     gap: 2rem;
 }
 
-/* Lista de rezultate */
 .srp-results-list {
     display: flex;
     flex-direction: column;
@@ -105,7 +100,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-bottom: 3.5rem; /* Spațiu suficient pentru butonul de jos */
+    padding-bottom: 3.5rem;
 }
 
 .srp-result-name {
@@ -154,9 +149,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 1rem; /* Spațiu normal, nu pentru buton */
-    max-height: 2.5rem; /* Limitez la 2 rânduri */
-    overflow: hidden; /* Ascund facilitățile care nu încap */
+    margin-bottom: 1rem;
+    max-height: 2.5rem;
+    overflow: hidden;
 }
 
 .srp-facility-badge {
@@ -186,14 +181,13 @@
     font-size: 0.9rem;
     text-align: center;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Umbră pentru a se detașa */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .srp-result-link:hover {
     background-color: #5b21b6;
 }
 
-/* Harta - Stiluri îmbunătățite */
 .srp-results-map {
     position: sticky;
     top: 20px;
@@ -212,25 +206,21 @@
     z-index: 1;
 }
 
-/* Asigurăm că harta Leaflet ocupă tot spațiul disponibil */
 .leaflet-container {
     width: 100% !important;
     height: 100% !important;
 }
 
-/* Fix pentru markere */
 .leaflet-marker-icon,
 .leaflet-marker-shadow {
     display: block !important;
 }
 
-/* Prevenim problemele de afișare în Container */
 .leaflet-control-container {
     position: relative;
     z-index: 2;
 }
 
-/* Controlăm mai bine animațiile pentru a evita erorile */
 .leaflet-fade-anim .leaflet-tile,
 .leaflet-fade-anim .leaflet-popup {
     opacity: 1 !important;
@@ -241,7 +231,6 @@
     transition: none !important;
 }
 
-/* Asigurăm că pane-urile sunt afișate corect */
 .leaflet-pane,
 .leaflet-map-pane,
 .leaflet-tile,
@@ -256,7 +245,6 @@
     position: absolute;
 }
 
-/* Stiluri defensive pentru a evita conflicte cu alte reguli CSS */
 .leaflet-container {
     overflow: hidden !important;
     -ms-touch-action: none;
@@ -283,7 +271,6 @@
     filter: drop-shadow(0 0 5px #6d28d9);
 }
 
-/* Stări loading și eroare */
 .srp-loading,
 .srp-error,
 .srp-no-results {
@@ -307,7 +294,6 @@
     font-style: italic;
 }
 
-/* Stiluri modale */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -333,7 +319,6 @@
     position: relative;
 }
 
-/* Media queries pentru responsiveness */
 @media (max-width: 992px) {
     .srp-results-layout {
         grid-template-columns: 1fr;

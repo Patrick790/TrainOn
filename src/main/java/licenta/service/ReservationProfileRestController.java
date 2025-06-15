@@ -46,7 +46,6 @@ public class ReservationProfileRestController {
     @GetMapping
     public ResponseEntity<?> getAllProfiles(@RequestParam(required = false) Long userId) {
         try {
-            // Obținem utilizatorul curent autentificat
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             Optional<User> userOpt = userSpringRepository.findByEmail(email);
@@ -54,24 +53,19 @@ public class ReservationProfileRestController {
             if (userOpt.isPresent()) {
                 User currentUser = userOpt.get();
 
-                // Dacă s-a specificat un userId și utilizatorul curent este admin
                 if (userId != null) {
-                    // Verificăm dacă utilizatorul curent este admin sau hall_admin
                     if (!"admin".equals(currentUser.getUserType()) && !"hall_admin".equals(currentUser.getUserType())) {
                         return ResponseEntity.status(403).body("Acces interzis - doar adminii pot accesa această funcționalitate");
                     }
 
-                    // Verificăm dacă utilizatorul țintă există
                     Optional<User> targetUserOpt = userSpringRepository.findById(userId);
                     if (targetUserOpt.isEmpty()) {
                         return ResponseEntity.status(404).body("Utilizatorul specificat nu a fost găsit");
                     }
 
-                    // Returnăm profilurile utilizatorului specificat
                     List<ReservationProfile> userProfiles = reservationProfileRepository.findByUserId(userId);
                     return ResponseEntity.ok(userProfiles);
                 } else {
-                    // Dacă nu s-a specificat userId, returnăm profilurile utilizatorului curent
                     List<ReservationProfile> userProfiles = reservationProfileRepository.findByUserId(currentUser.getId());
                     return ResponseEntity.ok(userProfiles);
                 }
@@ -87,7 +81,6 @@ public class ReservationProfileRestController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getProfilesByUserId(@PathVariable Long userId) {
         try {
-            // Verificăm dacă utilizatorul curent este admin
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
             Optional<User> currentUserOpt = userSpringRepository.findByEmail(currentUserEmail);
@@ -98,18 +91,15 @@ public class ReservationProfileRestController {
 
             User currentUser = currentUserOpt.get();
 
-            // Verificăm dacă utilizatorul curent este admin sau hall_admin
             if (!"admin".equals(currentUser.getUserType()) && !"hall_admin".equals(currentUser.getUserType())) {
                 return ResponseEntity.status(403).body("Acces interzis - doar adminii pot accesa această funcționalitate");
             }
 
-            // Verificăm dacă utilizatorul țintă există
             Optional<User> targetUserOpt = userSpringRepository.findById(userId);
             if (targetUserOpt.isEmpty()) {
                 return ResponseEntity.status(404).body("Utilizatorul specificat nu a fost găsit");
             }
 
-            // Returnăm profilurile utilizatorului specificat
             List<ReservationProfile> userProfiles = reservationProfileRepository.findByUserId(userId);
             return ResponseEntity.ok(userProfiles);
 
@@ -139,7 +129,6 @@ public class ReservationProfileRestController {
         try {
             logger.info("Creating profile with data: {}", profileData);
 
-            // Obținem utilizatorul curent
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             Optional<User> userOpt = userSpringRepository.findByEmail(email);
@@ -147,13 +136,12 @@ public class ReservationProfileRestController {
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
 
-                // Creăm profilul
+                // Creez profilul
                 ReservationProfile profile = new ReservationProfile();
                 profile.setName((String) profileData.get("name"));
                 profile.setAgeCategory((String) profileData.get("ageCategory"));
                 profile.setTimeInterval((String) profileData.get("timeInterval"));
 
-                // Verificăm dacă weeklyBudget există și nu este null
                 if (profileData.get("weeklyBudget") != null && !profileData.get("weeklyBudget").toString().isEmpty()) {
                     profile.setWeeklyBudget(new BigDecimal(profileData.get("weeklyBudget").toString()));
                 }
@@ -162,7 +150,6 @@ public class ReservationProfileRestController {
                 profile.setSport((String) profileData.get("sport")); // ADĂUGAT: procesarea sportului
                 profile.setUser(user);
 
-                // Procesăm sălile selectate dacă există
                 if (profileData.get("selectedHalls") != null) {
                     List<Integer> hallIds = (List<Integer>) profileData.get("selectedHalls");
                     if (!hallIds.isEmpty()) {
@@ -176,10 +163,8 @@ public class ReservationProfileRestController {
                     }
                 }
 
-                // Procesăm setările pentru plăți automate
                 processAutoPaymentSettings(profile, profileData, user);
 
-                // Salvăm profilul
                 ReservationProfile savedProfile = reservationProfileRepository.save(profile);
                 logger.info("Profile created successfully with id: {}", savedProfile.getId());
                 return ResponseEntity.ok(savedProfile);
@@ -204,8 +189,6 @@ public class ReservationProfileRestController {
 
             ReservationProfile profile = profileOpt.get();
 
-            // Verificăm permisiunile - utilizatorul poate edita doar propriile profiluri,
-            // în timp ce adminii pot edita orice profil
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
             Optional<User> currentUserOpt = userSpringRepository.findByEmail(currentUserEmail);
@@ -216,7 +199,6 @@ public class ReservationProfileRestController {
 
             User currentUser = currentUserOpt.get();
 
-            // Verificăm dacă utilizatorul curent poate edita acest profil
             if (!profile.getUser().getId().equals(currentUser.getId()) &&
                     !"admin".equals(currentUser.getUserType()) &&
                     !"hall_admin".equals(currentUser.getUserType())) {
@@ -259,7 +241,6 @@ public class ReservationProfileRestController {
                 profile.setSport((String) profileData.get("sport"));
             }
 
-            // Actualizăm sălile selectate dacă există
             if (profileData.containsKey("selectedHalls")) {
                 Object hallsData = profileData.get("selectedHalls");
                 if (hallsData != null) {
@@ -278,10 +259,8 @@ public class ReservationProfileRestController {
                 }
             }
 
-            // Procesăm setările pentru plăți automate la update
             processAutoPaymentSettings(profile, profileData, currentUser);
 
-            // Salvăm profilul actualizat
             ReservationProfile updatedProfile = reservationProfileRepository.save(profile);
             logger.info("Profile {} updated successfully", id);
             return ResponseEntity.ok(updatedProfile);
@@ -292,7 +271,6 @@ public class ReservationProfileRestController {
         }
     }
 
-    // METODĂ NOUĂ: Procesează setările pentru plăți automate
     private void processAutoPaymentSettings(ReservationProfile profile, Map<String, Object> profileData, User user) {
         try {
             // Procesăm autoPaymentEnabled
@@ -310,7 +288,6 @@ public class ReservationProfileRestController {
                 logger.info("Set autoPaymentEnabled to: {}", autoPaymentEnabled);
 
                 if (autoPaymentEnabled) {
-                    // Procesăm autoPaymentMethod
                     if (profileData.containsKey("autoPaymentMethod")) {
                         String paymentMethodStr = (String) profileData.get("autoPaymentMethod");
                         if ("CARD".equals(paymentMethodStr)) {
@@ -321,7 +298,6 @@ public class ReservationProfileRestController {
                         logger.info("Set autoPaymentMethod to: {}", paymentMethodStr);
                     }
 
-                    // Procesăm defaultCardPaymentMethodId
                     if (profileData.containsKey("defaultCardPaymentMethodId")) {
                         Object cardIdObj = profileData.get("defaultCardPaymentMethodId");
                         if (cardIdObj != null && !cardIdObj.toString().isEmpty()) {
@@ -338,7 +314,6 @@ public class ReservationProfileRestController {
                                 Optional<CardPaymentMethod> cardOpt = cardPaymentMethodRepository.findById(cardId);
                                 if (cardOpt.isPresent()) {
                                     CardPaymentMethod card = cardOpt.get();
-                                    // Verifică că cardul aparține utilizatorului
                                     if (card.getUser().getId().equals(user.getId())) {
                                         profile.setDefaultCardPaymentMethod(card);
                                         logger.info("Set defaultCardPaymentMethod to: {}", cardId);
@@ -356,7 +331,6 @@ public class ReservationProfileRestController {
                         }
                     }
 
-                    // Procesăm autoPaymentThreshold
                     if (profileData.containsKey("autoPaymentThreshold")) {
                         Object thresholdObj = profileData.get("autoPaymentThreshold");
                         if (thresholdObj != null && !thresholdObj.toString().isEmpty()) {
@@ -372,7 +346,6 @@ public class ReservationProfileRestController {
                         }
                     }
 
-                    // Procesăm maxWeeklyAutoPayment
                     if (profileData.containsKey("maxWeeklyAutoPayment")) {
                         Object maxWeeklyObj = profileData.get("maxWeeklyAutoPayment");
                         if (maxWeeklyObj != null && !maxWeeklyObj.toString().isEmpty()) {
@@ -388,7 +361,6 @@ public class ReservationProfileRestController {
                         }
                     }
                 } else {
-                    // Dacă plata automată este dezactivată, resetează toate setările
                     profile.setAutoPaymentMethod(null);
                     profile.setDefaultCardPaymentMethod(null);
                     profile.setAutoPaymentThreshold(null);
@@ -398,7 +370,6 @@ public class ReservationProfileRestController {
             }
         } catch (Exception e) {
             logger.error("Error processing auto payment settings", e);
-            // Nu aruncăm excepția pentru a nu bloca salvarea profilului
         }
     }
 
@@ -412,8 +383,6 @@ public class ReservationProfileRestController {
 
             ReservationProfile profile = profileOpt.get();
 
-            // Verificăm permisiunile - utilizatorul poate șterge doar propriile profiluri,
-            // în timp ce adminii pot șterge orice profil
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
             Optional<User> currentUserOpt = userSpringRepository.findByEmail(currentUserEmail);
@@ -424,7 +393,6 @@ public class ReservationProfileRestController {
 
             User currentUser = currentUserOpt.get();
 
-            // Verificăm dacă utilizatorul curent poate șterge acest profil
             if (!profile.getUser().getId().equals(currentUser.getId()) &&
                     !"admin".equals(currentUser.getUserType()) &&
                     !"hall_admin".equals(currentUser.getUserType())) {

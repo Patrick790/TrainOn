@@ -32,7 +32,6 @@ public class PasswordResetController {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
-    // Map pentru a stoca token-urile temporare (în producție, folosește Redis sau o bază de date)
     private final Map<String, TokenData> resetTokens = new HashMap<>();
 
     @Autowired
@@ -71,7 +70,6 @@ public class PasswordResetController {
 
             User user = userOptional.get();
 
-            // Verifică statusul contului
             if ("suspended".equals(user.getAccountStatus())) {
                 return ResponseEntity.status(403)
                         .body(Map.of("message", "Contul este suspendat și nu poate fi resetat"));
@@ -82,17 +80,15 @@ public class PasswordResetController {
                         .body(Map.of("message", "Contul a fost respins și nu poate fi resetat"));
             }
 
-            // Generează token unic pentru resetare folosind JWT
             String resetToken = generateSecureToken();
 
-            // Stochează token-ul cu timestamp (expiră în 1 oră)
+            // Stocheaza token-ul cu timestamp (expira in 1 ora)
             TokenData tokenData = new TokenData(user.getEmail(), System.currentTimeMillis() + 3600000); // 1 oră
             resetTokens.put(resetToken, tokenData);
 
-            // Creează URL-ul de resetare
+            // Creeaza URL-ul de resetare
             String resetUrl = "http://localhost:3000/reset-password?token=" + resetToken;
 
-            // Creează conținutul email-ului
             String emailContent = String.format(
                     "Salut %s,\n\n" +
                             "Ai solicitat resetarea parolei pentru contul tău de pe platforma TrainOn.\n\n" +
@@ -125,7 +121,7 @@ public class PasswordResetController {
                         .body(Map.of("message", "Eroare la trimiterea email-ului. Te rugăm să încerci din nou."));
             }
 
-            // Salvează email-ul în baza de date pentru istoric
+            // Salveaza email-ul in baza de date pentru istoric
             try {
                 Email emailEntity = new Email();
                 emailEntity.setSubject("Resetare parolă - TrainOn");
@@ -142,7 +138,6 @@ public class PasswordResetController {
                 savedEmail.addRecipient(recipient);
                 emailRecipientRepository.save(recipient);
             } catch (Exception dbException) {
-                // Nu oprește procesul dacă salvarea în BD eșuează
                 System.err.println("Eroare la salvarea email-ului în BD: " + dbException.getMessage());
             }
 
@@ -171,14 +166,12 @@ public class PasswordResetController {
                         .body(Map.of("message", "Link-ul de resetare este invalid", "valid", false));
             }
 
-            // Verifică dacă token-ul a expirat
             if (System.currentTimeMillis() > tokenData.getExpirationTime()) {
                 resetTokens.remove(token);
                 return ResponseEntity.status(400)
                         .body(Map.of("message", "Link-ul de resetare a expirat. Te rugăm să soliciți din nou resetarea parolei.", "valid", false));
             }
 
-            // Verifică dacă utilizatorul încă există și este activ
             Optional<User> userOptional = userRepository.findByEmail(tokenData.getEmail());
             if (userOptional.isEmpty()) {
                 resetTokens.remove(token);
@@ -188,7 +181,6 @@ public class PasswordResetController {
 
             User user = userOptional.get();
 
-            // Verifică statusul contului
             if ("suspended".equals(user.getAccountStatus()) || "rejected".equals(user.getAccountStatus())) {
                 resetTokens.remove(token);
                 return ResponseEntity.status(403)
@@ -264,27 +256,22 @@ public class PasswordResetController {
 
             User user = userOptional.get();
 
-            // Verifică statusul contului
             if ("suspended".equals(user.getAccountStatus()) || "rejected".equals(user.getAccountStatus())) {
                 resetTokens.remove(request.getToken());
                 return ResponseEntity.status(403)
                         .body(Map.of("message", "Contul nu poate fi resetat din cauza statusului său"));
             }
 
-            // Verifică dacă noua parolă este diferită de cea curentă
             if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
                 return ResponseEntity.badRequest()
                         .body(Map.of("message", "Parola nouă trebuie să fie diferită de cea curentă"));
             }
 
-            // Actualizează parola folosind encodarea existentă
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userRepository.save(user);
 
-            // Șterge token-ul folosit
             resetTokens.remove(request.getToken());
 
-            // Log pentru audit (opțional)
             System.out.println("Password reset successful for user: " + user.getEmail());
 
             return ResponseEntity.ok(Map.of(
@@ -307,7 +294,6 @@ public class PasswordResetController {
         random.nextBytes(tokenBytes);
         String baseToken = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
 
-        // Adaugă timestamp pentru unicitate suplimentară
         String timestamp = String.valueOf(System.currentTimeMillis());
         return baseToken + "_" + timestamp.substring(timestamp.length() - 6);
     }

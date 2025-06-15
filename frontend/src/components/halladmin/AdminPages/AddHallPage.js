@@ -54,7 +54,7 @@ class AddHallPage extends Component {
                 tariff: '',
                 description: '',
                 facilities: '',
-                phoneNumber: '' // Adăugat câmpul pentru numărul de telefon
+                phoneNumber: ''
             },
             images: {
                 cover: [],
@@ -122,10 +122,7 @@ class AddHallPage extends Component {
         this.setState({ previewImage: null });
     }
 
-    // Funcție pentru validarea numărului de telefon
     isValidPhoneNumber = (phoneNumber) => {
-        // Regex pentru numerele de telefon românești
-        // Acceptă formate: +40..., 07..., 02..., 03... (10 cifre)
         const phoneRegex = /^(\+4|4|0)?(7[0-9]{8}|[23][0-9]{8})$/;
         return phoneRegex.test(phoneNumber.replace(/[\s\-\(\)]/g, ''));
     }
@@ -133,24 +130,19 @@ class AddHallPage extends Component {
     prepareFormData = () => {
         const { hallData, images } = this.state;
 
-        // Asigură-te că valorile numerice sunt numere, nu string-uri
         const processedHallData = {
             ...hallData,
             capacity: hallData.capacity ? parseInt(hallData.capacity, 10) : 0,
             tariff: hallData.tariff ? parseFloat(hallData.tariff) : 0
         };
 
-        // Creăm un FormData pentru a trimite date multipart
         const formData = new FormData();
 
-        // Adăugăm datele sălii ca JSON
         formData.append('sportsHall', new Blob([JSON.stringify(processedHallData)], { type: 'application/json' }));
 
-        // Colectăm toate imaginile într-o listă
         const allImages = [];
         const imageTypes = [];
 
-        // Pentru fiecare tip de imagine, adăugăm la listele noastre
         Object.entries(images).forEach(([type, imagesList]) => {
             imagesList.forEach(img => {
                 allImages.push(img.file);
@@ -158,12 +150,10 @@ class AddHallPage extends Component {
             });
         });
 
-        // Adăugăm imaginile la FormData
         allImages.forEach(file => {
             formData.append('images', file);
         });
 
-        // Adăugăm tipurile ca o listă separată
         imageTypes.forEach(type => {
             formData.append('imageTypes', type);
         });
@@ -174,7 +164,6 @@ class AddHallPage extends Component {
     validateForm = () => {
         const { hallData, images } = this.state;
 
-        // Verificăm dacă toate câmpurile obligatorii sunt completate
         if (!hallData.name || !hallData.county || !hallData.city ||
             !hallData.address || !hallData.capacity || !hallData.type ||
             !hallData.tariff || !hallData.phoneNumber) {
@@ -182,7 +171,6 @@ class AddHallPage extends Component {
             return false;
         }
 
-        // Validăm numărul de telefon
         if (!this.isValidPhoneNumber(hallData.phoneNumber)) {
             this.setState({
                 submitError: 'Numărul de telefon nu este valid. Folosiți format românesc (ex: 0722123456, +40722123456)'
@@ -190,7 +178,6 @@ class AddHallPage extends Component {
             return false;
         }
 
-        // Verificăm dacă avem cel puțin o imagine de copertă
         if (images.cover.length === 0) {
             this.setState({ submitError: 'Trebuie să adăugați cel puțin o imagine de copertă' });
             return false;
@@ -202,7 +189,6 @@ class AddHallPage extends Component {
     handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validăm datele
         if (!this.validateForm()) {
             return;
         }
@@ -212,20 +198,16 @@ class AddHallPage extends Component {
         try {
             const { hallData, images } = this.state;
 
-            // Procesăm datele sălii pentru a ne asigura că valorile numerice sunt corecte
             const processedHallData = {
                 ...hallData,
                 capacity: hallData.capacity ? parseInt(hallData.capacity, 10) : 0,
                 tariff: hallData.tariff ? parseFloat(hallData.tariff) : 0
             };
 
-            // Creăm FormData pentru trimiterea datelor
             const formData = new FormData();
 
-            // Adăugăm JSON-ul ca șir de caractere
             formData.append('sportsHall', JSON.stringify(processedHallData));
 
-            // Adăugăm imaginile și tipurile lor
             let imageIndex = 0;
             Object.entries(images).forEach(([type, imagesList]) => {
                 imagesList.forEach(img => {
@@ -235,7 +217,6 @@ class AddHallPage extends Component {
                 });
             });
 
-            // Obținem token-ul de autentificare
             const token = localStorage.getItem('jwtToken');
 
             if (!token) {
@@ -246,7 +227,6 @@ class AddHallPage extends Component {
                 return;
             }
 
-            // Pentru debugging - verifică ce conține FormData
             console.log("FormData entries:");
             for (let entry of formData.entries()) {
                 console.log(entry[0], entry[1]);
@@ -257,7 +237,6 @@ class AddHallPage extends Component {
                 body: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`
-                    // Nu setăm 'Content-Type' - browserul o va face automat pentru FormData
                 },
             });
 
@@ -268,7 +247,6 @@ class AddHallPage extends Component {
                 this.setState({
                     isSubmitting: false,
                     submitSuccess: true,
-                    // Resetăm formularul
                     hallData: {
                         name: '',
                         county: '',
@@ -289,7 +267,6 @@ class AddHallPage extends Component {
                     }
                 });
             } else {
-                // Gestionăm eroarea
                 const errorText = await response.text();
                 console.error('Error creating hall:', errorText);
                 console.error('Response status:', response.status);

@@ -10,7 +10,7 @@ class ManageSchedulePage extends Component {
         this.state = {
             halls: [],
             selectedHallId: null,
-            activeTab: 'schedule', // 'schedule' sau 'reservations'
+            activeTab: 'schedule',
             initialLoading: true,
             error: null,
             successMessage: '',
@@ -48,9 +48,9 @@ class ManageSchedulePage extends Component {
             }
 
             const halls = await response.json();
-            console.log('Fetched halls:', halls); // Pentru debugging
+            console.log('Fetched halls:', halls);
             const selectedHallId = halls.length > 0 ? halls[0].id : null;
-            console.log('Auto-selected hall ID:', selectedHallId); // Pentru debugging
+            console.log('Auto-selected hall ID:', selectedHallId);
 
             this.setState({
                 halls,
@@ -67,10 +67,9 @@ class ManageSchedulePage extends Component {
         }
     }
 
-    // Event handlers
     handleHallChange = (event) => {
         const hallId = parseInt(event.target.value);
-        console.log('Selected hall ID:', hallId); // Pentru debugging
+        console.log('Selected hall ID:', hallId);
         this.setState({
             selectedHallId: hallId,
             errorMessage: '',
@@ -171,7 +170,6 @@ class ManageSchedulePage extends Component {
                             </div>
                         </div>
 
-                        {/* Content bazat pe tab-ul activ */}
                         <div className="msp-tab-content">
                             {activeTab === 'schedule' && (
                                 <ScheduleManagement

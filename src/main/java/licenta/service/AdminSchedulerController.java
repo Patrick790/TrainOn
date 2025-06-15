@@ -30,13 +30,12 @@ public class AdminSchedulerController {
     private IUserSpringRepository userRepository;
 
     /**
-     * Endpoint pentru rularea manuală a procesului de generare
+     * Endpoint pentru rularea manuala a procesului de generare
      * Doar pentru administratori
      */
     @PostMapping("/manual-generation")
     public ResponseEntity<Map<String, Object>> manualGeneration() {
         try {
-            // Verifică dacă utilizatorul este admin
             if (!isCurrentUserAdmin()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "Acces interzis - doar administratorii pot accesa această funcționalitate"));
@@ -47,7 +46,6 @@ public class AdminSchedulerController {
 
             Map<String, Object> result = weeklyPaymentScheduler.manualWeeklyProcessing();
 
-            // Adaugă informații suplimentare despre execuția manuală
             result.put("executionType", "manual");
             result.put("executionTime", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             result.put("executedBy", getCurrentUserEmail());
@@ -79,7 +77,6 @@ public class AdminSchedulerController {
 
             Map<String, Object> stats = weeklyPaymentScheduler.getAutoPaymentStatistics();
 
-            // Adaugă informații despre timpul ultimei verificări
             stats.put("lastCheck", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             stats.put("nextScheduledRun", getNextScheduledRunInfo());
 
@@ -111,7 +108,6 @@ public class AdminSchedulerController {
             status.put("weeklyRunSchedule", "Duminică la 22:00");
             status.put("dailyCardCheckSchedule", "Zilnic la 08:00");
 
-            // Informații despre ultima rulare (ar trebui salvate în baza de date într-o implementare completă)
             status.put("lastSuccessfulRun", "N/A - Vezi log-urile pentru detalii");
             status.put("systemHealth", "OK");
 
@@ -137,7 +133,6 @@ public class AdminSchedulerController {
 
             logger.info("Verificare manuală carduri expirate declanșată de admin");
 
-            // Apelează metoda din scheduler
             weeklyPaymentScheduler.checkExpiredCards();
 
             Map<String, Object> result = new HashMap<>();
@@ -170,7 +165,6 @@ public class AdminSchedulerController {
             }
 
             // TODO: Implementează configurarea dinamică a scheduler-ului
-            // De exemplu: schimbarea orei de rulare, activarea/dezactivarea anumitor task-uri, etc.
 
             logger.info("Configurare scheduler solicitată de admin: {}", config);
 
@@ -201,7 +195,6 @@ public class AdminSchedulerController {
             }
 
             // TODO: Implementează citirea log-urilor din sistem
-            // Aceasta ar putea include logurile din fișiere sau din baza de date
 
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
@@ -235,7 +228,6 @@ public class AdminSchedulerController {
 
             logger.info("Simulare următoarea execuție declanșată de admin");
 
-            // Aceasta este esențial identică cu generarea manuală, dar cu alt nume
             Map<String, Object> result = weeklyPaymentScheduler.manualWeeklyProcessing();
 
             result.put("executionType", "simulation");
@@ -256,7 +248,6 @@ public class AdminSchedulerController {
         }
     }
 
-    // Metode helper
 
     /**
      * Verifică dacă utilizatorul curent este administrator
@@ -324,16 +315,13 @@ public class AdminSchedulerController {
         try {
             LocalDateTime now = LocalDateTime.now();
 
-            // Găsește următoarea duminică la 22:00
             LocalDateTime nextSunday = now;
             while (nextSunday.getDayOfWeek().getValue() != 7) { // 7 = Duminică
                 nextSunday = nextSunday.plusDays(1);
             }
 
-            // Setează ora la 22:00
             nextSunday = nextSunday.withHour(22).withMinute(0).withSecond(0).withNano(0);
 
-            // Dacă am trecut de ora 22:00 duminica curentă, mergi la următoarea duminică
             if (nextSunday.isBefore(now)) {
                 nextSunday = nextSunday.plusWeeks(1);
             }

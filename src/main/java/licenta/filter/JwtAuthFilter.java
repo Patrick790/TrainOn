@@ -38,7 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
-                // ADĂUGAT: Excludem endpoint-urile pentru resetarea parolei
+                // Excludem endpoint-urile pentru resetarea parolei
                 path.equals("/forgot-password") ||
                 path.startsWith("/reset-password") ||
 
@@ -47,9 +47,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 (path.startsWith("/sportsHalls") && "GET".equals(method)) ||
                 path.equals("/sportsHalls/cities") ||
                 (path.startsWith("/schedules/hall/") && "GET".equals(method)) ||
-                // ACTUALIZAT - Permite doar anumite endpoint-uri de rezervări fără autentificare
-                (path.equals("/reservations") && "GET".equals(method)) || // Doar listarea generală
-                (path.startsWith("/reservations/maintenance") && "GET".equals(method)) || // Mentenanța
+                (path.equals("/reservations") && "GET".equals(method)) ||
+                (path.startsWith("/reservations/maintenance") && "GET".equals(method)) ||
                 (path.startsWith("/images") && "GET".equals(method)) ||
                 path.startsWith("/payment/stripe/webhook") ||
                 (path.startsWith("/feedbacks") && "GET".equals(method));
@@ -94,7 +93,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             logger.error("Error processing JWT token: " + e.getMessage(), e);
-            // Nu blocăm cererea în caz de eroare, dar nu setăm autentificarea
         }
 
         filterChain.doFilter(request, response);

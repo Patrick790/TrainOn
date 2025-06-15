@@ -211,7 +211,6 @@
     opacity: 0;
 }
 
-/* Hall Info Section */
 .hall-info-section {
     background-color: white;
     border-radius: 16px;
@@ -275,7 +274,6 @@
     min-height: 100px;
 }
 
-/* Form actions */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -326,7 +324,6 @@
     box-shadow: none;
 }
 
-/* Message styles */
 .success-message,
 .error-message {
     padding: 1rem;
@@ -348,7 +345,6 @@
     border-left: 4px solid #ef4444;
 }
 
-/* Image Viewer */
 .image-viewer-overlay {
     position: fixed;
     top: 0;
@@ -472,7 +468,6 @@
     font-weight: 500;
 }
 
-/* Loading container */
 .loading-container {
     display: flex;
     align-items: center;
@@ -483,7 +478,6 @@
     font-weight: 500;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -494,7 +488,6 @@
     to { transform: scale(1); opacity: 1; }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .edit-hall-header {
         flex-direction: column;

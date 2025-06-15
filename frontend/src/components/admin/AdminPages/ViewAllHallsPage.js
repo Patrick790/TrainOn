@@ -12,7 +12,7 @@ class ViewAllHallsPage extends Component {
             halls: [],
             cities: [],
             admins: {},
-            hallRatings: {}, // Obiect pentru a stoca rating-urile fiecărei săli
+            hallRatings: {},
             selectedCity: 'all',
             loading: true,
             error: null,
@@ -53,7 +53,6 @@ class ViewAllHallsPage extends Component {
 
             const halls = await response.json();
 
-            // Extragem toate orașele unice pentru filtrare
             const uniqueCities = [...new Set(halls.map(hall => hall.city))];
 
             this.setState({
@@ -62,7 +61,6 @@ class ViewAllHallsPage extends Component {
                 loading: false
             });
 
-            // După ce avem sălile, obținem informațiile administratorilor și rating-urile
             await this.fetchAdminsData(halls);
             await this.fetchRatingsForHalls(halls);
 
@@ -128,7 +126,6 @@ class ViewAllHallsPage extends Component {
                         const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
                         hallRatings[hall.id] = ratingData;
                     } else {
-                        // Dacă nu putem încărca feedback-urile, setăm valori default
                         hallRatings[hall.id] = {
                             averageRating: 0,
                             totalReviews: 0
@@ -155,7 +152,6 @@ class ViewAllHallsPage extends Component {
             };
         }
 
-        // Calculăm media rating-urilor
         const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
         const averageRating = totalRating / feedbacks.length;
 
@@ -233,7 +229,6 @@ class ViewAllHallsPage extends Component {
         }));
     }
 
-    // Elimină funcția handleHallDeactivated, nu mai e necesară
 
     renderRatingStars = (rating) => {
         const totalStars = 5;
@@ -256,7 +251,6 @@ class ViewAllHallsPage extends Component {
                             />
                         );
                     }
-                    // Pentru jumătate de stea
                     else if (index === fullStars && hasHalfStar) {
                         return (
                             <div className="global-half-star-container" key={index}>
@@ -275,7 +269,6 @@ class ViewAllHallsPage extends Component {
                             </div>
                         );
                     }
-                    // Pentru aproape o stea completa (peste 0.7)
                     else if (index === fullStars && hasAlmostFullStar) {
                         return (
                             <Star
@@ -287,7 +280,6 @@ class ViewAllHallsPage extends Component {
                             />
                         );
                     }
-                    // Pentru stele goale
                     else {
                         return (
                             <Star
@@ -325,7 +317,6 @@ class ViewAllHallsPage extends Component {
             );
         }
 
-        // Filtrăm sălile în funcție de orașul selectat
         const filteredHalls = selectedCity === 'all'
             ? halls
             : halls.filter(hall => hall.city === selectedCity);
@@ -399,7 +390,6 @@ class ViewAllHallsPage extends Component {
 
                                         <p className="global-hall-description">{hall.description || 'Fără descriere'}</p>
 
-                                        {/* Rating real din baza de date */}
                                         <div className="global-hall-rating">
                                             {this.renderRatingStars(ratingData.averageRating)}
                                             <span className="global-rating-text">

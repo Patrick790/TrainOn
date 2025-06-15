@@ -23,7 +23,6 @@ const AppAdminPersonalData = () => {
 
     const [tempPersonalData, setTempPersonalData] = useState({...personalData});
 
-    // Orașele din România pentru dropdown
     const romanianCities = [
         'Alba Iulia', 'Arad', 'Argeș', 'Bacău', 'Bihor', 'Bistrița-Năsăud',
         'Botoșani', 'Brăila', 'Brașov', 'București', 'Buzău', 'Călărași',
@@ -34,7 +33,6 @@ const AppAdminPersonalData = () => {
         'Timișoara', 'Tulcea', 'Vâlcea', 'Vaslui', 'Vrancea'
     ];
 
-    // Funcție pentru a obține datele administratorului din baza de date
     const fetchAdminData = async () => {
         try {
             setLoading(true);
@@ -47,7 +45,6 @@ const AppAdminPersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            // SCHIMBAT: folosim /users în loc de /app-admins
             const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: {
@@ -68,12 +65,10 @@ const AppAdminPersonalData = () => {
 
             const userData = await response.json();
 
-            // Separăm numele complet în prenume și nume
             const nameParts = userData.name ? userData.name.split(' ') : ['', ''];
             const firstName = nameParts[0] || '';
             const lastName = nameParts.slice(1).join(' ') || '';
 
-            // Formatăm data nașterii pentru input-ul de tip date
             const formattedBirthDate = userData.birthDate
                 ? new Date(userData.birthDate).toISOString().split('T')[0]
                 : '';
@@ -99,7 +94,6 @@ const AppAdminPersonalData = () => {
         }
     };
 
-    // Funcție pentru a salva datele actualizate în baza de date
     const saveAdminData = async (updatedData) => {
         try {
             setSaving(true);
@@ -113,10 +107,8 @@ const AppAdminPersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            // Combinăm prenumele și numele înapoi
             const fullName = `${updatedData.firstName} ${updatedData.lastName}`.trim();
 
-            // Formatăm data pentru trimitere la backend
             const birthDate = updatedData.birthDate ? new Date(updatedData.birthDate) : null;
 
             const dataToSend = {
@@ -128,7 +120,6 @@ const AppAdminPersonalData = () => {
                 birthDate: birthDate
             };
 
-            // SCHIMBAT: folosim /users în loc de /app-admins
             const response = await fetch(`${API_BASE_URL}/users/${userId}`, {                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -151,7 +142,6 @@ const AppAdminPersonalData = () => {
             setSuccessMessage('Datele au fost salvate cu succes!');
             setSaving(false);
 
-            // Ascundem mesajul de succes după 3 secunde
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);

@@ -24,7 +24,6 @@ const PersonalData = () => {
 
     const [tempPersonalData, setTempPersonalData] = useState({...personalData});
 
-    // Orașele din România pentru dropdown
     const romanianCities = [
         'Alba Iulia', 'Arad', 'Argeș', 'Bacău', 'Bihor', 'Bistrița-Năsăud',
         'Botoșani', 'Brăila', 'Brașov', 'București', 'Buzău', 'Călărași',
@@ -35,7 +34,6 @@ const PersonalData = () => {
         'Timișoara', 'Tulcea', 'Vâlcea', 'Vaslui', 'Vrancea'
     ];
 
-    // Funcție pentru a obține datele utilizatorului din baza de date
     const fetchUserData = async () => {
         try {
             setLoading(true);
@@ -68,12 +66,10 @@ const PersonalData = () => {
 
             const userData = await response.json();
 
-            // Separăm numele complet în prenume și nume
             const nameParts = userData.name ? userData.name.split(' ') : ['', ''];
             const firstName = nameParts[0] || '';
             const lastName = nameParts.slice(1).join(' ') || '';
 
-            // Formatăm data nașterii pentru input-ul de tip date
             const formattedBirthDate = userData.birthDate
                 ? new Date(userData.birthDate).toISOString().split('T')[0]
                 : '';
@@ -99,7 +95,6 @@ const PersonalData = () => {
         }
     };
 
-    // Funcție pentru a salva datele actualizate în baza de date
     const saveUserData = async (updatedData) => {
         try {
             setSaving(true);
@@ -113,10 +108,8 @@ const PersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            // Combinăm prenumele și numele înapoi
             const fullName = `${updatedData.firstName} ${updatedData.lastName}`.trim();
 
-            // Formatăm data pentru trimitere la backend
             const birthDate = updatedData.birthDate ? new Date(updatedData.birthDate) : null;
 
             const dataToSend = {

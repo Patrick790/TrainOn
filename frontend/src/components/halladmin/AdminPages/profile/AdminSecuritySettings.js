@@ -41,7 +41,6 @@ const AdminSecuritySettings = ({ userId }) => {
             [field]: value
         }));
 
-        // Clear specific error when user starts typing
         if (passwordErrors[field]) {
             setPasswordErrors(prev => ({
                 ...prev,
@@ -110,7 +109,6 @@ const AdminSecuritySettings = ({ userId }) => {
                 });
                 setPasswordErrors({});
             } else {
-                // Handle specific error from backend
                 if (data.message) {
                     if (data.message.includes('incorectă')) {
                         setPasswordErrors({ currentPassword: data.message });
@@ -138,7 +136,6 @@ const AdminSecuritySettings = ({ userId }) => {
         // TODO: Implementează logica pentru ștergerea contului de administrator
         if (window.confirm('Ești sigur că vrei să ștergi permanent contul de administrator? Această acțiune nu poate fi anulată și va afecta toate sălile administrate.')) {
             console.log('Șterge contul de administrator');
-            // Aici ar trebui să faci un request către backend pentru ștergerea contului
         }
     };
 

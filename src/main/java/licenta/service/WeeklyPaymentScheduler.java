@@ -45,7 +45,6 @@ public class WeeklyPaymentScheduler {
         logger.info("=== ÎNCEPUT PROCESARE PLĂȚI AUTOMATE SĂPTĂMÂNALE ===");
 
         try {
-            // Apelează controllerul pentru generarea rezervărilor cu plăți automate
             var response = bookingController.generateBookings();
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -56,10 +55,8 @@ public class WeeklyPaymentScheduler {
                     logger.info("Procesare automată reușită: {} rezervări generate",
                             responseBody.get("count"));
 
-                    // Logăm statisticile plăților
                     logPaymentStatistics(responseBody);
 
-                    // Notifică adminii despre rezultat
                     notifyAdminsAboutWeeklyGeneration(responseBody);
                 } else {
                     logger.error("Generarea automată a rezervărilor a eșuat: {}",
@@ -73,7 +70,6 @@ public class WeeklyPaymentScheduler {
         } catch (Exception e) {
             logger.error("Eroare critică la procesarea automată săptămânală", e);
 
-            // Încearcă să notifice adminii despre eroare
             try {
                 notifyAdminsAboutError(e);
             } catch (Exception notificationError) {
@@ -102,11 +98,9 @@ public class WeeklyPaymentScheduler {
             if (deactivatedCards > 0) {
                 logger.warn("Au fost dezactivate {} carduri expirate", deactivatedCards);
 
-                // Găsește profilurile afectate și dezactivează plata automată
                 disableAutoPaymentForExpiredCards();
             }
 
-            // Verifică cardurile care urmează să expire în următoarele 2 luni
             checkCardsExpiringNextMonth(currentYear, currentMonth);
 
         } catch (Exception e) {
@@ -162,15 +156,12 @@ public class WeeklyPaymentScheduler {
                 nextMonthNextYear = nextMonth;
             }
 
-            // Găsește cardurile care expiră în următoarele 2 luni
             List<CardPaymentMethod> expiringSoon = cardPaymentMethodRepository
                     .findCardsExpiringInNextMonths(currentYear, nextMonth, nextYear, nextMonthNextYear);
 
             if (!expiringSoon.isEmpty()) {
                 logger.info("Găsite {} carduri care expiră în următoarele luni", expiringSoon.size());
 
-                // Aici poți adăuga logică pentru notificarea utilizatorilor
-                // despre cardurile care urmează să expire
             }
 
         } catch (Exception e) {
@@ -192,7 +183,6 @@ public class WeeklyPaymentScheduler {
             logger.info("Plăți automate reușite: {}", autoPaymentsSuccessful);
             logger.info("Plăți automate eșuate: {}", autoPaymentsFailed);
 
-            // Calculează procentajul de succes pentru plățile automate
             if (autoPaymentsSuccessful instanceof Number && autoPaymentsFailed instanceof Number) {
                 int successful = ((Number) autoPaymentsSuccessful).intValue();
                 int failed = ((Number) autoPaymentsFailed).intValue();
@@ -218,8 +208,6 @@ public class WeeklyPaymentScheduler {
      */
     private void notifyAdminsAboutWeeklyGeneration(Map<String, Object> responseBody) {
         try {
-            // Aici poți implementa logica de notificare a adminilor
-            // De exemplu, prin email sau prin salvarea unei notificări în baza de date
 
             String summary = String.format(
                     "Generare automată rezervări completă: %s rezervări, %s plăți procesate",
@@ -274,7 +262,6 @@ public class WeeklyPaymentScheduler {
                 }
             }
 
-            // Dacă ajungem aici, ceva nu a mers bine
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
             errorResponse.put("message", "Eroare la procesarea manuală");

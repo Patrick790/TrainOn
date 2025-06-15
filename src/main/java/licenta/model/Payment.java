@@ -44,7 +44,6 @@ public class Payment extends BruteEntity<Long> {
     @Column(name = "failure_reason")
     private String failureReason;
 
-    // Relația Many-to-Many cu Reservation prin PaymentReservation
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("payment")
     private List<PaymentReservation> paymentReservations = new ArrayList<>();

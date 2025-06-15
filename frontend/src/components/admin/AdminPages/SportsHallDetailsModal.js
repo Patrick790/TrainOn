@@ -20,7 +20,6 @@ class SportsHallDetailsModal extends Component {
 
     componentDidMount() {
         this.fetchHallDetails();
-        // Adăugăm un mic delay pentru animația de fade-in
         setTimeout(() => {
             this.setState({ fadeIn: true });
         }, 50);
@@ -46,14 +45,12 @@ class SportsHallDetailsModal extends Component {
             const hall = await hallResponse.json();
             this.setState({ hall });
 
-            // Obținem datele administratorului și rating-urile în paralel
             const promises = [];
 
             if (hall.adminId) {
                 promises.push(this.fetchAdminData(hall.adminId));
             }
 
-            // Adăugat: încărcăm rating-urile din baza de date
             promises.push(this.fetchHallRating(hallId));
 
             await Promise.all(promises);
@@ -87,7 +84,6 @@ class SportsHallDetailsModal extends Component {
         }
     }
 
-    // Nouă metodă pentru încărcarea rating-urilor din baza de date
     fetchHallRating = async (hallId) => {
         try {
             const response = await fetch(`${this.API_BASE_URL}/feedbacks?hallId=${hallId}`);
@@ -97,7 +93,6 @@ class SportsHallDetailsModal extends Component {
                 const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
                 this.setState({ hallRating: ratingData });
             } else {
-                // Setăm valori default dacă nu putem încărca feedback-urile
                 this.setState({ hallRating: { averageRating: 0, totalReviews: 0 } });
             }
         } catch (error) {
@@ -106,7 +101,6 @@ class SportsHallDetailsModal extends Component {
         }
     }
 
-    // Nouă metodă pentru calcularea rating-ului din feedback-uri
     calculateRatingFromFeedbacks = (feedbacks) => {
         if (!feedbacks || feedbacks.length === 0) {
             return { averageRating: 0, totalReviews: 0 };
@@ -137,7 +131,6 @@ class SportsHallDetailsModal extends Component {
     }
 
     handleClose = () => {
-        // Animație de fade-out la închidere
         this.setState({ fadeIn: false });
         setTimeout(() => {
             if (this.props.onClose) {
@@ -348,7 +341,6 @@ class SportsHallDetailsModal extends Component {
                                                 <h3>Rating și recenzii</h3>
                                             </div>
                                             <div className="modal-rating">
-                                                {/* Folosește rating-ul real din baza de date */}
                                                 {this.renderRatingStars(hallRating.averageRating)}
                                                 <span className="modal-rating-text">
                                                     {hallRating.averageRating > 0

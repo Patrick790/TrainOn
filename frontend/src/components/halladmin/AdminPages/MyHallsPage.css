@@ -59,7 +59,6 @@
             0 0 0 1px rgba(124, 58, 237, 0.1);
 }
 
-/* STILURI PENTRU SĂLI INACTIVE */
 .hall-card.inactive {
     opacity: 0.7;
     border: 2px solid #f87171;
@@ -245,7 +244,6 @@
     font-weight: 500;
 }
 
-/* NOTIFICARE PENTRU SĂLI INACTIVE */
 .hall-inactive-notice {
     background-color: #fef3c7;
     border: 1px solid #fbbf24;

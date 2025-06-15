@@ -1,4 +1,3 @@
-/* ProfilePage.css */
 
 .profile-page {
     min-height: 100vh;
@@ -16,7 +15,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: transparent; /* Complet transparent */
+    background-color: transparent;
     z-index: 1;
 }
 
@@ -29,17 +28,16 @@
     z-index: 2;
 }
 
-/* Sidebar */
 .profile-sidebar {
     width: 280px;
-    background: rgba(0, 0, 0, 0.1); /* Foarte transparent, doar o umbră subtilă */
-    backdrop-filter: blur(3px); /* Blur minim */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Bordură foarte subtilă */
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2rem 0;
     position: sticky;
     top: 100px;
     height: fit-content;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Umbră foarte subtilă */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     border-radius: 16px;
     margin: 1rem 0 1rem 1rem;
 }
@@ -69,7 +67,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     color: white;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); /* Umbră puternică pentru lizibilitate */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .profile-user-info p {
@@ -102,18 +100,17 @@
 }
 
 .profile-nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.05); /* Foarte subtil */
+    background-color: rgba(255, 255, 255, 0.05);
     color: white;
 }
 
 .profile-nav-item.active {
-    background: rgba(124, 58, 237, 0.2); /* Puțin mai vizibil pentru elementul activ */
+    background: rgba(124, 58, 237, 0.2);
     color: white;
     font-weight: 500;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Content Area */
 .profile-content {
     flex: 1;
     padding: 2rem;
@@ -121,8 +118,8 @@
 }
 
 .profile-section {
-    background: rgba(0, 0, 0, 0.08); /* Foarte transparent */
-    backdrop-filter: blur(3px); /* Blur minim */
+    background: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -146,7 +143,6 @@
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
-/* Personal Data Section */
 .personal-data-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -260,7 +256,6 @@
     background-color: rgba(109, 40, 217, 0.8);
 }
 
-/* Reservation Profiles */
 .reservation-profiles {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -352,7 +347,6 @@
     background-color: rgba(185, 28, 28, 0.8);
 }
 
-/* Security Section */
 .security-section {
     display: flex;
     flex-direction: column;
@@ -415,7 +409,6 @@
     background-color: rgba(185, 28, 28, 0.8);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .profile-page::before {
         background-color: transparent;
@@ -480,9 +473,6 @@
     }
 }
 
-/* Add these styles to your ProfilePage.css file */
-
-/* Error state for input fields */
 .edit-input.error {
     border-color: rgba(239, 68, 68, 0.7);
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
@@ -493,7 +483,6 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
-/* Override save and cancel buttons to look like security buttons */
 .security-item .save-button,
 .security-item .cancel-button {
     display: flex;
@@ -525,7 +514,6 @@
     background-color: rgba(75, 85, 99, 0.8);
 }
 
-/* Disabled button styles */
 .security-item .save-button:disabled,
 .security-item .cancel-button:disabled,
 .security-button:disabled {
@@ -541,7 +529,6 @@
     background-color: rgba(107, 114, 128, 0.7);
 }
 
-/* Password strength indicator (optional enhancement) */
 .password-strength {
     margin-top: 0.5rem;
     font-size: 0.8rem;
@@ -559,7 +546,6 @@
     color: #10b981;
 }
 
-/* Loading state for buttons */
 .security-item .save-button.loading {
     position: relative;
     color: transparent;
@@ -584,7 +570,6 @@
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Better spacing for password form */
 .security-item .personal-data-grid {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
@@ -596,7 +581,6 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Error message styling */
 .error-message {
     color: #ef4444;
     font-size: 0.8rem;
@@ -615,7 +599,6 @@
     font-size: 0.9rem;
 }
 
-/* Responsive adjustments for password form */
 @media (max-width: 768px) {
     .security-item .personal-data-grid {
         grid-template-columns: 1fr;

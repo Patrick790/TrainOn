@@ -216,7 +216,6 @@ public class ReservationEmailService {
 
             StringBuilder content = new StringBuilder();
 
-            // Header pentru anulare
             content.append("================================================================================\n");
             content.append("                                  TRAINON\n");
             content.append("                           PLATFORMĂ REZERVĂRI SPORTIVE\n");
@@ -227,7 +226,6 @@ public class ReservationEmailService {
             content.append("Vă confirmăm că rezervarea dumneavoastră a fost anulată cu succes.\n");
             content.append("Înțelegem că planurile se pot schimba și sperăm să vă revedem curând pe TrainOn.\n\n");
 
-            // Detalii rezervare anulată
             content.append("================================================================================\n");
             content.append("                           REZERVARE ANULATĂ\n");
             content.append("================================================================================\n\n");
@@ -241,7 +239,6 @@ public class ReservationEmailService {
             }
             content.append("\n");
 
-            // Informații despre rambursare
             if (reservation.getPrice() != null && reservation.getPrice() > 0) {
                 content.append("================================================================================\n");
                 content.append("                         INFORMAȚII RAMBURSARE\n");
@@ -269,7 +266,6 @@ public class ReservationEmailService {
             content.append("• Echipa noastră de suport este disponibilă zilnic între 08:00 - 22:00\n");
             content.append("• Răspundem prompt la toate solicitările prin platforma online\n\n");
 
-            // Footer pentru anulare
             content.append("================================================================================\n");
             content.append("                        NE PARE RĂU PENTRU INCONVENIENT!\n");
             content.append("                                                                                \n");

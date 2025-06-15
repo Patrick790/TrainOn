@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import './LoginModal.css';
 
 const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
-    // Configurația API URL dinamică
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
     const [email, setEmail] = useState('');
@@ -13,7 +12,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
 
-    // State pentru forgot password
     const [forgotEmail, setForgotEmail] = useState('');
     const [forgotErrors, setForgotErrors] = useState({});
     const [forgotErrorMessage, setForgotErrorMessage] = useState('');
@@ -22,12 +20,10 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
 
     const navigate = useNavigate();
 
-    // Refs pentru focus management
     const modalRef = useRef(null);
     const emailInputRef = useRef(null);
     const forgotEmailInputRef = useRef(null);
 
-    // Focus pe primul input când modalul se deschide
     useEffect(() => {
         if (isOpen) {
             if (showForgotPassword && forgotEmailInputRef.current) {
@@ -42,7 +38,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         }
     }, [isOpen, showForgotPassword]);
 
-    // Reset toate state-urile când modalul se deschide
     useEffect(() => {
         if (isOpen) {
             setEmail('');
@@ -59,7 +54,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         }
     }, [isOpen]);
 
-    // Gestionarea tastelor pentru accesibilitate
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!isOpen) return;
@@ -70,7 +64,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                 return;
             }
 
-            // Tab trapping pentru focus
             if (e.key === 'Tab') {
                 const focusableElements = modalRef.current?.querySelectorAll(
                     'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -106,7 +99,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         };
     }, [isOpen, onClose]);
 
-    // Funcții pentru login
     const handleInputChange = (setter, field) => (e) => {
         setter(e.target.value);
         setErrors((prevErrors) => ({ ...prevErrors, [field]: false }));
@@ -139,7 +131,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         setErrorMessage('');
 
         try {
-            // ACTUALIZAT: Folosește API_BASE_URL dinamic
             const loginResponse = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -164,7 +155,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                 throw new Error(loginData.message || 'Autentificare eșuată');
             }
 
-            // ACTUALIZAT: Folosește API_BASE_URL dinamic
             const tokenResponse = await fetch(`${API_BASE_URL}/login/generateToken`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -216,7 +206,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         }
     }
 
-    // Funcții pentru forgot password
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -256,7 +245,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         setForgotErrorMessage('');
 
         try {
-            // ACTUALIZAT: Folosește API_BASE_URL dinamic
             const response = await fetch(`${API_BASE_URL}/forgot-password`, {
                 method: 'POST',
                 headers: {
@@ -294,7 +282,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
         }
     };
 
-    // Event handlers
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!isLoading) {
@@ -342,7 +329,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                 onClick={e => e.stopPropagation()}
             >
                 {showForgotPassword ? (
-                    // Interfața pentru forgot password
                     <>
                         <h1 className="login-modal-title">RESETARE PAROLĂ</h1>
 
@@ -398,7 +384,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick, onLoginSuccess }) => {
                         </form>
                     </>
                 ) : (
-                    // Interfața pentru login
                     <>
                         <h1 className="login-modal-title">LOGIN</h1>
 

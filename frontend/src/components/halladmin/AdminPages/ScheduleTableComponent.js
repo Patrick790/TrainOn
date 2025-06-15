@@ -29,13 +29,11 @@ class ScheduleTableComponent extends React.Component {
     }
 
     componentDidMount() {
-        // If a different start week is provided, use it
         if (this.props.initialWeekStart) {
             this.setState({ currentWeekStart: this.props.initialWeekStart });
         }
     }
 
-    // Utility functions
     getStartOfWeek = (date) => {
         const dayOfWeek = date.getDay();
         const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
@@ -64,7 +62,7 @@ class ScheduleTableComponent extends React.Component {
         // Check if navigation is restricted to current week onward
         if (this.props.restrictPastNavigation &&
             currentWeekStart.getTime() <= startOfCurrentWeek.getTime()) {
-            return; // Prevent navigation to past
+            return;
         }
 
         const previousWeekStart = new Date(currentWeekStart);
@@ -130,7 +128,6 @@ class ScheduleTableComponent extends React.Component {
         return weekDays;
     }
 
-    // În ScheduleTableComponent.js, modifică metoda renderTimeSlots
     renderTimeSlots = () => {
         const { currentWeekStart, timeSlots } = this.state;
         const { schedule, isPastDateBlocked, isReadOnly, reservations } = this.props;

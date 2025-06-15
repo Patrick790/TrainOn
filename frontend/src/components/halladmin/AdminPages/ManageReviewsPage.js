@@ -13,7 +13,7 @@ class ManageReviewsPage extends Component {
             myHalls: [],
             selectedHall: null,
             reviews: [],
-            filter: 'all', // 'all', 'highest', 'lowest', 'recent'
+            filter: 'all',
         };
     }
 
@@ -21,7 +21,6 @@ class ManageReviewsPage extends Component {
         this.fetchMyHalls();
     }
 
-    // Obține sălile de sport ale adminului logat
     fetchMyHalls = async () => {
         try {
             const userId = localStorage.getItem('userId');
@@ -51,7 +50,6 @@ class ManageReviewsPage extends Component {
                     isLoading: false,
                     selectedHall: response.data[0],
                 }, () => {
-                    // După ce am setat sala selectată, încărcăm recenziile
                     this.fetchReviews(response.data[0].id);
                 });
             }
@@ -64,7 +62,6 @@ class ManageReviewsPage extends Component {
         }
     };
 
-    // Obține recenziile pentru o sală specifică
     fetchReviews = async (hallId) => {
         this.setState({ isLoading: true });
         try {
@@ -87,19 +84,16 @@ class ManageReviewsPage extends Component {
         }
     };
 
-    // Schimbă sala selectată pentru vizualizarea recenziilor
     handleHallChange = (hall) => {
         this.setState({ selectedHall: hall, reviews: [] }, () => {
             this.fetchReviews(hall.id);
         });
     };
 
-    // Schimbă filtrul de afișare a recenziilor
     handleFilterChange = (filter) => {
         this.setState({ filter });
     };
 
-    // Filtează recenziile conform filtrului
     getFilteredReviews = () => {
         const { reviews, filter } = this.state;
 
@@ -115,7 +109,6 @@ class ManageReviewsPage extends Component {
         }
     };
 
-    // Render stars based on rating
     renderStars = (rating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -131,7 +124,6 @@ class ManageReviewsPage extends Component {
         return stars;
     };
 
-    // Formatează data pentru afișare
     formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('ro-RO', {
@@ -225,7 +217,6 @@ class ManageReviewsPage extends Component {
                     </div>
                 </div>
 
-                {/* Lista de recenzii */}
                 {isLoading ? (
                     <div className="reviews-loading">Se încarcă recenziile...</div>
                 ) : error ? (

@@ -99,7 +99,6 @@ public class EmailRestController {
                 return ResponseEntity.badRequest().body(Map.of("message", "Adresa de email a destinatarului este obligatorie"));
             }
 
-            // Obține utilizatorul curent (administratorul)
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
 
@@ -112,21 +111,17 @@ public class EmailRestController {
             email.setCreatedBy(currentUserEmail);
             email.setStatus("SENT");
 
-            // Determină destinatarii în funcție de tipul selectat
             List<String> recipientEmails = getRecipientEmails(
                     emailRequest.getRecipientType(),
                     emailRequest.getRecipient()
             );
 
-            // Verifică dacă există destinatari
             if (recipientEmails.isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Nu există destinatari pentru acest email"));
             }
 
-            // Salvează emailul în baza de date
             Email savedEmail = emailRepository.save(email);
 
-            // Trimite email-urile și salvează destinatarii
             for (String recipientEmail : recipientEmails) {
                 try {
                     // Trimite email
@@ -137,13 +132,12 @@ public class EmailRestController {
                     message.setText(emailRequest.getContent());
                     mailSender.send(message);
 
-                    // Salvează destinatarul
+                    // Salveaza destinatarul
                     EmailRecipient recipient = new EmailRecipient(recipientEmail);
                     recipient.setStatus("SENT");
                     email.addRecipient(recipient);
                     emailRecipientRepository.save(recipient);
                 } catch (Exception e) {
-                    // În caz de eroare, marchează statusul ca FAILED
                     EmailRecipient recipient = new EmailRecipient(recipientEmail);
                     recipient.setStatus("FAILED");
                     email.addRecipient(recipient);
@@ -237,8 +231,8 @@ public class EmailRestController {
      * Clasa pentru cererea de trimitere a email-urilor
      */
     public static class EmailRequest {
-        private String recipientType; // all_users, all_admins, specific_user
-        private String recipient; // email-ul utilizatorului specific (folosit doar când recipientType este specific_user)
+        private String recipientType;
+        private String recipient;
         private String subject;
         private String content;
 

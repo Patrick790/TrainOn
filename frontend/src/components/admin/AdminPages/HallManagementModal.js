@@ -147,7 +147,7 @@ class HallManagementModal extends Component {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || 'Nu s-au putut salva modificările');
+                throw new Error(errorText || 'Nu s-au putut salva modificarile');
             }
 
             const updatedHall = await response.json();

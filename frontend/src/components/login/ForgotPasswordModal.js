@@ -9,11 +9,9 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-    // Refs pentru focus management
     const modalRef = useRef(null);
     const emailInputRef = useRef(null);
 
-    // Focus pe input când modalul se deschide
     useEffect(() => {
         if (isOpen && emailInputRef.current) {
             setTimeout(() => {
@@ -22,7 +20,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         }
     }, [isOpen]);
 
-    // Gestionarea tastelor pentru accesibilitate
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!isOpen) return;
@@ -32,7 +29,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                 return;
             }
 
-            // Tab trapping pentru focus
             if (e.key === 'Tab') {
                 const focusableElements = modalRef.current?.querySelectorAll(
                     'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -68,7 +64,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         };
     }, [isOpen, onClose]);
 
-    // Reset form când modalul se deschide
     useEffect(() => {
         if (isOpen) {
             setEmail('');
@@ -140,11 +135,9 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                 }
             }
 
-            // Succes
             setSuccessMessage('Un email cu instrucțiuni pentru resetarea parolei a fost trimis la adresa specificată!');
             setEmail('');
 
-            // Închide modalul după 3 secunde
             setTimeout(() => {
                 onClose();
             }, 3000);

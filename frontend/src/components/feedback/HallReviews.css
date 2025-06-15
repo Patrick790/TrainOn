@@ -5,7 +5,6 @@
     background-color: #f9fafb;
 }
 
-/* Header styles */
 .reviews-header {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -67,14 +66,12 @@
     box-shadow: 0 6px 8px rgba(91, 33, 182, 0.4);
 }
 
-/* Content styles */
 .reviews-content {
     max-width: 1200px;
     margin: 0 auto 3rem;
     padding: 0 2rem;
 }
 
-/* Reviews summary section */
 .reviews-summary {
     display: flex;
     background-color: white;
@@ -151,7 +148,6 @@
     font-size: 0.9rem;
 }
 
-/* Success message */
 .success-message {
     background-color: #d1fae5;
     color: #065f46;
@@ -168,7 +164,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Add review form */
 .add-review-form {
     background-color: white;
     border-radius: 12px;
@@ -239,7 +234,6 @@
     background-color: #5b21b6;
 }
 
-/* Login prompt */
 .login-prompt {
     background-color: white;
     border-radius: 12px;
@@ -271,7 +265,6 @@
     box-shadow: 0 4px 6px rgba(109, 40, 217, 0.2);
 }
 
-/* Reviews list */
 .reviews-list {
     background-color: white;
     border-radius: 12px;
@@ -354,7 +347,6 @@
     color: #4b5563;
 }
 
-/* Loading and error states */
 .reviews-loading,
 .reviews-error {
     display: flex;
@@ -380,7 +372,6 @@
     to { transform: rotate(360deg); }
 }
 
-/* Responsive styles */
 @media (max-width: 992px) {
     .reviews-summary {
         flex-direction: column;
@@ -421,7 +412,7 @@
 
     .review-rating {
         margin-top: 0.75rem;
-        margin-left: 3.5rem; /* Aligns with username */
+        margin-left: 3.5rem;
     }
 }
 

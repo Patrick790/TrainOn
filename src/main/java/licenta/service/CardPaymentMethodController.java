@@ -74,13 +74,11 @@ public class CardPaymentMethodController {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Utilizator negăsit"));
 
-            // Verifică dacă cardul nu există deja
             if (cardPaymentMethodRepository.existsByUserAndStripePaymentMethodId(user, request.getStripePaymentMethodId())) {
                 return ResponseEntity.badRequest()
                         .body(Map.of("error", "Acest card este deja salvat"));
             }
 
-            // Obține detaliile cardului de la Stripe
             PaymentMethod stripePaymentMethod = PaymentMethod.retrieve(request.getStripePaymentMethodId());
             PaymentMethod.Card cardDetails = stripePaymentMethod.getCard();
 
@@ -89,7 +87,6 @@ public class CardPaymentMethodController {
                         .body(Map.of("error", "Detaliile cardului nu sunt disponibile"));
             }
 
-            // Creează entitatea CardPaymentMethod
             CardPaymentMethod cardPaymentMethod = new CardPaymentMethod();
             cardPaymentMethod.setStripePaymentMethodId(request.getStripePaymentMethodId());
             cardPaymentMethod.setCardLastFour(cardDetails.getLast4());
@@ -98,7 +95,6 @@ public class CardPaymentMethodController {
             cardPaymentMethod.setCardExpYear(Math.toIntExact(cardDetails.getExpYear()));
             cardPaymentMethod.setUser(user);
 
-            // Setează numele titularului de card
             if (stripePaymentMethod.getBillingDetails() != null &&
                     stripePaymentMethod.getBillingDetails().getName() != null) {
                 cardPaymentMethod.setCardholderName(stripePaymentMethod.getBillingDetails().getName());
@@ -107,7 +103,6 @@ public class CardPaymentMethodController {
                         request.getCardholderName() : "Titular necunoscut");
             }
 
-            // Setează detaliile de facturare dacă sunt disponibile
             if (stripePaymentMethod.getBillingDetails() != null) {
                 if (stripePaymentMethod.getBillingDetails().getAddress() != null) {
                     cardPaymentMethod.setBillingCountry(stripePaymentMethod.getBillingDetails().getAddress().getCountry());
@@ -115,10 +110,8 @@ public class CardPaymentMethodController {
                 }
             }
 
-            // Dacă este primul card sau este marcat ca default, fă-l default
             boolean isFirstCard = cardPaymentMethodRepository.countByUserAndIsActiveTrue(user) == 0;
             if (isFirstCard || Boolean.TRUE.equals(request.getSetAsDefault())) {
-                // Marchează toate cardurile existente ca non-default
                 cardPaymentMethodRepository.unmarkAllAsDefaultForUser(user);
                 cardPaymentMethod.setIsDefault(true);
             }
@@ -149,7 +142,6 @@ public class CardPaymentMethodController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // LOG: Verifică utilizatorul
             User currentUser = getCurrentUser();
             logger.info("=== SAVE CARD DEBUG ===");
             logger.info("Current user: {}", currentUser != null ? currentUser.getEmail() : "NULL");
@@ -168,7 +160,6 @@ public class CardPaymentMethodController {
             String cardBrand;
             String lastFour;
 
-            // Pentru cardurile de test, generează ID-uri unice
             if ("4242424242424242".equals(cardNumber)) {
                 paymentMethodId = "pm_card_visa_" + System.currentTimeMillis() + "_" + currentUser.getId();
                 cardBrand = "visa";
@@ -193,7 +184,6 @@ public class CardPaymentMethodController {
 
             logger.info("Generated payment method ID: {}", paymentMethodId);
 
-            // Verifică dacă cardul nu există deja (nu ar trebui să existe cu ID-ul generat)
             boolean cardExists = cardPaymentMethodRepository.existsByUserAndStripePaymentMethodId(currentUser, paymentMethodId);
             logger.info("Card already exists: {}", cardExists);
 
@@ -203,7 +193,6 @@ public class CardPaymentMethodController {
                 return ResponseEntity.status(400).body(response);
             }
 
-            // Dacă va fi cardul default, resetează alte carduri
             if (request.isSetAsDefault()) {
                 List<CardPaymentMethod> userCards = cardPaymentMethodRepository.findByUserAndIsActiveTrueOrderByIsDefaultDescCreatedAtDesc(currentUser);
                 for (CardPaymentMethod existingCard : userCards) {
@@ -214,7 +203,6 @@ public class CardPaymentMethodController {
                 }
             }
 
-            // Creează și salvează cardul în baza de date
             CardPaymentMethod cardPaymentMethod = new CardPaymentMethod();
             cardPaymentMethod.setStripePaymentMethodId(paymentMethodId);
             cardPaymentMethod.setCardholderName(request.getCardDetails().getCardholder_name());
@@ -257,7 +245,6 @@ public class CardPaymentMethodController {
             CardPaymentMethod card = cardPaymentMethodRepository.findById(cardId)
                     .orElseThrow(() -> new RuntimeException("Card negăsit"));
 
-            // Verifică dacă cardul aparține utilizatorului
             if (!card.getUser().getId().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "Nu aveți permisiunea să modificați acest card"));
@@ -268,7 +255,6 @@ public class CardPaymentMethodController {
                         .body(Map.of("error", "Nu puteți seta ca default un card inactiv"));
             }
 
-            // Marchează toate cardurile ca non-default
             List<CardPaymentMethod> userCards = cardPaymentMethodRepository.findByUserAndIsActiveTrueOrderByIsDefaultDescCreatedAtDesc(user);
             for (CardPaymentMethod existingCard : userCards) {
                 if (existingCard.getIsDefault()) {
@@ -277,7 +263,6 @@ public class CardPaymentMethodController {
                 }
             }
 
-            // Marchează cardul curent ca default
             card.markAsDefault();
             cardPaymentMethodRepository.save(card);
 
@@ -308,24 +293,20 @@ public class CardPaymentMethodController {
             CardPaymentMethod card = cardPaymentMethodRepository.findById(cardId)
                     .orElseThrow(() -> new RuntimeException("Card negăsit"));
 
-            // Verifică dacă cardul aparține utilizatorului
             if (!card.getUser().getId().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "Nu aveți permisiunea să ștergeți acest card"));
             }
 
-            // Dezactivează cardul (nu îl ștergem complet pentru istoricul plăților)
             card.deactivate();
             cardPaymentMethodRepository.save(card);
 
-            // Încearcă să ștergi PaymentMethod-ul și de la Stripe (opțional)
             try {
                 PaymentMethod stripePaymentMethod = PaymentMethod.retrieve(card.getStripePaymentMethodId());
                 stripePaymentMethod.detach();
                 logger.info("PaymentMethod detached from Stripe: {}", card.getStripePaymentMethodId());
             } catch (StripeException e) {
                 logger.warn("Nu s-a putut detach PaymentMethod de la Stripe: {}", e.getMessage());
-                // Nu returnăm eroare, cardul este dezactivat în BD oricum
             }
 
             logger.info("Card dezactivat pentru utilizatorul {}: {}", userId, card.getDisplayName());
@@ -400,7 +381,6 @@ public class CardPaymentMethodController {
         }
     }
 
-    // Helper methods
     private Map<String, Object> convertToDTO(CardPaymentMethod card) {
         Map<String, Object> dto = new HashMap<>();
         dto.put("id", card.getId());
@@ -443,7 +423,6 @@ public class CardPaymentMethodController {
         return null;
     }
 
-    // DTO Classes
     public static class SaveCardFromStripeRequest {
         private String stripePaymentMethodId;
         private String cardholderName;
@@ -463,7 +442,6 @@ public class CardPaymentMethodController {
         private CardDetails cardDetails;
         private boolean setAsDefault;
 
-        // Getters și setters
         public CardDetails getCardDetails() { return cardDetails; }
         public void setCardDetails(CardDetails cardDetails) { this.cardDetails = cardDetails; }
         public boolean isSetAsDefault() { return setAsDefault; }
@@ -476,7 +454,6 @@ public class CardPaymentMethodController {
             private String cvc;
             private String cardholder_name;
 
-            // Getters și setters
             public String getNumber() { return number; }
             public void setNumber(String number) { this.number = number; }
             public int getExp_month() { return exp_month; }

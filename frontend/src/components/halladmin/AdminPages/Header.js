@@ -9,7 +9,6 @@ class Header extends React.Component {
 
         return (
             <header className="main-header">
-                {/* Linii de lumină animate pentru fundal */}
                 <div className="light-line"></div>
                 <div className="light-line"></div>
                 <div className="light-line"></div>

@@ -48,7 +48,6 @@ public class LoginRestController {
             String email = auth.getEmail();
             String password = auth.getPassword();
 
-            // Verifică dacă utilizatorul există
             Optional<User> userOptional = userSpringRepository.findByEmail(email);
 
             if (!userOptional.isPresent()) {
@@ -57,12 +56,12 @@ public class LoginRestController {
 
             User user = userOptional.get();
 
-            // Verifică parola folosind PasswordEncoder
+            // Verifica parola folosind PasswordEncoder
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 return ResponseEntity.status(401).body(createErrorResponse("Email sau parola incorectă"));
             }
 
-            // Verifică statusul contului
+            // Verifica statusul contului
             if ("rejected".equals(user.getAccountStatus())) {
                 return ResponseEntity.status(403).body(createErrorResponse("Contul dumneavoastră a fost respins. Vă rugăm să contactați administratorul."));
             }
@@ -71,12 +70,10 @@ public class LoginRestController {
                 return ResponseEntity.status(403).body(createErrorResponse("Contul dumneavoastră este în așteptarea aprobării administratorului."));
             }
 
-            // Verifică dacă contul este activ
             if (!"active".equals(user.getAccountStatus()) && !"verified".equals(user.getAccountStatus())) {
                 return ResponseEntity.status(403).body(createErrorResponse("Contul dumneavoastră nu este activ."));
             }
 
-            // Dacă totul este OK, setează utilizatorul logat și returnează datele
             UserCredentials.getInstance().setLoggedInUser(user);
             return ResponseEntity.ok(createSuccessResponse(user));
 
@@ -88,17 +85,14 @@ public class LoginRestController {
     @PostMapping("/generateToken")
     public ResponseEntity<?> authenticateAndGenerateToken(@RequestBody UserCredentials auth) {
         try {
-            // Folosește AuthenticationManager pentru a verifica credențialele
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(auth.getEmail(), auth.getPassword()));
 
             if (authentication.isAuthenticated()) {
-                // Verifică din nou statusul utilizatorului pentru token
                 Optional<User> userOptional = userSpringRepository.findByEmail(auth.getEmail());
                 if (userOptional.isPresent()) {
                     User user = userOptional.get();
 
-                    // Verificări suplimentare pentru statusul contului
                     if ("rejected".equals(user.getAccountStatus())) {
                         return ResponseEntity.status(403).body("Contul a fost respins");
                     }
@@ -120,7 +114,6 @@ public class LoginRestController {
         }
     }
 
-    // Metode helper pentru răspunsuri consistente
     private Map<String, Object> createErrorResponse(String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);

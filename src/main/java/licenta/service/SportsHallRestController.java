@@ -46,9 +46,7 @@ public class SportsHallRestController {
         this.objectMapper = objectMapper;
     }
 
-    // IMPORTANT: Endpoint-urile specifice trebuie să fie ÎNAINTEA celor generice
 
-    // 1. Endpoint pentru cities - PRIMUL
     @GetMapping("/cities")
     public ResponseEntity<?> getAvailableCities() {
         try {
@@ -61,7 +59,6 @@ public class SportsHallRestController {
         }
     }
 
-    // 2. Endpoint pentru admin - AL DOILEA
     @GetMapping("/admin/{adminId}")
     public ResponseEntity<?> getSportsHallsByAdminId(@PathVariable Long adminId) {
         try {
@@ -74,7 +71,6 @@ public class SportsHallRestController {
         }
     }
 
-    // 3. Endpoint general pentru toate sălile (cu filtrare opțională după oraș) - AL TREILEA
     @GetMapping
     public ResponseEntity<?> getAllSportsHalls(@RequestParam(required = false) String city) {
         try {
@@ -93,13 +89,11 @@ public class SportsHallRestController {
         }
     }
 
-    // 4. Endpoint pentru ID specific - ULTIMUL din GET-uri
     @GetMapping("/{id}")
     public SportsHall getSportsHallById(@PathVariable Long id) {
         return sportsHallSpringRepository.findById(id).orElse(null);
     }
 
-    // 5. POST pentru crearea unei săli noi
     @PostMapping
     public ResponseEntity<?> createSportsHall(
             @RequestParam("sportsHall") String sportsHallJson,
@@ -118,7 +112,6 @@ public class SportsHallRestController {
 
             sportsHall.setStatus(SportsHall.HallStatus.ACTIVE);
 
-            // Obținem utilizatorul curent autentificat
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.isAuthenticated()) {
                 String email = authentication.getName();
@@ -135,7 +128,6 @@ public class SportsHallRestController {
                 logger.warn("No authenticated user found when creating sports hall");
             }
 
-            // Asigura-te ca valorile numerice sunt procesate corect
             if (sportsHall.getCapacity() != null && sportsHall.getCapacity() <= 0) {
                 sportsHall.setCapacity(1);
             }
@@ -144,21 +136,17 @@ public class SportsHallRestController {
                 sportsHall.setTariff(0.0f);
             }
 
-            // Salvam sala fara imagini initial
             SportsHall savedSportsHall = sportsHallSpringRepository.save(sportsHall);
             logger.info("Saved sports hall with ID: {}", savedSportsHall.getId());
 
-            // Procesam imaginile si tipurile lor
             List<MultipartFile> imageFiles = new ArrayList<>();
             List<String> imageTypes = new ArrayList<>();
 
-            // Extragem imaginile din Map-ul de fisiere
             for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
                 if (entry.getKey().startsWith("images[")) {
                     String key = entry.getKey();
                     int index = Integer.parseInt(key.substring(7, key.length() - 1));
 
-                    // Ne asiguram ca avem suficient spatiu in lista noastra
                     while (imageFiles.size() <= index) {
                         imageFiles.add(null);
                         imageTypes.add(null);
@@ -168,13 +156,11 @@ public class SportsHallRestController {
                 }
             }
 
-            // Extragem tipurile din Map-ul de parametri
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 if (entry.getKey().startsWith("imageTypes[")) {
                     String key = entry.getKey();
                     int index = Integer.parseInt(key.substring(11, key.length() - 1));
 
-                    // Ne asiguram ca avem suficient spatiu în lista noastra
                     while (imageTypes.size() <= index) {
                         imageTypes.add(null);
                     }
@@ -183,7 +169,6 @@ public class SportsHallRestController {
                 }
             }
 
-            // Validam ca avem toate imaginile si tipurile lor
             for (int i = 0; i < imageFiles.size(); i++) {
                 if (imageFiles.get(i) == null || imageTypes.get(i) == null) {
                     logger.error("Missing image or type at index {}", i);
@@ -191,7 +176,6 @@ public class SportsHallRestController {
                 }
             }
 
-            // Acum procesam fiecare imagine
             for (int i = 0; i < imageFiles.size(); i++) {
                 MultipartFile file = imageFiles.get(i);
                 String type = imageTypes.get(i);
@@ -208,7 +192,6 @@ public class SportsHallRestController {
                 logger.info("Saved image of type: {}", type);
             }
 
-            // Reincarcare sala pentru a obtine imaginile proaspat salvate
             SportsHall result = sportsHallSpringRepository.findById(savedSportsHall.getId()).orElse(null);
             logger.info("Sports hall created successfully with {} images",
                     result != null ? result.getImages().size() : 0);
@@ -223,7 +206,6 @@ public class SportsHallRestController {
         }
     }
 
-    // 6. PUT pentru actualizarea unei săli existente
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSportsHall(
             @PathVariable Long id,
@@ -239,7 +221,6 @@ public class SportsHallRestController {
         logger.info("Images to delete: {}", deleteImageIdsJson);
 
         try {
-            // Verificăm dacă sala există
             Optional<SportsHall> existingHallOpt = sportsHallSpringRepository.findById(id);
             if (existingHallOpt.isEmpty()) {
                 logger.error("Sports hall with ID {} not found", id);
@@ -248,17 +229,15 @@ public class SportsHallRestController {
 
             SportsHall existingHall = existingHallOpt.get();
 
-            // Obține utilizatorul autentificat (pentru a verifica permisiunile sau pentru logging)
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = authentication.getName();
             logger.info("Current authenticated user email: {}", currentUserEmail);
 
-            // Parsăm JSON-ul pentru a obține datele actualizate ale sălii
+            // Parsam JSON-ul pentru a obtine datele actualizate ale salii
             SportsHall updatedHall = objectMapper.readValue(sportsHallJson, SportsHall.class);
-            updatedHall.setId(id); // Ne asigurăm că ID-ul rămâne același
-            updatedHall.setAdminId(existingHall.getAdminId()); // Păstrăm admin-ul original
+            updatedHall.setId(id); // Ne asiguram ca ID-ul rămâne același
+            updatedHall.setAdminId(existingHall.getAdminId()); // Pastram admin-ul original
 
-            // Asigurăm că valorile numerice sunt valide
             if (updatedHall.getCapacity() != null && updatedHall.getCapacity() <= 0) {
                 updatedHall.setCapacity(1);
             }
@@ -267,7 +246,6 @@ public class SportsHallRestController {
                 updatedHall.setTariff(0.0f);
             }
 
-            // Ștergem imaginile marcate pentru ștergere doar dacă parametrul există
             if (deleteImageIdsJson != null && !deleteImageIdsJson.isEmpty()) {
                 List<Long> deleteImageIds = objectMapper.readValue(deleteImageIdsJson,
                         objectMapper.getTypeFactory().constructCollectionType(List.class, Long.class));
@@ -285,10 +263,8 @@ public class SportsHallRestController {
                 }
             }
 
-            // Adăugăm imaginile existente la sala de sport actualizată
             updatedHall.setImages(existingHall.getImages());
 
-            // Verificăm dacă există imagini noi pentru a le procesa
             boolean hasNewImages = false;
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 if (entry.getKey().startsWith("newImageTypes[")) {
@@ -298,17 +274,14 @@ public class SportsHallRestController {
             }
 
             if (hasNewImages) {
-                // Procesăm imaginile noi
                 List<MultipartFile> newImageFiles = new ArrayList<>();
                 List<String> newImageTypes = new ArrayList<>();
 
-                // Extragem imaginile din Map-ul de fișiere
                 for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
                     if (entry.getKey().startsWith("newImages[")) {
                         String key = entry.getKey();
                         int index = Integer.parseInt(key.substring(10, key.length() - 1));
 
-                        // Ne asigurăm că avem suficient spațiu în lista noastră
                         while (newImageFiles.size() <= index) {
                             newImageFiles.add(null);
                             newImageTypes.add(null);
@@ -318,13 +291,11 @@ public class SportsHallRestController {
                     }
                 }
 
-                // Extragem tipurile din Map-ul de parametri
                 for (Map.Entry<String, String> entry : params.entrySet()) {
                     if (entry.getKey().startsWith("newImageTypes[")) {
                         String key = entry.getKey();
                         int index = Integer.parseInt(key.substring(14, key.length() - 1));
 
-                        // Ne asigurăm că avem suficient spațiu în lista noastră
                         while (newImageTypes.size() <= index) {
                             newImageTypes.add(null);
                         }
@@ -333,7 +304,6 @@ public class SportsHallRestController {
                     }
                 }
 
-                // Validăm că avem toate imaginile noi și tipurile lor
                 for (int i = 0; i < newImageFiles.size(); i++) {
                     if (newImageFiles.get(i) == null || newImageTypes.get(i) == null) {
                         logger.error("Missing new image or type at index {}", i);
@@ -341,11 +311,9 @@ public class SportsHallRestController {
                     }
                 }
 
-                // Salvăm sala actualizată
                 SportsHall savedHall = sportsHallSpringRepository.save(updatedHall);
                 logger.info("Updated sports hall with ID: {}", savedHall.getId());
 
-                // Procesăm fiecare imagine nouă
                 for (int i = 0; i < newImageFiles.size(); i++) {
                     MultipartFile file = newImageFiles.get(i);
                     String type = newImageTypes.get(i);
@@ -362,12 +330,10 @@ public class SportsHallRestController {
                     logger.info("Saved new image of type: {}", type);
                 }
             } else {
-                // Salvăm sala actualizată fără a procesa imagini noi
                 SportsHall savedHall = sportsHallSpringRepository.save(updatedHall);
                 logger.info("Updated sports hall with ID: {} (no new images)", savedHall.getId());
             }
 
-            // Reîncărcăm sala pentru a obține configurația actualizată cu toate imaginile
             SportsHall result = sportsHallSpringRepository.findById(id).orElse(null);
             logger.info("Sports hall updated successfully with {} images",
                     result != null && result.getImages() != null ? result.getImages().size() : 0);
@@ -396,7 +362,6 @@ public class SportsHallRestController {
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivateHall(@PathVariable Long id) {
         try {
-            // Verifică permisiunile utilizatorului
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (!hasPermissionToManageHall(id, authentication)) {
                 logger.warn("User {} does not have permission to manage hall {}",
@@ -411,7 +376,7 @@ public class SportsHallRestController {
             }
 
             SportsHall hall = hallOpt.get();
-            hall.setStatus(SportsHall.HallStatus.INACTIVE); // Setează direct statusul
+            hall.setStatus(SportsHall.HallStatus.INACTIVE);
 
             SportsHall savedHall = sportsHallSpringRepository.save(hall);
             logger.info("Deactivated sports hall with ID: {} by user: {}",
@@ -429,7 +394,6 @@ public class SportsHallRestController {
     @PutMapping("/{id}/activate")
     public ResponseEntity<?> activateHall(@PathVariable Long id) {
         try {
-            // Verifică permisiunile utilizatorului
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (!hasPermissionToManageHall(id, authentication)) {
                 logger.warn("User {} does not have permission to manage hall {}",
@@ -444,7 +408,7 @@ public class SportsHallRestController {
             }
 
             SportsHall hall = hallOpt.get();
-            hall.setStatus(SportsHall.HallStatus.ACTIVE); // Setează direct statusul
+            hall.setStatus(SportsHall.HallStatus.ACTIVE);
 
             SportsHall savedHall = sportsHallSpringRepository.save(hall);
             logger.info("Activated sports hall with ID: {} by user: {}",
@@ -468,7 +432,6 @@ public class SportsHallRestController {
         logger.info("Checking permissions for user: {} with authorities: {}",
                 authentication.getName(), authentication.getAuthorities());
 
-        // Dacă utilizatorul este admin, are acces la toate sălile
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("admin"));
 
@@ -477,7 +440,6 @@ public class SportsHallRestController {
             return true;
         }
 
-        // Dacă utilizatorul este hall_admin, verifică dacă este owner-ul sălii
         boolean isHallAdmin = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("hall_admin"));
 
@@ -506,7 +468,7 @@ public class SportsHallRestController {
         return false;
     }
 
-    // Endpoint pentru a obține doar sălile active
+    // Endpoint pentru a obtine doar salile active
     @GetMapping("/active")
     public ResponseEntity<?> getActiveHalls(@RequestParam(required = false) String city) {
         try {
@@ -530,7 +492,6 @@ public class SportsHallRestController {
     public ResponseEntity<?> getHallNamesSuggestions(@RequestParam String query) {
         try {
             if (query == null || query.trim().length() < 2) {
-                // Returnează listă goală dacă query-ul este prea scurt
                 return ResponseEntity.ok(List.of());
             }
 
@@ -557,76 +518,60 @@ public class SportsHallRestController {
 
             logger.info("Search request - City: '{}', Sport: '{}', Query: '{}'", city, sport, query);
 
-            // Logica de căutare în ordine de prioritate
             if (query != null && !query.trim().isEmpty()) {
-                // Prioritate 1: Căutare după nume (cu sau fără oraș și sport)
+                // Prioritate 1: Cautare dupa nume (cu sau fara oras si sport)
                 String searchQuery = query.trim();
 
                 if (city != null && !city.trim().isEmpty() && sport != null && !sport.trim().isEmpty()) {
-                    // Căutare completă: nume + oraș + sport
                     if ("inot".equalsIgnoreCase(sport.trim())) {
-                        // Pentru înot, căutăm doar săli specifice de înot
                         results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim())
                                 .stream()
                                 .filter(hall -> isSwimmingHall(hall.getType()))
                                 .collect(Collectors.toList());
                     } else {
-                        // Pentru alte sporturi, folosim logica normală cu polivalente
                         results = sportsHallSpringRepository.findByCityAndSportAndNameIncludingMultipurpose(
                                 city.trim(), sport.trim(), searchQuery);
                     }
                     logger.info("Search by name + city + sport found {} results", results.size());
 
-                    // Dacă nu găsim rezultate cu toate criteriile, încearcă doar cu numele și orașul
                     if (results.isEmpty()) {
                         results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim());
                         logger.info("Fallback search by name + city found {} results", results.size());
                     }
                 } else if (city != null && !city.trim().isEmpty()) {
-                    // Căutare după nume + oraș
                     results = sportsHallSpringRepository.findByNameContainingAndCityIgnoreCase(searchQuery, city.trim());
                     logger.info("Search by name + city found {} results", results.size());
                 } else {
-                    // Căutare doar după nume (în toate orașele)
                     results = sportsHallSpringRepository.findByNameContainingIgnoreCase(searchQuery);
                     logger.info("Search by name only found {} results", results.size());
                 }
 
             } else if (city != null && !city.trim().isEmpty() && sport != null && !sport.trim().isEmpty()) {
-                // Prioritate 2: Căutare după oraș și sport
                 if ("inot".equalsIgnoreCase(sport.trim())) {
-                    // Pentru înot, căutăm doar săli specifice de înot în orașul respectiv
                     results = sportsHallSpringRepository.findSwimmingHallsByCity(city.trim());
                 } else {
-                    // Pentru alte sporturi, include polivalente
                     results = sportsHallSpringRepository.findByCityAndSportIncludingMultipurpose(
                             city.trim(), sport.trim());
                 }
                 logger.info("Search by city + sport found {} results", results.size());
 
             } else if (city != null && !city.trim().isEmpty()) {
-                // Prioritate 3: Căutare doar după oraș
                 results = sportsHallSpringRepository.findByCityAndStatusOrderByName(city.trim(), SportsHall.HallStatus.ACTIVE);
                 logger.info("Search by city only found {} results", results.size());
 
             } else if (sport != null && !sport.trim().isEmpty()) {
-                // Prioritate 4: Căutare doar după sport (în toate orașele)
                 if ("inot".equalsIgnoreCase(sport.trim())) {
-                    // Pentru înot, căutăm doar săli specifice de înot
                     results = sportsHallSpringRepository.findSwimmingHalls();
                 } else {
-                    // Pentru alte sporturi, include polivalente
                     results = sportsHallSpringRepository.findBySportIncludingMultipurpose(sport.trim());
                 }
                 logger.info("Search by sport only found {} results", results.size());
 
             } else {
-                // Fallback: Returnează toate sălile active
                 results = sportsHallSpringRepository.findByStatusOrderByName(SportsHall.HallStatus.ACTIVE);
                 logger.info("Search with no criteria, returning all active halls: {} results", results.size());
             }
 
-            // Log pentru debugging
             if (!results.isEmpty()) {
                 logger.info("First result example: Hall '{}' in '{}' for type '{}'",
                         results.get(0).getName(),
@@ -643,7 +588,6 @@ public class SportsHallRestController {
         }
     }
 
-    // Metodă helper pentru a verifica dacă o sală este dedicată înot-ului
     private boolean isSwimmingHall(String type) {
         if (type == null) return false;
         String lowerType = type.toLowerCase();

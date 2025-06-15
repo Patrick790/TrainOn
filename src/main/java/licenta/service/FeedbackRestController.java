@@ -36,7 +36,6 @@ public class FeedbackRestController {
         List<Feedback> feedbacks;
 
         if (hallId != null) {
-            // Dacă avem un ID de sală, filtrăm doar recenziile pentru acea sală
             if (sort != null) {
                 switch (sort) {
                     case "date":
@@ -55,7 +54,6 @@ public class FeedbackRestController {
                 feedbacks = feedbackSpringRepository.findByHallId(hallId);
             }
         } else {
-            // Altfel, returnăm toate recenziile
             feedbacks = (List<Feedback>) feedbackSpringRepository.findAll();
         }
 

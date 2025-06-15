@@ -46,7 +46,6 @@ class ViewHallsSchedulePage extends Component {
         ]);
     }
 
-    // FCFS Control Methods
     fetchFcfsStatus = async () => {
         try {
             this.setState({ fcfsInitialLoading: true });
@@ -110,7 +109,6 @@ class ViewHallsSchedulePage extends Component {
                     fcfsError: ''
                 });
 
-                // Afișează mesajul timp de 4 secunde
                 setTimeout(() => {
                     this.setState({ fcfsMessage: '' });
                 }, 4000);
@@ -126,7 +124,6 @@ class ViewHallsSchedulePage extends Component {
         }
     };
 
-    // API calls (existing methods remain the same)
     fetchAllHalls = async () => {
         try {
             const token = localStorage.getItem('jwtToken');
@@ -140,7 +137,6 @@ class ViewHallsSchedulePage extends Component {
                 return;
             }
 
-            // Obținem toate sălile
             const response = await fetch(`${this.API_BASE_URL}/sportsHalls`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -152,7 +148,6 @@ class ViewHallsSchedulePage extends Component {
 
             const halls = await response.json();
 
-            // Extragem toate orașele unice
             const uniqueCities = [...new Set(halls.map(hall => hall.city))];
             uniqueCities.sort();
 
@@ -180,7 +175,6 @@ class ViewHallsSchedulePage extends Component {
         }
     }
 
-    // Metodă pentru a obține programul sălii din baza de date
     fetchHallSchedule = async (hallId, token) => {
         try {
             const response = await fetch(`${this.API_BASE_URL}/schedules/hall/${hallId}`, {
@@ -231,27 +225,23 @@ class ViewHallsSchedulePage extends Component {
             { id: "22:00 - 23:30", startTime: "22:00", endTime: "23:30" }
         ];
 
-        // Creăm programul pentru toată săptămâna
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(weekStart);
             currentDate.setDate(currentDate.getDate() + i);
             const dateKey = this.formatDate(currentDate);
             const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
 
-            // Convertim la formatul folosit în backend (1 = Monday, 7 = Sunday)
+            // Convertim la formatul folosit in backend (1 = Monday, 7 = Sunday)
             const backendDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
             schedule[dateKey] = {};
 
-            // Găsim programul pentru această zi
             const daySchedule = hallSchedule.find(s => s.dayOfWeek === backendDayOfWeek);
 
             timeSlots.forEach(slot => {
                 if (!daySchedule || !daySchedule.isActive) {
-                    // Ziua este închisă - toate sloturile sunt indisponibile
                     schedule[dateKey][slot.id] = 'unavailable';
                 } else {
-                    // Verificăm dacă slotul este în intervalul de funcționare
                     if (this.isSlotInWorkingHours(slot, daySchedule.startTime, daySchedule.endTime)) {
                         schedule[dateKey][slot.id] = 'available';
                     } else {
@@ -264,18 +254,15 @@ class ViewHallsSchedulePage extends Component {
         return schedule;
     }
 
-    // Metodă helper pentru a verifica dacă un slot este în orele de funcționare
     isSlotInWorkingHours = (slot, workingStartTime, workingEndTime) => {
         const slotStart = this.timeToMinutes(slot.startTime);
         const slotEnd = this.timeToMinutes(slot.endTime);
         const workingStart = this.timeToMinutes(workingStartTime);
         const workingEnd = this.timeToMinutes(workingEndTime);
 
-        // Slotul trebuie să fie complet în intervalul de lucru
         return slotStart >= workingStart && slotEnd <= workingEnd;
     }
 
-    // Metodă helper pentru a converti ora în minute
     timeToMinutes = (timeString) => {
         const [hours, minutes] = timeString.split(':').map(Number);
         return hours * 60 + minutes;
@@ -293,18 +280,15 @@ class ViewHallsSchedulePage extends Component {
             endDate.setDate(endDate.getDate() + 6);
             const endDateStr = this.formatDate(endDate);
 
-            // Obținem toate datele necesare în paralel
             const [hallSchedule, maintenanceReservations, bookingReservations] = await Promise.all([
                 this.fetchHallSchedule(hallId, token),
                 this.fetchMaintenanceReservations(hallId, startDateStr, token),
                 this.fetchBookingReservations(hallId, weekStart, token)
             ]);
 
-            // Creăm programul bazat pe orele de funcționare ale sălii
             const scheduleWithAvailability = this.createScheduleWithHallAvailability(weekStart, hallSchedule);
             const originalMaintenanceSlots = [];
 
-            // Marcăm sloturile de mentenanță (doar pe cele disponibile)
             maintenanceReservations.forEach(reservation => {
                 const dateKey = this.formatDate(new Date(reservation.date));
                 const slotId = reservation.timeSlot;
@@ -320,7 +304,6 @@ class ViewHallsSchedulePage extends Component {
                 }
             });
 
-            // Marcăm sloturile rezervate (doar pe cele disponibile)
             bookingReservations.forEach(reservation => {
                 const dateKey = this.formatDate(new Date(reservation.date));
                 const slotId = reservation.timeSlot;
@@ -331,7 +314,6 @@ class ViewHallsSchedulePage extends Component {
                 }
             });
 
-            // Numărăm intervalele de mentenanță
             let maintenanceCount = 0;
             Object.values(scheduleWithAvailability).forEach(daySchedule => {
                 Object.values(daySchedule).forEach(status => {
@@ -358,7 +340,6 @@ class ViewHallsSchedulePage extends Component {
         }
     }
 
-    // Metodă pentru îmbogățirea rezervărilor cu informații despre echipe și profiluri
     enhanceReservationsWithDetails = async (reservations, token) => {
         return reservations.map(reservation => {
             if (reservation.user) {
@@ -409,7 +390,6 @@ class ViewHallsSchedulePage extends Component {
         return allBookingResponses.flat();
     }
 
-    // Event handlers (keeping existing methods)
     handleHallChange = (event) => {
         const hallId = event.target.value;
 
@@ -463,7 +443,6 @@ class ViewHallsSchedulePage extends Component {
         });
     }
 
-    // Modifică pentru a verifica disponibilitatea
     toggleMaintenanceSlot = (date, slotId) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -489,7 +468,6 @@ class ViewHallsSchedulePage extends Component {
 
             const currentStatus = prevState.schedule[date][slotId];
 
-            // Verificăm dacă slotul este indisponibil din cauza programului sălii
             if (currentStatus === 'unavailable') {
                 return {
                     errorMessage: 'Nu puteți marca pentru mentenanță un interval în afara orelor de funcționare ale sălii',
@@ -673,7 +651,8 @@ class ViewHallsSchedulePage extends Component {
         return changedSlots
             .filter(slot => slot.action === 'delete' && slot.id)
             .map(slot => {
-                return fetch(`${this.API_BASE_URL}/reservations/${slot.id}`, {                    method: 'DELETE',
+                return fetch(`${this.API_BASE_URL}/reservations/${slot.id}`, {
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -690,7 +669,6 @@ class ViewHallsSchedulePage extends Component {
         }
     };
 
-    // FCFS Toggle Component (inline for simplicity)
     renderFcfsControl = () => {
         const {
             fcfsEnabled,
@@ -840,7 +818,6 @@ class ViewHallsSchedulePage extends Component {
                                 </div>
                             )}
 
-                            {/* FCFS Control Section */}
                             <div className="vhsp-fcfs-section">
                                 {this.renderFcfsControl()}
                             </div>

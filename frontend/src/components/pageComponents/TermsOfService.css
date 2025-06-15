@@ -5,7 +5,6 @@
     background-color: #f9fafb;
 }
 
-/* Header Styles */
 .terms-header {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -95,7 +94,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Content Styles */
 .terms-content {
     flex: 1;
     padding: 3rem 0;
@@ -195,7 +193,6 @@
     text-decoration: underline;
 }
 
-/* Animations */
 @keyframes shineText {
     0% { background-position: 0% center; }
     100% { background-position: 200% center; }
@@ -206,7 +203,6 @@
     25%, 45% { left: 100%; }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .terms-header-content {
         flex-direction: column;

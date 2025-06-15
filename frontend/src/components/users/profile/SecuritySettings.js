@@ -30,7 +30,6 @@ const SecuritySettings = () => {
             [name]: value
         }));
 
-        // Clear error for this field when user starts typing
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -74,17 +73,14 @@ const SecuritySettings = () => {
         setLoading(true);
 
         try {
-            // Get the current user ID from localStorage or context
             const token = localStorage.getItem('jwtToken');
             if (!token) {
                 throw new Error('Nu ești autentificat');
             }
 
-            // Decode the token to get user info (you might need to implement this differently based on your auth setup)
             const tokenPayload = JSON.parse(atob(token.split('.')[1]));
             const userEmail = tokenPayload.sub;
 
-            // Find user by email to get the ID
             const usersResponse = await fetch(`${API_BASE_URL}/users`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -103,7 +99,6 @@ const SecuritySettings = () => {
                 throw new Error('Utilizatorul nu a fost găsit');
             }
 
-            // Call the change password endpoint
             const response = await fetch(`${API_BASE_URL}/users/${currentUser.id}/change-password`, {
                 method: 'POST',
                 headers: {
@@ -121,7 +116,6 @@ const SecuritySettings = () => {
                 throw new Error(errorData.message || 'Eroare la schimbarea parolei');
             }
 
-            // Success
             alert('Parola a fost schimbată cu succes!');
             setIsChangingPassword(false);
             setPasswordData({
@@ -159,7 +153,6 @@ const SecuritySettings = () => {
         // TODO: Implementează logica pentru ștergerea contului
         if (window.confirm('Ești sigur că vrei să ștergi permanent contul? Această acțiune nu poate fi anulată.')) {
             console.log('Șterge contul');
-            // Aici ar trebui să faci un request către backend pentru ștergerea contului
         }
     };
 

@@ -1,4 +1,3 @@
-/* Screen reader only content - pentru mesajele de eroare */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -11,7 +10,6 @@
     border: 0;
 }
 
-/* Stiluri pentru descrierea forgot password */
 .forgot-password-description {
     color: #6b7280;
     font-size: 0.9rem;
@@ -21,7 +19,6 @@
     max-width: 280px;
 }
 
-/* Stiluri pentru mesajul de succes */
 .login-success-message {
     color: #059669;
     font-size: 0.85rem;
@@ -124,7 +121,6 @@
     cursor: not-allowed;
 }
 
-/* Fixed floating label styles */
 .login-floating-label {
     position: absolute;
     left: 1rem;

@@ -63,57 +63,54 @@ public class SecurityConfig {
                         .requestMatchers("/reset-password").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll()
                         .requestMatchers(HttpMethod.GET, "/sportsHalls/cities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET pentru săli sunt publice
-                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
-                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll() // Permite accesul public la endpoint-ul de recenzii
-                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll() // Permite accesul public la detalii specifice de recenzii
-                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza săli
-                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
-                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli
-                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge imagini
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin")
 
-                        // Configurare pentru rezervări - ACTUALIZAT
-                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll() // Listarea generală publică
-                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll() // Mentenanța publică
-                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin") // Toate celelalte operații necesită autentificare
+                        // Configurare pentru rezervari
+                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll()
+                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // Configurare pentru hall-schedules - programul sălilor
+                        // Configurare pentru hall-schedules - programul salilor
                         .requestMatchers(HttpMethod.GET, "/schedules/hall/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
-                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
-                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge programul
+                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
 
-                        // Adaugare pentru profilurile de rezervare - doar utilizatorii autentificați pot accesa
-                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin") // Toți utilizatorii autentificați pot accesa profilurile
+                        // Adaugare pentru profilurile de rezervare - doar utilizatorii autentificati pot accesa
+                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // ADĂUGAT: Configurare pentru gestionarea cardurilor
-                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin") // Cardurile necesită autentificare
+                        // Configurare pentru gestionarea cardurilor
+                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // Adaugare pentru gestionarea înregistrărilor de echipe
-                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin") // Doar adminii pot accesa acest endpoint
+                        // Adaugare pentru gestionarea inregistrarilor de echipe
+                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin")
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")
                         .requestMatchers("/users/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // Endpoint-uri pentru plăți - permit accesul public pentru webhook-uri BT Pay
-                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll() // Noul webhook Stripe
+                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll()
                         .requestMatchers(HttpMethod.GET, "/payment/bt/status/**").permitAll()
                         .requestMatchers("/payment/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // ACTUALIZAT: Endpoint-uri pentru generarea automată de rezervări - ACCES PUBLIC PENTRU TESTARE
-                        .requestMatchers("/booking-prioritization/generate").permitAll() // ACCES PUBLIC
-                        .requestMatchers("/booking-prioritization/status").permitAll() // ACCES PUBLIC pentru monitoring
+                        // Endpoint-uri pentru generarea automata de rezervari
+                        .requestMatchers("/booking-prioritization/generate").permitAll()
+                        .requestMatchers("/booking-prioritization/status").permitAll()
 
-                        // Restul endpoint-urilor pentru booking-prioritization rămân pentru admini
                         .requestMatchers("/booking-prioritization/diagnostic").hasAuthority("admin")
                         .requestMatchers("/booking-prioritization/test-generation").hasAuthority("admin")
                         .requestMatchers("/booking-prioritization/**").hasAuthority("admin")
 
-                        // ADĂUGAT: Endpoints pentru vizualizarea log-urilor (doar pentru admini)
                         .requestMatchers("/admin/logs/**").hasAuthority("admin")
 
-                        // ADĂUGAT: Endpoint pentru scheduler (doar pentru admini)
+                        // Endpoint pentru scheduler (doar pentru admini)
                         .requestMatchers("/admin/scheduler/**").hasAuthority("admin")
 
                         // Endpoint pentru FCFS status
@@ -155,7 +152,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://trainonapp.onrender.com"  // Noul URL frontend
+                "https://trainonapp.onrender.com"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

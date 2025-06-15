@@ -19,7 +19,7 @@ public class PaymentResult {
         this.successful = successful;
     }
 
-    // Metode helper pentru crearea rapidă a rezultatelor
+    // Metode helper pentru crearea rapida a rezultatelor
     public static PaymentResult success(Payment payment, String paymentMethod, String message) {
         PaymentResult result = new PaymentResult(true);
         result.setPayment(payment);
@@ -34,7 +34,6 @@ public class PaymentResult {
         return result;
     }
 
-    // Getters și setters
     public boolean isSuccessful() {
         return successful;
     }

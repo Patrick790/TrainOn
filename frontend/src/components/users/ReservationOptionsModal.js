@@ -8,13 +8,11 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     const handleCreateProfile = () => {
-        // În loc să deschidă un modal, va naviga către pagina de profil
         navigate('/profile-creation');
         onClose();
     };
 
     const handleReserveRemaining = () => {
-        // Navighează către pagina FCFS
         navigate('/fcfs-reservation');
         onClose();
     };

@@ -30,7 +30,6 @@ public class Reservation extends BruteEntity<Long> {
     @Column(name = "status")
     private String status = "CONFIRMED";
 
-    // NOU: Adăugăm câmpul created_at pentru a ști când s-a făcut rezervarea
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -47,22 +46,18 @@ public class Reservation extends BruteEntity<Long> {
         this.type = type;
         this.status = "CONFIRMED";
 
-        // Setează timpul curent în timezone-ul României
         java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Europe/Bucharest"));
         this.createdAt = cal.getTime();
     }
 
-    // Metodă JPA care se execută înainte de persistarea entității
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {
-            // Setează timpul curent în timezone-ul României
             java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Europe/Bucharest"));
             createdAt = cal.getTime();
         }
     }
 
-    // Getteri și setteri existenți
     public String getTimeSlot() {
         return timeSlot;
     }

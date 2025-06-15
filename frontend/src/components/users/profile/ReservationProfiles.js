@@ -88,7 +88,8 @@ const ReservationProfiles = () => {
             const token = localStorage.getItem('jwtToken');
             if (!token) throw new Error('Nu sunt disponibile informațiile de autentificare');
 
-            const response = await fetch(`${API_BASE_URL}/reservationProfiles/${profileId}`, {                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/reservationProfiles/${profileId}`, {
+                method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData)
             });

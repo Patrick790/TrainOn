@@ -1,4 +1,3 @@
-/* Modern Schedule Management Design */
 
 .sm-schedule-manager {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -8,7 +7,6 @@
     box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
 }
 
-/* Header Section */
 .sm-header {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
@@ -87,7 +85,6 @@
     font-weight: 500;
 }
 
-/* Notifications */
 .sm-notification {
     display: flex;
     align-items: center;
@@ -116,7 +113,6 @@
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Controls */
 .sm-controls {
     display: flex;
     justify-content: flex-end;
@@ -185,7 +181,6 @@
     transform: none !important;
 }
 
-/* Spinners */
 .sm-spinner-small {
     width: 16px;
     height: 16px;
@@ -210,7 +205,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Content */
 .sm-content {
     background: white;
     min-height: 400px;
@@ -261,7 +255,6 @@
     line-height: 1.6;
 }
 
-/* Days Container */
 .sm-days-container {
     padding: 2rem;
     display: grid;
@@ -362,7 +355,6 @@
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Time Selector */
 .sm-time-selector {
     display: flex;
     align-items: center;
@@ -418,7 +410,6 @@
     font-weight: 500;
 }
 
-/* Footer */
 .sm-footer {
     background: #f8fafc;
     border-top: 1px solid #e2e8f0;
@@ -460,7 +451,6 @@
     color: #78350f;
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
     .sm-header-content {
         flex-direction: column;

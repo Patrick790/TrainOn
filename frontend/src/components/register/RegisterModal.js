@@ -21,11 +21,28 @@ const RegisterModal = ({ isOpen, onClose }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-
-    // Ref pentru primul input
     const firstInputRef = useRef(null);
 
-    // Focus pe primul input când modalul se deschide
+    const resetForm = () => {
+        setFormData({
+            associationName: '',
+            name: '',
+            email: '',
+            birthDate: '',
+            address: '',
+            county: '',
+            city: '',
+            password: '',
+            confirmPassword: '',
+            teamType: '',
+            certificate: null
+        });
+        setFileName('');
+        setErrors({});
+        setErrorMessage('');
+        setIsAssociation(true);
+    };
+
     useEffect(() => {
         if (isOpen && firstInputRef.current) {
             setTimeout(() => {
@@ -34,7 +51,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
         }
     }, [isOpen]);
 
-    // Gestionarea tastei Escape pentru închiderea modalului
+    useEffect(() => {
+        if (!isOpen) {
+            resetForm();
+        }
+    }, [isOpen]);
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (!isOpen) return;
@@ -72,7 +94,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
         setErrorMessage('');
     };
 
-    // Funcție pentru gestionarea tastei Enter
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -83,7 +104,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Salvează numele fișierului pentru afișare
             setFileName(file.name);
 
             const reader = new FileReader();
@@ -114,7 +134,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
         if (!formData.confirmPassword) newErrors.confirmPassword = true;
         if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = true;
 
-        // Verificăm dacă certificatul este furnizat pentru asociații
         if (isAssociation && !formData.certificate) {
             newErrors.certificate = true;
         }
@@ -123,14 +142,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
             setErrors(newErrors);
             if (!errorMessage) setErrorMessage('Toate câmpurile sunt obligatorii!');
 
-            // Focus pe primul câmp cu eroare
             if (firstInputRef.current) {
                 firstInputRef.current.focus();
             }
             return;
         }
 
-        // Pregătire date pentru request
         const user = {
             name: isAssociation ? formData.associationName : formData.name,
             email: formData.email,
@@ -142,9 +159,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
             certificate: isAssociation ? formData.certificate : null
         };
 
-        // Adaugă data nașterii doar dacă nu este asociație
         if (!isAssociation && formData.birthDate) {
-            // Data trebuie trimisă în format ISO pentru a fi corect deserializată de Java
             user.birthDate = new Date(formData.birthDate).toISOString();
         }
 
@@ -161,6 +176,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
 
             if (response.ok) {
                 alert('Cont creat cu succes!');
+                resetForm();
                 onClose();
             } else {
                 const errorText = await response.text();

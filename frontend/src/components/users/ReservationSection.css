@@ -1,4 +1,3 @@
-/* Stiluri pentru secțiunea de rezervare */
 .reservation-section {
     text-align: center;
     margin: 3rem auto 4rem;
@@ -164,7 +163,6 @@
     background-color: #e5e7eb;
 }
 
-/* Responsive pentru modal pe dispozitive mobile */
 @media (max-width: 640px) {
     .reservation-options {
         flex-direction: column;
@@ -175,7 +173,6 @@
     }
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
     .reservation-section {
         margin: 2rem auto 3rem;

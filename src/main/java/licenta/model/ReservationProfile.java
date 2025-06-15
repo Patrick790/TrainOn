@@ -31,7 +31,7 @@ public class ReservationProfile extends BruteEntity<Long> {
     @Column(name = "sport", nullable = false)
     private String sport;
 
-    // Suport pentru metoda de plată automată
+    // Suport pentru metoda de plata automata
     @Enumerated(EnumType.STRING)
     @Column(name = "auto_payment_method")
     private PaymentMethod autoPaymentMethod;
@@ -45,10 +45,10 @@ public class ReservationProfile extends BruteEntity<Long> {
     private Boolean autoPaymentEnabled;
 
     @Column(name = "auto_payment_threshold", precision = 10, scale = 2)
-    private BigDecimal autoPaymentThreshold; // Pragul minim pentru plata automată
+    private BigDecimal autoPaymentThreshold;
 
     @Column(name = "max_weekly_auto_payment", precision = 10, scale = 2)
-    private BigDecimal maxWeeklyAutoPayment; // Limita maximă pentru plăți automate săptămânale
+    private BigDecimal maxWeeklyAutoPayment;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -70,7 +70,7 @@ public class ReservationProfile extends BruteEntity<Long> {
     @JsonIgnoreProperties("reservationProfiles")
     private List<SportsHall> selectedHalls = new ArrayList<>();
 
-    // Constructori
+
     public ReservationProfile() {
         this.createdAt = new Date();
         this.updatedAt = new Date();
@@ -90,7 +90,6 @@ public class ReservationProfile extends BruteEntity<Long> {
         this.selectedHalls = selectedHalls != null ? selectedHalls : new ArrayList<>();
     }
 
-    // Constructor complet pentru plăți automate
     public ReservationProfile(String name, String ageCategory, String timeInterval, BigDecimal weeklyBudget,
                               String city, String sport, User user, List<SportsHall> selectedHalls,
                               Boolean autoPaymentEnabled, PaymentMethod autoPaymentMethod,
@@ -104,7 +103,6 @@ public class ReservationProfile extends BruteEntity<Long> {
         this.maxWeeklyAutoPayment = maxWeeklyAutoPayment;
     }
 
-    // Helper methods pentru plata automată
     public boolean canProcessAutoPayment(BigDecimal amount) {
         // Verificări de securitate
         if (autoPaymentEnabled == null || !autoPaymentEnabled) {
@@ -121,12 +119,10 @@ public class ReservationProfile extends BruteEntity<Long> {
             return false;
         }
 
-        // Verifică pragul minim
         if (autoPaymentThreshold != null && amount.compareTo(autoPaymentThreshold) < 0) {
             return false;
         }
 
-        // Verifică limita maximă săptămânală
         if (maxWeeklyAutoPayment != null && amount.compareTo(maxWeeklyAutoPayment) > 0) {
             return false;
         }
@@ -154,7 +150,6 @@ public class ReservationProfile extends BruteEntity<Long> {
         this.updatedAt = new Date();
     }
 
-    // Existing methods
     public void addSportsHall(SportsHall sportsHall) {
         if (sportsHall != null) {
             this.selectedHalls.add(sportsHall);
@@ -167,7 +162,6 @@ public class ReservationProfile extends BruteEntity<Long> {
         }
     }
 
-    // Metode de validare
     public boolean isValidForAutoPayment() {
         return autoPaymentEnabled != null && autoPaymentEnabled &&
                 autoPaymentMethod != null &&
@@ -202,7 +196,6 @@ public class ReservationProfile extends BruteEntity<Long> {
         this.updatedAt = new Date();
     }
 
-    // Getters și Setters cu validări
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

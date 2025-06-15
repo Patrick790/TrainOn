@@ -6,15 +6,15 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface IFeedbackSpringRepository extends CrudRepository<Feedback, Long> {
-    // Metodă pentru a obține toate feedback-urile pentru o sală specifică
+    // Metoda pentru a obtine toate feedback-urile pentru o sala specifica
     List<Feedback> findByHallId(Long hallId);
 
-    // Metodă pentru a obține feedback-urile pentru o sală, ordonate după dată (descendent)
+    // Metodă pentru a obtine feedback-urile pentru o sala, ordonate dupa data (descendent)
     List<Feedback> findByHallIdOrderByDateDesc(Long hallId);
 
-    // Metodă pentru a obține feedback-urile pentru o sală, ordonate după rating (descendent)
+    // Metoda pentru a obtine feedback-urile pentru o sala, ordonate dupa rating (descendent)
     List<Feedback> findByHallIdOrderByRatingDesc(Long hallId);
 
-    // Metodă pentru a obține feedback-urile pentru o sală, ordonate după rating (ascendent)
+    // Metoda pentru a obtine feedback-urile pentru o sala, ordonate dupa rating (ascendent)
     List<Feedback> findByHallIdOrderByRatingAsc(Long hallId);
 }

@@ -127,7 +127,6 @@
     font-size: 0.9rem;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -138,31 +137,26 @@
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Email icon gradient */
 .email-icon {
     background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
     color: #6d28d9;
 }
 
-/* Phone icon gradient */
 .phone-icon {
     background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
     color: #4f46e5;
 }
 
-/* Address icon gradient */
 .address-icon {
     background: linear-gradient(135deg, #dbeafe, #bfdbfe);
     color: #2563eb;
 }
 
-/* Hours icon gradient */
 .hours-icon {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8);
     color: #db2777;
 }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
     .contact-modal {
         width: 95%;

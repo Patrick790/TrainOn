@@ -35,7 +35,6 @@ const ResetPasswordPage = () => {
         validateToken();
     }, [token]);
 
-    // Focus pe primul input când token-ul este valid
     useEffect(() => {
         if (tokenValid && newPasswordRef.current) {
             setTimeout(() => {
@@ -192,7 +191,6 @@ const ResetPasswordPage = () => {
         );
     }
 
-    // Token invalid
     if (!tokenValid) {
         return (
             <div className="reset-password-page">
@@ -217,7 +215,7 @@ const ResetPasswordPage = () => {
         );
     }
 
-    // Formularul de resetare parolă
+    // formular de resetare parola
     return (
         <div className="reset-password-page">
             <div className="reset-password-container">

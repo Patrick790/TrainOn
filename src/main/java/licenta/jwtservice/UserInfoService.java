@@ -36,17 +36,13 @@ public class UserInfoService implements UserDetailsService {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setUserType("user");
 
-        // Asigurăm că data creării este setată
         if (user.getCreatedAt() == null) {
             user.setCreatedAt(new Date());
         }
 
-        // Set account status based on whether it's a team registration
         if (user.getTeamType() != null && !user.getTeamType().isEmpty()) {
-            // If it's a team registration, set status to "pending"
             user.setAccountStatus("pending");
         } else {
-            // For regular users, set status to "verified"
             user.setAccountStatus("verified");
         }
 

@@ -9,7 +9,7 @@ class MyHallsPage extends Component {
         this.API_BASE_URL = process.env.REACT_APP_API_URL || '';
         this.state = {
             halls: [],
-            hallRatings: {}, // Obiect pentru a stoca rating-urile fiecărei săli
+            hallRatings: {},
             loading: true,
             error: null,
             redirectToEdit: null
@@ -48,7 +48,6 @@ class MyHallsPage extends Component {
             const halls = await response.json();
             console.log('Halls loaded:', halls);
 
-            // După încărcarea sălilor, încărcăm rating-urile pentru fiecare
             await this.fetchRatingsForHalls(halls);
 
             this.setState({ halls, loading: false });
@@ -65,7 +64,6 @@ class MyHallsPage extends Component {
     fetchRatingsForHalls = async (halls) => {
         const hallRatings = {};
 
-        // Încărcăm rating-urile pentru fiecare sală în paralel
         await Promise.all(
             halls.map(async (hall) => {
                 try {
@@ -75,7 +73,6 @@ class MyHallsPage extends Component {
                         const ratingData = this.calculateRatingFromFeedbacks(feedbacks);
                         hallRatings[hall.id] = ratingData;
                     } else {
-                        // Dacă nu putem încărca feedback-urile, setăm valori default
                         hallRatings[hall.id] = {
                             averageRating: 0,
                             totalReviews: 0
@@ -102,12 +99,11 @@ class MyHallsPage extends Component {
             };
         }
 
-        // Calculăm media rating-urilor
         const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
         const averageRating = totalRating / feedbacks.length;
 
         return {
-            averageRating: Math.round(averageRating * 10) / 10, // Rotunjim la o zecimală
+            averageRating: Math.round(averageRating * 10) / 10,
             totalReviews: feedbacks.length
         };
     }
@@ -134,7 +130,6 @@ class MyHallsPage extends Component {
         return (
             <div className="hall-rating-stars">
                 {[...Array(totalStars)].map((_, index) => {
-                    // Pentru stele complete
                     if (index < fullStars) {
                         return (
                             <Star
@@ -146,7 +141,6 @@ class MyHallsPage extends Component {
                             />
                         );
                     }
-                    // Pentru jumătate de stea
                     else if (index === fullStars && hasHalfStar) {
                         return (
                             <div className="half-star-container" key={index}>
@@ -165,7 +159,6 @@ class MyHallsPage extends Component {
                             </div>
                         );
                     }
-                    // Pentru aproape o stea completa (peste 0.7)
                     else if (index === fullStars && hasAlmostFullStar) {
                         return (
                             <Star
@@ -177,7 +170,6 @@ class MyHallsPage extends Component {
                             />
                         );
                     }
-                    // Pentru stele goale
                     else {
                         return (
                             <Star
@@ -222,7 +214,6 @@ class MyHallsPage extends Component {
                             return (
                                 <div key={hall.id} className={`hall-card ${hall.status?.toLowerCase()}`}>
                                     <div className="hall-image-container">
-                                        {/* SCHIMBAREA PRINCIPALĂ: Afișarea statusului real */}
                                         <div className={`hall-status-indicator ${hall.status?.toLowerCase()}`}>
                                             {hall.status === 'ACTIVE' ? 'Activ' : 'Inactiv'}
                                         </div>
@@ -245,7 +236,6 @@ class MyHallsPage extends Component {
                                         <p className="hall-location">{hall.city}, {hall.county}</p>
                                         <p className="hall-description">{hall.description || 'Fără descriere'}</p>
 
-                                        {/* Rating real din baza de date */}
                                         <div className="hall-rating">
                                             {this.renderRatingStars(ratingData.averageRating)}
                                             <span className="rating-text">
@@ -256,7 +246,6 @@ class MyHallsPage extends Component {
                                             </span>
                                         </div>
 
-                                        {/* Afișăm un mesaj pentru sălile inactive */}
                                         {hall.status === 'INACTIVE' && (
                                             <div className="hall-inactive-notice">
                                                 <p>⚠️ Această sală a fost dezactivată de administratorii aplicației</p>

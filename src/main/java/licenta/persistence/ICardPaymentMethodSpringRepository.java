@@ -16,17 +16,17 @@ import java.util.Optional;
 public interface ICardPaymentMethodSpringRepository extends JpaRepository<CardPaymentMethod, Long> {
 
     /**
-     * Găsește toate cardurile active ale unui utilizator
+     * Gaseste toate cardurile active ale unui utilizator
      */
     List<CardPaymentMethod> findByUserAndIsActiveTrueOrderByIsDefaultDescCreatedAtDesc(User user);
 
     /**
-     * Găsește cardul default al unui utilizator
+     * Gaseste cardul default al unui utilizator
      */
     Optional<CardPaymentMethod> findByUserAndIsDefaultTrueAndIsActiveTrue(User user);
 
     /**
-     * Găsește un card după Stripe Payment Method ID
+     * Gaseste un card după Stripe Payment Method ID
      */
     Optional<CardPaymentMethod> findByStripePaymentMethodId(String stripePaymentMethodId);
 
@@ -36,17 +36,17 @@ public interface ICardPaymentMethodSpringRepository extends JpaRepository<CardPa
     List<CardPaymentMethod> findByUserOrderByIsDefaultDescCreatedAtDesc(User user);
 
     /**
-     * Verifică dacă utilizatorul are deja un card salvat cu același Stripe ID
+     * Verifica daca utilizatorul are deja un card salvat cu acelasi Stripe ID
      */
     boolean existsByUserAndStripePaymentMethodId(User user, String stripePaymentMethodId);
 
     /**
-     * Contorizează cardurile active ale unui utilizator
+     * Contorizeaza cardurile active ale unui utilizator
      */
     long countByUserAndIsActiveTrue(User user);
 
     /**
-     * Marchează toate cardurile unui utilizator ca non-default
+     * Marcheaza toate cardurile unui utilizator ca non-default
      */
     @Modifying
     @Transactional
@@ -54,7 +54,7 @@ public interface ICardPaymentMethodSpringRepository extends JpaRepository<CardPa
     void unmarkAllAsDefaultForUser(@Param("user") User user);
 
     /**
-     * Găsește cardurile expirate ale unui utilizator
+     * Gaseste cardurile expirate ale unui utilizator
      */
     @Query("SELECT c FROM CardPaymentMethod c WHERE c.user = :user AND c.isActive = true AND " +
             "(c.cardExpYear < :currentYear OR (c.cardExpYear = :currentYear AND c.cardExpMonth < :currentMonth))")
@@ -63,7 +63,7 @@ public interface ICardPaymentMethodSpringRepository extends JpaRepository<CardPa
                                                     @Param("currentMonth") Integer currentMonth);
 
     /**
-     * Dezactivează toate cardurile expirate
+     * Dezactiveaza toate cardurile expirate
      */
     @Modifying
     @Query("UPDATE CardPaymentMethod c SET c.isActive = false, c.isDefault = false WHERE " +
@@ -72,7 +72,7 @@ public interface ICardPaymentMethodSpringRepository extends JpaRepository<CardPa
                                @Param("currentMonth") Integer currentMonth);
 
     /**
-     * Găsește cardurile care urmează să expire în următoarele luni
+     * Gaseste cardurile care urmeaza sa expire in urmatoarele luni
      */
     @Query("SELECT c FROM CardPaymentMethod c WHERE c.isActive = true AND " +
             "((c.cardExpYear = :currentYear AND c.cardExpMonth <= :nextMonth) OR " +

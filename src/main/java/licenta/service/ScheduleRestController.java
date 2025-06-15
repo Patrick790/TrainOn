@@ -56,14 +56,12 @@ public class ScheduleRestController {
 
             SportsHall hall = hallOpt.get();
 
-            // Găsim și ștergem toate schedule-urile existente
             List<Schedule> existingSchedules = scheduleRepository.findBySportsHallIdOrderByDayOfWeek(hallId);
             if (!existingSchedules.isEmpty()) {
                 scheduleRepository.deleteAll(existingSchedules);
                 scheduleRepository.flush();
             }
 
-            // Salvăm noile programe
             List<Schedule> savedSchedules = new ArrayList<>();
             for (Schedule schedule : schedules) {
                 Schedule newSchedule = new Schedule();
@@ -87,10 +85,9 @@ public class ScheduleRestController {
     }
 
     @PostMapping("/hall/{hallId}/default")
-    @Transactional  // Adaugă și aici
+    @Transactional
     public ResponseEntity<?> createDefaultSchedule(@PathVariable Long hallId) {
         try {
-            // Verificăm dacă sala există
             Optional<SportsHall> hallOpt = sportsHallRepository.findById(hallId);
             if (hallOpt.isEmpty()) {
                 logger.error("Sports hall with ID {} not found", hallId);
@@ -99,10 +96,8 @@ public class ScheduleRestController {
 
             SportsHall hall = hallOpt.get();
 
-            // Ștergem programele existente
             scheduleRepository.deleteBySportsHallId(hallId);
 
-            // Creăm programul standard pentru toate zilele săptămânii
             for (int day = 1; day <= 7; day++) {
                 Schedule schedule = new Schedule(hall, day, "07:00", "23:00");
                 scheduleRepository.save(schedule);

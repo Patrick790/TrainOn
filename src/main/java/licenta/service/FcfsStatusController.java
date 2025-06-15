@@ -30,8 +30,7 @@ public class FcfsStatusController {
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getFcfsStatus() {
         try {
-            // Verificăm statusul FCFS prin primul utilizator normal găsit
-            // (toți utilizatorii normali ar trebui să aibă același status)
+
             Optional<User> normalUser = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                     .filter(user -> "user".equals(user.getUserType()))
                     .findFirst();
@@ -44,7 +43,6 @@ public class FcfsStatusController {
             ));
 
         } catch (Exception e) {
-            // În caz de eroare, returnăm că FCFS este activat (comportament fail-safe)
             return ResponseEntity.ok(Map.of(
                     "fcfsEnabled", true,
                     "timestamp", System.currentTimeMillis(),
@@ -60,7 +58,6 @@ public class FcfsStatusController {
     @GetMapping("/access-check")
     public ResponseEntity<Map<String, Object>> checkFcfsAccess(Authentication authentication) {
         try {
-            // Verificăm dacă utilizatorul este autentificat
             if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity.ok(Map.of(
                         "canAccess", false,
@@ -69,7 +66,6 @@ public class FcfsStatusController {
                 ));
             }
 
-            // Obținem utilizatorul curent prin email-ul din authentication
             String userEmail = authentication.getName();
             Optional<User> currentUserOpt = userSpringRepository.findByEmail(userEmail);
 
@@ -84,16 +80,13 @@ public class FcfsStatusController {
             User currentUser = currentUserOpt.get();
             String userType = currentUser.getUserType();
 
-            // Verificăm statusul global FCFS (din primul utilizator normal)
             Optional<User> normalUser = StreamSupport.stream(userSpringRepository.findAll().spliterator(), false)
                     .filter(user -> "user".equals(user.getUserType()))
                     .findFirst();
 
             boolean fcfsGloballyEnabled = normalUser.map(User::isFcfsEnabled).orElse(true);
 
-            // Logica de acces bazată pe tipul de utilizator
             if ("admin".equals(userType)) {
-                // Adminii pot accesa întotdeauna pentru management
                 return ResponseEntity.ok(Map.of(
                         "canAccess", true,
                         "fcfsEnabled", fcfsGloballyEnabled,
@@ -103,7 +96,6 @@ public class FcfsStatusController {
                                 "Admin access - FCFS este dezactivat pentru utilizatori"
                 ));
             } else if ("user".equals(userType)) {
-                // Utilizatorii normali pot accesa doar dacă au FCFS activat
                 boolean userCanAccess = currentUser.isFcfsEnabled();
 
                 return ResponseEntity.ok(Map.of(
@@ -115,7 +107,6 @@ public class FcfsStatusController {
                                 "Rezervarea locurilor rămase a fost dezactivată pentru contul dumneavoastră"
                 ));
             } else {
-                // Pentru alte tipuri de utilizatori (hall_admin, etc.)
                 return ResponseEntity.ok(Map.of(
                         "canAccess", false,
                         "fcfsEnabled", fcfsGloballyEnabled,
@@ -125,7 +116,6 @@ public class FcfsStatusController {
             }
 
         } catch (Exception e) {
-            // În caz de eroare, returnăm că utilizatorul poate accesa (fail-safe)
             return ResponseEntity.ok(Map.of(
                     "canAccess", true,
                     "fcfsEnabled", true,

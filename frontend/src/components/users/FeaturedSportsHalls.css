@@ -66,7 +66,6 @@
     transform: scale(1.05);
 }
 
-/* Overlay pentru un efect gradient delicat peste imagine */
 .sports-hall-image-wrapper::after {
     content: '';
     position: absolute;
@@ -78,7 +77,6 @@
     pointer-events: none;
 }
 
-/* Badge pentru tipul sălii */
 .sports-hall-badge {
     position: absolute;
     top: 12px;
@@ -151,7 +149,6 @@
     font-size: 1rem;
 }
 
-/* Stiluri pentru rating */
 .sports-hall-rating {
     display: flex;
     align-items: center;
@@ -178,7 +175,7 @@
 .sports-hall-star-full,
 .sports-hall-star-half,
 .sports-hall-star-empty {
-    color: #f59e0b; /* Galben pentru stele */
+    color: #f59e0b;
     font-size: 1rem;
     line-height: 1;
     transition: transform 0.2s ease;
@@ -186,7 +183,7 @@
 
 .sports-hall-stars:hover .sports-hall-star-full,
 .sports-hall-stars:hover .sports-hall-star-half {
-    color: #d97706; /* Galben mai închis la hover */
+    color: #d97706;
 }
 
 .sports-hall-star-empty {
@@ -224,7 +221,6 @@
     transform: translateY(-2px);
 }
 
-/* Stiluri pentru stări de încărcare și eroare */
 .sports-halls-loading,
 .sports-halls-error,
 .sports-halls-empty {
@@ -258,7 +254,6 @@
     }
 }
 
-/* Responsive Design */
 @media (max-width: 992px) {
     .sports-halls-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -291,12 +286,10 @@
     opacity: 1;
 }
 
-/* Stiluri pentru carduri cu animație */
 .sports-hall-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Animație pentru carduri la schimbarea orașului */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -312,7 +305,6 @@
     animation: fadeIn 0.5s ease forwards;
 }
 
-/* Delay pentru fiecare card pentru efect în cascadă */
 .sports-hall-card:nth-child(1) { animation-delay: 0.05s; }
 .sports-hall-card:nth-child(2) { animation-delay: 0.1s; }
 .sports-hall-card:nth-child(3) { animation-delay: 0.15s; }

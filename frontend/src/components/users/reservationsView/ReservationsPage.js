@@ -20,19 +20,14 @@ const ReservationsPage = () => {
     });
     const [loading, setLoading] = useState(false);
 
-    // Funcție helper pentru a parsa corect data și ora rezervării
     const parseReservationDateTime = (dateString, timeSlot) => {
         try {
-            // Extrage data (fără timp) din string-ul de la backend
-            const dateOnly = dateString.split('T')[0]; // "2025-06-06T21:00:00.000+00:00" -> "2025-06-06"
+            const dateOnly = dateString.split('T')[0];
 
-            // Extrage ora de început din timeSlot (ex: "19:00 - 20:30" -> "19:00")
             const startTime = timeSlot ? timeSlot.split(' - ')[0] : '00:00';
 
-            // Construiește data completă cu ora corectă în timezone-ul local
             const dateTimeString = `${dateOnly}T${startTime}:00`;
 
-            // Creează data în timezone-ul local (România)
             const date = new Date(dateTimeString);
 
             console.log(`Parsing: ${dateString} + ${timeSlot} -> ${dateTimeString} -> ${date} (${date.toLocaleString('ro-RO')})`);
@@ -40,13 +35,11 @@ const ReservationsPage = () => {
             return date;
         } catch (error) {
             console.error('Error parsing reservation date/time:', error);
-            // Fallback la comportamentul vechi
             const dateOnly = dateString.split('T')[0];
             return new Date(dateOnly + 'T00:00:00');
         }
     };
 
-    // Funcție pentru a obține informațiile de bază ale utilizatorului pentru sidebar
     const fetchBasicUserInfo = async () => {
         try {
             const userId = localStorage.getItem('userId');
@@ -67,7 +60,6 @@ const ReservationsPage = () => {
             if (response.ok) {
                 const userData = await response.json();
 
-                // Separăm numele complet în prenume și nume
                 const nameParts = userData.name ? userData.name.split(' ') : ['', ''];
                 const firstName = nameParts[0] || '';
                 const lastName = nameParts.slice(1).join(' ') || '';
@@ -83,7 +75,6 @@ const ReservationsPage = () => {
         }
     };
 
-    // Funcție pentru a încărca rezervările
     const fetchReservations = async () => {
         console.log('fetchReservations called at:', new Date().toTimeString());
         setLoading(true);
@@ -106,7 +97,6 @@ const ReservationsPage = () => {
             if (response.ok) {
                 const reservationsData = await response.json();
 
-                // Clasificăm rezervările pe categorii
                 const now = new Date();
                 console.log('Current time for comparison:', now.toLocaleString('ro-RO'));
 
@@ -115,7 +105,6 @@ const ReservationsPage = () => {
                 const cancelled = [];
 
                 reservationsData.forEach(reservation => {
-                    // Construiește data rezervării CORECT cu ora din timeSlot
                     const reservationDateTime = parseReservationDateTime(reservation.date, reservation.timeSlot);
 
                     console.log(`Reservation: ${reservation.hall?.name || 'Unknown'} on ${reservationDateTime.toLocaleString('ro-RO')} - Status: ${reservation.status}`);
@@ -124,11 +113,9 @@ const ReservationsPage = () => {
                     if (reservation.status === 'CANCELLED') {
                         cancelled.push(reservation);
                     } else if (reservationDateTime > now) {
-                        // Rezervarea este în viitor
                         upcoming.push(reservation);
                         console.log(`Added to upcoming: ${reservation.hall?.name} on ${reservationDateTime.toLocaleString('ro-RO')}`);
                     } else {
-                        // Rezervarea este în trecut
                         past.push(reservation);
                         console.log(`Added to past: ${reservation.hall?.name} on ${reservationDateTime.toLocaleString('ro-RO')}`);
                     }
@@ -145,12 +132,12 @@ const ReservationsPage = () => {
                     past: past.sort((a, b) => {
                         const aDate = parseReservationDateTime(a.date, a.timeSlot);
                         const bDate = parseReservationDateTime(b.date, b.timeSlot);
-                        return bDate - aDate; // Descending order for past reservations
+                        return bDate - aDate;
                     }),
                     cancelled: cancelled.sort((a, b) => {
                         const aDate = parseReservationDateTime(a.date, a.timeSlot);
                         const bDate = parseReservationDateTime(b.date, b.timeSlot);
-                        return bDate - aDate; // Descending order for cancelled reservations
+                        return bDate - aDate;
                     })
                 });
             }
@@ -166,7 +153,7 @@ const ReservationsPage = () => {
             fetchBasicUserInfo();
             fetchReservations();
         }
-    }, []); // Elimină dependința de isLoggedIn care cauzează re-render-ul
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('isLoggedIn');
@@ -179,7 +166,6 @@ const ReservationsPage = () => {
 
     const formatDate = (dateString) => {
         console.log('formatDate input:', dateString);
-        // Folosește aceeași logică de parsing
         const dateOnly = dateString.split('T')[0];
         const date = new Date(dateOnly + 'T00:00:00');
         console.log('formatDate parsed:', date);
@@ -240,7 +226,6 @@ const ReservationsPage = () => {
             });
 
             if (response.ok) {
-                // Reîncărcăm rezervările pentru a reflecta schimbarea
                 fetchReservations();
             } else {
                 alert('Eroare la anularea rezervării. Te rugăm să încerci din nou.');

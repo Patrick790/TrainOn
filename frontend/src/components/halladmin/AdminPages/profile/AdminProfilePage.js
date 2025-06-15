@@ -15,8 +15,6 @@ const AdminProfilePage = () => {
     });
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-
-    // Funcție pentru a obține informațiile de bază ale administratorului pentru sidebar
     const fetchBasicAdminInfo = async () => {
         try {
             const userId = localStorage.getItem('userId');
@@ -37,7 +35,6 @@ const AdminProfilePage = () => {
             if (response.ok) {
                 const userData = await response.json();
 
-                // Separăm numele complet în prenume și nume
                 const nameParts = userData.name ? userData.name.split(' ') : ['', ''];
                 const firstName = nameParts[0] || '';
                 const lastName = nameParts.slice(1).join(' ') || '';

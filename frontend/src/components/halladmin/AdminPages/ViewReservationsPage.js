@@ -20,7 +20,6 @@ class ViewReservationsPage extends Component {
         this.loadHalls();
     }
 
-    // Încarcă sălile administratorului curent
     loadHalls = async () => {
         try {
             const userId = localStorage.getItem('userId');
@@ -49,7 +48,6 @@ class ViewReservationsPage extends Component {
         }
     };
 
-    // Încarcă rezervările pentru sala selectată
     loadReservations = async (hallId) => {
         if (!hallId) {
             this.setState({ reservations: [] });
@@ -63,7 +61,6 @@ class ViewReservationsPage extends Component {
             if (response.ok) {
                 const allReservations = await response.json();
 
-                // Filtrează doar rezervările viitoare și confirmarte
                 const now = new Date();
                 const futureReservations = allReservations
                     .filter(reservation => {
@@ -84,14 +81,12 @@ class ViewReservationsPage extends Component {
         }
     };
 
-    // Handler pentru schimbarea sălii selectate
     handleHallChange = (event) => {
         const hallId = event.target.value;
         this.setState({ selectedHallId: hallId });
         this.loadReservations(hallId);
     };
 
-    // Formatează data pentru afișare
     formatDate = (dateString) => {
         const date = new Date(dateString);
         const options = {
@@ -103,12 +98,10 @@ class ViewReservationsPage extends Component {
         return date.toLocaleDateString('ro-RO', options);
     };
 
-    // Formatează intervalul de timp
     formatTimeSlot = (timeSlot) => {
         return timeSlot.replace('-', ' - ');
     };
 
-    // Determină câte zile rămân până la rezervare
     getDaysUntilReservation = (dateString) => {
         const reservationDate = new Date(dateString);
         const today = new Date();
@@ -130,7 +123,6 @@ class ViewReservationsPage extends Component {
             <div className="admin-page">
                 <h1 className="admin-page-title">Vizualizare Rezervări</h1>
 
-                {/* Selector pentru sală */}
                 <div className="vrp-hall-selector-container">
                     <label htmlFor="vrp-hall-select" className="vrp-hall-selector-label">
                         Selectează sala de sport:
@@ -150,14 +142,12 @@ class ViewReservationsPage extends Component {
                     </select>
                 </div>
 
-                {/* Mesaj de eroare */}
                 {error && (
                     <div className="vrp-error-message">
                         {error}
                     </div>
                 )}
 
-                {/* Loading indicator */}
                 {loading && (
                     <div className="vrp-loading-container">
                         <div className="vrp-loading-spinner"></div>
@@ -165,7 +155,6 @@ class ViewReservationsPage extends Component {
                     </div>
                 )}
 
-                {/* Lista de rezervări */}
                 {!loading && selectedHallId && (
                     <div className="vrp-reservations-container">
                         <div className="vrp-reservations-header">
@@ -232,7 +221,6 @@ class ViewReservationsPage extends Component {
                     </div>
                 )}
 
-                {/* Mesaj pentru când nu s-a selectat nicio sală */}
                 {!selectedHallId && !loading && (
                     <div className="vrp-no-hall-selected">
                         <div className="vrp-no-hall-icon">

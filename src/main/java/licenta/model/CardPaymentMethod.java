@@ -106,7 +106,6 @@ public class CardPaymentMethod extends BruteEntity<Long> {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters și Setters
     public String getStripePaymentMethodId() { return stripePaymentMethodId; }
     public void setStripePaymentMethodId(String stripePaymentMethodId) { this.stripePaymentMethodId = stripePaymentMethodId; }
 

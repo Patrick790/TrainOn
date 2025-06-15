@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Star } from 'lucide-react';
 import axios from 'axios';
 import Header from './Header';
-import SearchBar from './SearchBar'; // Import componenta SearchBar separată
+import SearchBar from './SearchBar';
 import LoginModal from '../login/LoginModal';
 import RegisterModal from '../register/RegisterModal';
 import Footer from '../pageComponents/Footer';
@@ -15,15 +15,15 @@ const SearchResultsPage = () => {
     const queryParams = new URLSearchParams(location.search);
     const mapRef = useRef(null);
     const mapContainerRef = useRef(null);
-    const markersRef = useRef([]); // Referință pentru markere
-    const mapInitializedRef = useRef(false); // Flag pentru a urmări dacă harta a fost inițializată
+    const markersRef = useRef([]);
+    const mapInitializedRef = useRef(false);
 
     // Stare pentru toate datele necesare paginii
     const [sportsHalls, setSportsHalls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [hoveredMarker, setHoveredMarker] = useState(null);
-    const [mapReady, setMapReady] = useState(false); // Stare pentru a urmări dacă harta este gata
+    const [mapReady, setMapReady] = useState(false);
 
     // State pentru header și autentificare
     const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
@@ -40,7 +40,6 @@ const SearchResultsPage = () => {
 
     const API_URL = process.env.REACT_APP_API_URL || '';
 
-    // Funcție pentru geocodarea adreselor (obținerea coordonatelor din adresă)
     const geocodeAddress = async (address, city, id) => {
         if (!address || !city) {
             console.log(`Sala cu ID ${id} nu are adresă sau oraș complet.`);
@@ -48,15 +47,13 @@ const SearchResultsPage = () => {
         }
 
         try {
-            // Folosim Nominatim OpenStreetMap pentru geocodare
             const fullAddress = `${address}, ${city}, Romania`;
             const encodedAddress = encodeURIComponent(fullAddress);
             const response = await axios.get(
                 `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1`
             );
 
-            // Respectăm limitele de utilizare ale API-ului Nominatim
-            await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             if (response.data && response.data.length > 0) {
                 const result = response.data[0];
@@ -74,13 +71,11 @@ const SearchResultsPage = () => {
         }
     };
 
-    // Încarcă sălile de sport folosind noul endpoint de search
     useEffect(() => {
         const fetchSportsHalls = async () => {
             try {
                 setLoading(true);
 
-                // Construim URL-ul pentru noul endpoint de search
                 const searchURLParams = new URLSearchParams();
 
                 if (searchParams.city) {
@@ -97,13 +92,11 @@ const SearchResultsPage = () => {
                 console.log('Fetching from URL:', searchURL);
                 console.log('Search parameters:', searchParams);
 
-                // Folosim noul endpoint de search
                 const response = await axios.get(searchURL);
 
                 console.log(`Found ${response.data.length} results for search:`, searchParams);
                 console.log('Response data:', response.data);
 
-                // Verificăm și geocodăm adresele care nu au coordonate
                 const hallsWithCoordinates = await Promise.all(
                     response.data.map(async (hall) => {
                         // Dacă sala are deja coordonate valide, le folosim
@@ -113,7 +106,6 @@ const SearchResultsPage = () => {
                             return hall;
                         }
 
-                        // Dacă nu are coordonate dar are adresă, încercăm să geocodăm
                         if (hall.address && hall.city) {
                             const coordinates = await geocodeAddress(hall.address, hall.city, hall.id);
                             if (coordinates) {
@@ -125,7 +117,6 @@ const SearchResultsPage = () => {
                             }
                         }
 
-                        // Dacă geocodarea eșuează sau nu există adresă, returnăm sala fără coordonate
                         return hall;
                     })
                 );
@@ -140,7 +131,6 @@ const SearchResultsPage = () => {
             }
         };
 
-        // Doar dacă avem cel puțin un criteriu de căutare
         if (searchParams.city || searchParams.sport || searchParams.query) {
             console.log('Starting search with params:', searchParams);
             fetchSportsHalls();
@@ -151,7 +141,6 @@ const SearchResultsPage = () => {
         }
     }, [searchParams, API_URL]);
 
-    // Actualizează parametrii când se schimbă URL-ul
     useEffect(() => {
         const currentParams = new URLSearchParams(location.search);
         const newSearchParams = {
@@ -164,27 +153,24 @@ const SearchResultsPage = () => {
         setSearchParams(newSearchParams);
     }, [location.search]);
 
-    // Funcție separată pentru inițializarea hărții
     const initializeMap = () => {
         if (!mapContainerRef.current || !window.L || mapInitializedRef.current) {
             return;
         }
 
         try {
-            // Curățăm harta anterioară dacă există
             if (mapRef.current) {
                 mapRef.current.remove();
             }
 
             console.log('Inițializez harta...');
 
-            // Creăm harta și adăugăm tile-urile OpenStreetMap
             const map = window.L.map(mapContainerRef.current, {
                 // Opțiuni suplimentare pentru stabilitate
-                fadeAnimation: false,      // Dezactivăm animațiile fade pentru stabilitate
-                zoomAnimation: false,      // Dezactivăm animațiile zoom pentru stabilitate
-                markerZoomAnimation: false // Dezactivăm animațiile zoom pentru markere
-            }).setView([46.7712, 23.6236], 13); // Centru Cluj-Napoca
+                fadeAnimation: false,
+                zoomAnimation: false,
+                markerZoomAnimation: false
+            }).setView([46.7712, 23.6236], 13);
 
             window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -193,7 +179,6 @@ const SearchResultsPage = () => {
             mapRef.current = map;
             mapInitializedRef.current = true;
 
-            // Invalidăm dimensiunea pentru a forța o recalculare corectă
             setTimeout(() => {
                 if (mapRef.current) {
                     mapRef.current.invalidateSize();
@@ -208,7 +193,6 @@ const SearchResultsPage = () => {
         }
     };
 
-    // Funcție separată pentru adăugarea markerelor
     const addMarkersToMap = () => {
         if (!mapRef.current || !sportsHalls.length || !mapReady) {
             return;
@@ -217,7 +201,6 @@ const SearchResultsPage = () => {
         try {
             console.log('Adaug markere pe hartă...');
 
-            // Curățăm markerele existente
             markersRef.current.forEach(marker => {
                 if (marker && marker.remove) {
                     marker.remove();
@@ -225,12 +208,10 @@ const SearchResultsPage = () => {
             });
             markersRef.current = [];
 
-            // Adăugăm markeri noi
             const bounds = [];
             let validMarkers = 0;
 
             sportsHalls.forEach(hall => {
-                // Verificăm dacă sala are coordonate valide
                 if (!hall.latitude || !hall.longitude) {
                     console.log(`Sala ${hall.name} nu are coordonate valide. Nu se adaugă marker.`);
                     return; // Skip la această sală
@@ -239,17 +220,15 @@ const SearchResultsPage = () => {
                 const lat = parseFloat(hall.latitude);
                 const lng = parseFloat(hall.longitude);
 
-                // Verificăm dacă coordonatele sunt numere valide
                 if (isNaN(lat) || isNaN(lng)) {
                     console.log(`Sala ${hall.name} are coordonate invalide. Nu se adaugă marker.`);
-                    return; // Skip la această sală
+                    return;
                 }
 
                 bounds.push([lat, lng]);
                 validMarkers++;
 
                 try {
-                    // Creăm și adăugăm markerul la hartă
                     const marker = window.L.marker([lat, lng])
                         .addTo(mapRef.current)
                         .bindTooltip(hall.name, { permanent: false, direction: 'top' });
@@ -276,19 +255,16 @@ const SearchResultsPage = () => {
                 }
             });
 
-            // Ajustăm vizualizarea hărții doar dacă avem markere valide
             if (bounds.length > 0) {
                 try {
                     mapRef.current.fitBounds(bounds, { padding: [30, 30] });
                     console.log(`Au fost adăugate ${validMarkers} markere pe hartă.`);
                 } catch (boundsError) {
                     console.error('Eroare la fitBounds:', boundsError);
-                    // Plan de rezervă: centrăm pe Cluj-Napoca dacă fitBounds eșuează
                     mapRef.current.setView([46.7712, 23.6236], 13);
                 }
             } else {
                 console.log('Nu există săli cu coordonate valide pentru afișare pe hartă.');
-                // Dacă nu există markere, centrăm harta pe Cluj-Napoca
                 mapRef.current.setView([46.7712, 23.6236], 13);
             }
         } catch (error) {
@@ -296,14 +272,12 @@ const SearchResultsPage = () => {
         }
     };
 
-    // Inițializarea hărții când componenta se montează
     useEffect(() => {
         // Verificăm dacă DOM este gata
         if (mapContainerRef.current && typeof window !== 'undefined' && window.L) {
             initializeMap();
         }
 
-        // Cleanup când componenta se demontează
         return () => {
             if (mapRef.current) {
                 // Curățăm markerele
@@ -314,7 +288,6 @@ const SearchResultsPage = () => {
                 });
                 markersRef.current = [];
 
-                // Apoi eliminăm harta
                 mapRef.current.remove();
                 mapRef.current = null;
                 mapInitializedRef.current = false;
@@ -323,14 +296,12 @@ const SearchResultsPage = () => {
         };
     }, []);
 
-    // Adăugăm markere când harta este gata și datele sunt disponibile
     useEffect(() => {
         if (!loading && !error && sportsHalls.length > 0 && mapReady) {
             addMarkersToMap();
         }
     }, [sportsHalls, loading, error, mapReady]);
 
-    // Actualizăm dimensiunea hărții când fereastra se redimensionează
     useEffect(() => {
         const handleResize = () => {
             if (mapRef.current) {
@@ -368,7 +339,6 @@ const SearchResultsPage = () => {
         setIsLoginModalOpen(false);
     };
 
-    // Funcție pentru calcularea ratingului
     const calculateRating = (hall) => {
         if (!hall || !hall.capacity) return 3.0;
 
@@ -383,7 +353,6 @@ const SearchResultsPage = () => {
         return rating.toFixed(1);
     };
 
-    // Funcție pentru afișarea stelelor de rating
     const renderStars = (rating) => {
         const fullStars = Math.floor(rating);
         const hasHalfStar = rating % 1 >= 0.5;
@@ -403,7 +372,6 @@ const SearchResultsPage = () => {
         );
     };
 
-    // Funcție pentru obținerea URL-ului imaginii
     const getImageUrl = (hall) => {
         if (hall.images && hall.images.length > 0) {
             const coverImage = hall.images.find(img => img.description === 'cover') || hall.images[0];
@@ -412,13 +380,11 @@ const SearchResultsPage = () => {
         return 'https://via.placeholder.com/400x250?text=Imagine+Indisponibilă';
     };
 
-    // Formatare preț
     const formatPrice = (price) => {
         if (!price) return 'Preț la cerere';
         return `${price} RON/oră`;
     };
 
-    // Functie pentru a genera mesajul din titlu
     const getResultsTitle = () => {
         if (!searchParams.city && !searchParams.sport && !searchParams.query) {
             return 'Introduceți criterii de căutare pentru a vedea rezultatele';
@@ -443,7 +409,6 @@ const SearchResultsPage = () => {
 
     return (
         <div className="main-container">
-            {/* Header global */}
             <Header
                 isLoggedIn={isLoggedIn}
                 onLoginClick={toggleLoginModal}
@@ -451,21 +416,18 @@ const SearchResultsPage = () => {
                 onLogout={handleLogout}
             />
 
-            {/* Search Bar - folosim componenta separată cu styling pentru SearchResults */}
             <div className="srp-search-container">
                 <div className="srp-search-wrapper">
                     <SearchBar />
                 </div>
             </div>
 
-            {/* Conținut rezultate căutare */}
             <div className="srp-results-content">
                 <h1 className="srp-results-title">
                     {getResultsTitle()}
                 </h1>
 
                 <div className="srp-results-layout">
-                    {/* Lista de săli */}
                     <div className="srp-results-list">
                         {!searchParams.city && !searchParams.sport && !searchParams.query ? (
                             <div className="srp-no-results">
@@ -515,7 +477,7 @@ const SearchResultsPage = () => {
                                             <div className="srp-result-facilities">
                                                 {(() => {
                                                     const facilitiesArray = hall.facilities.split(',').map(f => f.trim());
-                                                    // Calculăm câte facilități încap într-un spațiu limitat
+
                                                     const maxVisible = 2; // Reducem la 2 pentru a fi siguri că nu se suprapun
                                                     const visibleFacilities = facilitiesArray.slice(0, maxVisible);
                                                     const remainingCount = facilitiesArray.length - maxVisible;
@@ -549,10 +511,8 @@ const SearchResultsPage = () => {
                 </div>
             </div>
 
-            {/* Footer Global */}
             <Footer />
 
-            {/* Modals */}
             {!isLoggedIn && (
                 <>
                     <LoginModal

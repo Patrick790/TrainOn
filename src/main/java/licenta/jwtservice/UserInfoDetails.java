@@ -22,7 +22,6 @@ public class UserInfoDetails implements UserDetails {
 
         List<String> authList = new ArrayList<>();
         if (user.getUserType() != null) {
-            // Adăugăm fiecare tip de utilizator separat, în caz că sunt mai multe separate prin virgulă
             if (user.getUserType().contains(",")) {
                 String[] types = user.getUserType().split(",");
                 for (String type : types) {
@@ -33,7 +32,6 @@ public class UserInfoDetails implements UserDetails {
             }
         }
 
-        // Adăugăm statusul doar pentru verificări
         if (user.getAccountStatus() != null && user.getAccountStatus().equals("rejected")) {
             this.accountNonLocked = false;
         }

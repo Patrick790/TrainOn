@@ -33,7 +33,6 @@ public class Schedule extends BruteEntity<Long> {
         this.isActive = true;
     }
 
-    // Metoda helper pentru a obține numele zilei
     public String getDayName() {
         switch (dayOfWeek) {
             case 1: return "Luni";
@@ -63,7 +62,7 @@ public class Schedule extends BruteEntity<Long> {
             while (currentHour < endHour || (currentHour == endHour && currentMinute < endMinute)) {
                 String slotStart = String.format("%02d:%02d", currentHour, currentMinute);
 
-                // Adaugă 1.5 ore
+                // Adauga 1.5 ore
                 currentMinute += 90;
                 if (currentMinute >= 60) {
                     currentHour += currentMinute / 60;
@@ -72,7 +71,6 @@ public class Schedule extends BruteEntity<Long> {
 
                 String slotEnd = String.format("%02d:%02d", currentHour, currentMinute);
 
-                // Verifică dacă slotul nu depășește timpul de închidere
                 if (currentHour < endHour || (currentHour == endHour && currentMinute <= endMinute)) {
                     slots.add(slotStart + "-" + slotEnd);
                 }
@@ -84,7 +82,6 @@ public class Schedule extends BruteEntity<Long> {
         return slots;
     }
 
-    // Getters și Setters
     public SportsHall getSportsHall() {
         return sportsHall;
     }

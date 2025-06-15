@@ -14,7 +14,6 @@ const SportsHallMap = ({ address, city, county }) => {
         }
 
         try {
-            // Construim adresa completă pentru geocoding
             const fullAddress = `${address}, ${city}${county ? ', ' + county : ''}, Romania`;
 
             // Folosim Nominatim pentru a obține coordonatele (lat/lon) pe baza adresei
@@ -23,16 +22,13 @@ const SportsHallMap = ({ address, city, county }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        // Avem coordonate
                         const lat = data[0].lat;
                         const lon = data[0].lon;
 
-                        // Creăm URL-ul pentru OpenStreetMap cu marcaj la coordonatele specifice
                         const openStreetMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(lon)-0.01},${parseFloat(lat)-0.01},${parseFloat(lon)+0.01},${parseFloat(lat)+0.01}&layer=mapnik&marker=${lat},${lon}`;
 
                         setMapUrl(openStreetMapUrl);
                     } else {
-                        // Dacă nu putem obține coordonate exacte, folosim o vizualizare generală a orașului
                         const openStreetMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=20.0,44.0,30.0,48.0&layer=mapnik&query=${encodeURIComponent(fullAddress)}`;
                         setMapUrl(openStreetMapUrl);
                     }
@@ -40,7 +36,6 @@ const SportsHallMap = ({ address, city, county }) => {
                 })
                 .catch(err => {
                     console.error("Eroare în geocoding:", err);
-                    // Fallback la o hartă generală
                     const openStreetMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=20.0,44.0,30.0,48.0&layer=mapnik&query=${encodeURIComponent(fullAddress)}`;
                     setMapUrl(openStreetMapUrl);
                     setIsLoading(false);

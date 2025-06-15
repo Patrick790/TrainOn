@@ -69,7 +69,6 @@ class ReservationOptionsModal extends React.Component {
 
         if (!isOpen) return null;
 
-        // Verificăm dacă utilizatorul este parte dintr-o echipă (are teamType setat)
         const isTeamUser = userType && userType.trim() !== '';
 
         return (
@@ -87,7 +86,6 @@ class ReservationOptionsModal extends React.Component {
 
                     {!loading && (
                         <div className="reservation-options">
-                            {/* Opțiunea pentru crearea profilului - doar pentru utilizatorii de echipă */}
                             {isTeamUser && (
                                 <div
                                     className="reservation-option"
@@ -104,7 +102,6 @@ class ReservationOptionsModal extends React.Component {
                                 </div>
                             )}
 
-                            {/* Opțiunea pentru rezervarea locurilor rămase - pentru toți utilizatorii */}
                             <div
                                 className={`reservation-option ${!isTeamUser ? 'single-option' : ''}`}
                                 onClick={() => { window.location.href = '/fcfs-reservation'; onClose(); }}
@@ -143,7 +140,7 @@ class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedCity: '', // Pentru a păstra orașul selectat din SearchBar
+            selectedCity: '',
             isLoginModalOpen: false,
             isRegisterModalOpen: false,
             isReservationModalOpen: false,
@@ -165,7 +162,6 @@ class MainPage extends React.Component {
         this.setState({ isLoggedIn });
     }
 
-    // Callback pentru când se schimbă orașul în SearchBar
     handleCityChange = (city) => {
         this.setState({ selectedCity: city });
     }
@@ -222,16 +218,13 @@ class MainPage extends React.Component {
                 />
 
                 <main className="main-content">
-                    {/* Folosim componenta SearchBar separată */}
                     <SearchBar onCityChange={this.handleCityChange} />
                 </main>
 
-                {/* Afișăm sălile recomandate doar dacă avem un oraș selectat */}
                 {selectedCity && (
                     <SimpleFeaturedSportsHalls selectedCity={selectedCity} />
                 )}
 
-                {/* Secțiunea de rezervare */}
                 <div className="reservation-cta">
                     <p className="reservation-text">
                         Dorești să efectuezi o rezervare rapidă? Folosește sistemul nostru inteligent
@@ -243,13 +236,11 @@ class MainPage extends React.Component {
                     </button>
                 </div>
 
-                {/* Modalul pentru opțiuni de rezervare */}
                 <ReservationOptionsModal
                     isOpen={this.state.isReservationModalOpen}
                     onClose={this.closeReservationModal}
                 />
 
-                {/* Modalurile pentru login/register - doar dacă nu este logat */}
                 {!isLoggedIn && (
                     <>
                         <LoginModal

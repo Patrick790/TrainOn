@@ -32,7 +32,6 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* Contact Modal Component */}
             <ContactModal
                 isOpen={isContactModalOpen}
                 onClose={closeContactModal}

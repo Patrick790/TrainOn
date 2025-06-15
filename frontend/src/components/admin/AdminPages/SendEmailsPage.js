@@ -22,13 +22,11 @@ const SendEmailsPage = () => {
     });
 
     const API_URL = process.env.REACT_APP_API_URL || '';
-    // Auth header helper function
     const getAuthHeader = () => {
         const token = localStorage.getItem('jwtToken');
         return token ? { headers: { 'Authorization': `Bearer ${token}` } } : {};
     };
 
-    // Fetch users and recipient stats
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -77,7 +75,6 @@ const SendEmailsPage = () => {
         const { name, value } = e.target;
         setEmailData(prev => ({ ...prev, [name]: value }));
 
-        // Reset message when user starts typing
         setMessage({ type: '', text: '' });
     };
 
@@ -86,7 +83,6 @@ const SendEmailsPage = () => {
         setEmailData(prev => ({
             ...prev,
             recipientType,
-            // Reset specific user when changing recipient type
             specificUser: recipientType === 'specific_user' ? prev.specificUser : ''
         }));
     };
@@ -129,7 +125,6 @@ const SendEmailsPage = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            // Construim obiectul de date pentru a trimite spre server
             const emailPayload = {
                 recipientType: emailData.recipientType,
                 recipient: emailData.recipientType === 'specific_user' ? emailData.specificUser : null,
@@ -137,7 +132,6 @@ const SendEmailsPage = () => {
                 content: emailData.content
             };
 
-            // Endpoint de exemplu, trebuie implementat pe backend
             const response = await axios.post(
                 `${API_URL}/admin/send-email`,
                 emailPayload,
@@ -149,7 +143,6 @@ const SendEmailsPage = () => {
                 text: 'Email-urile au fost trimise cu succes!'
             });
 
-            // Reset form
             setEmailData({
                 recipientType: 'all_users',
                 specificUser: '',
@@ -169,7 +162,6 @@ const SendEmailsPage = () => {
         }
     };
 
-    // Obține numărul de destinatari pentru tipul selectat
     const getRecipientCount = () => {
         switch (emailData.recipientType) {
             case 'all_users':
@@ -183,12 +175,10 @@ const SendEmailsPage = () => {
         }
     };
 
-    // Verificare dacă utilizatorul este administrator
     const checkIsAdmin = () => {
         return localStorage.getItem('userType') === 'admin';
     };
 
-    // Afișăm un mesaj dacă utilizatorul nu este administrator
     if (!checkIsAdmin()) {
         return (
             <div className="global-admin-page">

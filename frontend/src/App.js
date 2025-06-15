@@ -34,7 +34,7 @@ function App() {
                     <Route path="/fcfs-reservation" element={<FCFSReservationPage />} />
                     <Route path="/sportsHalls/:hallId/reviews" element={<HallReviews />} />
 
-                    {/* ADĂUGAT: Ruta pentru resetarea parolei */}
+                    {/* Ruta pentru resetarea parolei */}
                     <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                     {/* Payment Routes */}

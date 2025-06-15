@@ -21,14 +21,11 @@ const HallReviews = () => {
 
     const API_URL = process.env.REACT_APP_API_URL || '';
 
-    // Verificăm autentificarea și încărcăm datele utilizatorului la încărcarea componentei
     useEffect(() => {
-        // Verificăm dacă există token și user ID în localStorage
         const token = localStorage.getItem('jwtToken');
         const userId = localStorage.getItem('userId');
         const userType = localStorage.getItem('userType');
 
-        // Verificăm dacă userul este logat
         const isLoggedIn = !!token && !!userId && localStorage.getItem('isLoggedIn') === 'true';
         setIsAuthenticated(isLoggedIn);
 
@@ -39,7 +36,6 @@ const HallReviews = () => {
             userType: userType
         });
 
-        // Încărcăm datele utilizatorului dacă este autentificat
         if (isLoggedIn && userId) {
             const fetchUserData = async () => {
                 try {
@@ -57,7 +53,6 @@ const HallReviews = () => {
         }
     }, []);
 
-    // Încarcă detaliile sălii de sport
     useEffect(() => {
         const fetchHallDetails = async () => {
             try {
@@ -72,17 +67,14 @@ const HallReviews = () => {
         fetchHallDetails();
     }, [hallId]);
 
-    // Funcție pentru încărcarea recenziilor
     const loadReviews = async () => {
         try {
             const feedbacksResponse = await axios.get(`${API_URL}/feedbacks`);
 
-            // Filtrăm recenziile doar pentru această sală
             const hallReviews = feedbacksResponse.data.filter(feedback =>
                 feedback.hall && feedback.hall.id === parseInt(hallId)
             );
 
-            // Sortăm recenziile - cele mai recente primele (folosind câmpul date)
             hallReviews.sort((a, b) => {
                 return new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0);
             });
@@ -98,14 +90,12 @@ const HallReviews = () => {
         }
     };
 
-    // Încarcă recenziile pentru sala de sport
     useEffect(() => {
         if (hallId) {
             loadReviews();
         }
     }, [hallId]);
 
-    // Gestionarea schimbărilor în formular
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewReview({
@@ -114,7 +104,6 @@ const HallReviews = () => {
         });
     };
 
-    // Gestionarea schimbării rating-ului
     const handleRatingChange = (rating) => {
         setNewReview({
             ...newReview,
@@ -122,7 +111,6 @@ const HallReviews = () => {
         });
     };
 
-    // Trimiterea recenziei noi
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -151,7 +139,6 @@ const HallReviews = () => {
 
             console.log("Se trimite recenzia:", reviewData);
 
-            // Adăugăm header-ul de autorizare
             const config = {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -161,20 +148,17 @@ const HallReviews = () => {
             const response = await axios.post(`${API_URL}/feedbacks`, reviewData, config);
             console.log("Răspuns de la server:", response.data);
 
-            // Resetăm formularul
             setNewReview({
                 rating: 0,
                 comment: '',
             });
             setShowAddReviewForm(false);
 
-            // Afișăm mesajul de succes
             setSuccessMessage('Recenzia dvs. a fost adăugată cu succes!');
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);
 
-            // Reîncărcăm recenziile pentru a vedea cea nouă
             loadReviews();
 
         } catch (err) {
@@ -183,7 +167,6 @@ const HallReviews = () => {
         }
     };
 
-    // Calculează rating-ul mediu
     const calculateAverageRating = () => {
         if (reviews.length === 0) return 0;
 
@@ -191,7 +174,6 @@ const HallReviews = () => {
         return (sum / reviews.length).toFixed(1);
     };
 
-    // Calculează numărul de recenzii per valoare de rating
     const calculateRatingDistribution = () => {
         const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
@@ -204,7 +186,6 @@ const HallReviews = () => {
         return distribution;
     };
 
-    // Format data
     const formatDate = (dateString) => {
         if (!dateString) return 'Dată necunoscută';
 
@@ -216,20 +197,17 @@ const HallReviews = () => {
         return `${day}.${month}.${year}`;
     };
 
-    // Format nume utilizator (din user sau team)
     const formatUsername = (review) => {
         // Verifică dacă există utilizator în review
         if (review.user) {
             return review.user.name || review.user.username || `Utilizator ${review.user.id}`;
         }
-        // Verifică dacă există team în review (compatibilitate cu versiunea anterioară)
         if (review.team) {
             return review.team.name || `Utilizator ${review.team.id}`;
         }
         return 'Utilizator anonim';
     };
 
-    // Obține prima literă a numelui utilizatorului pentru avatar
     const getUserInitial = (review) => {
         const username = formatUsername(review);
         return username.charAt(0).toUpperCase();

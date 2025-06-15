@@ -1,4 +1,3 @@
-/* Search Bar Styles */
 .search-container {
     position: relative;
     width: 100%;
@@ -29,11 +28,10 @@
 }
 
 .search-input-group {
-    flex: 1; /* Permite input-ului să ocupe spațiul rămas */
+    flex: 1;
     min-width: 250px;
 }
 
-/* Custom Select Styles */
 .custom-select {
     position: relative;
     width: 100%;
@@ -76,7 +74,6 @@
     background-color: rgba(255, 255, 255, 0.8);
 }
 
-/* Stiluri pentru opțiunile disabled din dropdown */
 .option.disabled {
     color: #999;
     cursor: not-allowed;
@@ -110,7 +107,6 @@
     background: transparent;
 }
 
-/* Stiluri pentru dropdown-ul de sugestii */
 .suggestions-list {
     position: absolute;
     top: 100%;
@@ -163,7 +159,6 @@
     background-color: transparent;
 }
 
-/* Hint pentru utilizatori */
 .search-hint {
     margin-top: 0.5rem;
     text-align: center;
@@ -190,7 +185,6 @@
     background-color: rgba(91, 33, 182, 0.8);
 }
 
-/* Stiluri pentru butonul de căutare disabled */
 .search-button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
@@ -202,7 +196,6 @@
     transform: none;
 }
 
-/* Responsive pentru dispozitive mobile */
 @media (max-width: 768px) {
     .search-container {
         transform: translateY(-80px);

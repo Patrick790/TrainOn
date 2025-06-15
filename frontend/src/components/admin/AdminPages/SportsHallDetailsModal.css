@@ -1,4 +1,3 @@
-/* SportsHallDetailsModal.css */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -45,7 +44,6 @@
     transform: translateY(20px);
 }
 
-/* Personalizare scrollbar pentru modern browsers */
 .modal-container::-webkit-scrollbar {
     width: 8px;
 }
@@ -133,7 +131,6 @@
     gap: 20px;
 }
 
-/* Image gallery */
 .modal-image-gallery {
     position: relative;
     border-radius: 12px;
@@ -272,7 +269,6 @@
     font-size: 0.95rem;
 }
 
-/* Info cards */
 .modal-info-card {
     background-color: white;
     border-radius: 12px;
@@ -461,7 +457,6 @@
     transform: translateY(0);
 }
 
-/* Loading and error states */
 .modal-loading {
     padding: 40px;
     text-align: center;
@@ -510,7 +505,6 @@
     color: #ef4444;
 }
 
-/* Responsive styles */
 @media (max-width: 900px) {
     .modal-columns {
         grid-template-columns: 1fr;

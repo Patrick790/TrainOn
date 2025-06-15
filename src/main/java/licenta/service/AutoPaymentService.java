@@ -26,7 +26,6 @@ public class AutoPaymentService {
      */
     public PaymentResult processAutoPayment(ReservationProfile profile, BigDecimal totalAmount, User user) {
         try {
-            // Verificări de validitate
             if (!profile.getAutoPaymentEnabled()) {
                 return PaymentResult.failure("Plata automată nu este activată pentru acest profil");
             }
@@ -36,22 +35,19 @@ public class AutoPaymentService {
                 return PaymentResult.failure("Nu există un card valid pentru plata automată");
             }
 
-            // Verifică limitele de plată
             if (!profile.canProcessAutoPayment(totalAmount)) {
                 return PaymentResult.failure("Suma depășește limitele configurate pentru plata automată");
             }
 
-            // Creează Payment în baza de date
             Payment payment = createPendingPayment(user.getId(), totalAmount, profile);
 
             try {
-                // Procesează plata cu Stripe
                 PaymentIntent paymentIntent = createStripePaymentIntent(payment, defaultCard, totalAmount);
 
                 payment.setStripePaymentIntentId(paymentIntent.getId());
 
                 if ("succeeded".equals(paymentIntent.getStatus())) {
-                    // Plata a reușit
+                    // Plata a reusit
                     payment.setStatus(PaymentStatus.SUCCEEDED);
                     payment.setPaymentDate(LocalDateTime.now());
                     if (paymentIntent.getLatestCharge() != null) {
@@ -66,7 +62,6 @@ public class AutoPaymentService {
                     return PaymentResult.success(savedPayment, "card_auto", "Plată automată procesată cu succes");
 
                 } else if ("requires_action".equals(paymentIntent.getStatus())) {
-                    // Necesită acțiune suplimentară - nu este potrivit pentru plata automată
                     payment.setStatus(PaymentStatus.FAILED);
                     payment.setFailureReason("Plata automată necesită autentificare suplimentară");
                     paymentRepository.save(payment);
@@ -74,7 +69,7 @@ public class AutoPaymentService {
                     return PaymentResult.failure("Cardul necesită autentificare suplimentară - nu este potrivit pentru plata automată");
 
                 } else {
-                    // Plata a eșuat
+                    // Plata a esuat
                     payment.setStatus(PaymentStatus.FAILED);
                     if (paymentIntent.getLastPaymentError() != null) {
                         payment.setFailureReason(paymentIntent.getLastPaymentError().getMessage());
@@ -113,8 +108,8 @@ public class AutoPaymentService {
                 .setAmount((long) (amount.doubleValue() * 100)) // convertește în cenți
                 .setCurrency("RON")
                 .setPaymentMethod(card.getStripePaymentMethodId())
-                .setConfirm(true) // Confirmă imediat pentru plata automată
-                .setOffSession(true) // Indică că este o plată fără prezența utilizatorului
+                .setConfirm(true)
+                .setOffSession(true)
                 .putMetadata("payment_db_id", payment.getId().toString())
                 .putMetadata("user_id", payment.getUserId().toString())
                 .putMetadata("auto_payment", "true")

@@ -203,7 +203,6 @@ class ScheduleManagement extends Component {
 
         return (
             <div className="sm-schedule-manager">
-                {/* Header cu statistici */}
                 <div className="sm-header">
                     <div className="sm-header-content">
                         <div className="sm-title-section">
@@ -228,7 +227,6 @@ class ScheduleManagement extends Component {
                     </div>
                 </div>
 
-                {/* Notificări */}
                 {successMessage && (
                     <div className="sm-notification sm-success">
                         <CheckCircle size={20} />
@@ -243,7 +241,6 @@ class ScheduleManagement extends Component {
                     </div>
                 )}
 
-                {/* Controale */}
                 <div className="sm-controls">
                     <button
                         onClick={this.createDefaultSchedule}
@@ -272,7 +269,6 @@ class ScheduleManagement extends Component {
                     </button>
                 </div>
 
-                {/* Content principal */}
                 <div className="sm-content">
                     {loading ? (
                         <div className="sm-loading">
@@ -358,7 +354,6 @@ class ScheduleManagement extends Component {
                     )}
                 </div>
 
-                {/* Footer info */}
                 <div className="sm-footer">
                     <div className="sm-info-card">
                         <div className="sm-info-icon">

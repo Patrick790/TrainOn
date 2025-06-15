@@ -1,11 +1,9 @@
-/* ManageReviewsPage.css (Clean Design) */
 
 .reviews-manager {
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Hall Selector Styles */
 .hall-selector {
     margin-bottom: 1.5rem;
     display: flex;
@@ -48,7 +46,6 @@
     pointer-events: none;
 }
 
-/* Filters Styles */
 .reviews-filters {
     display: flex;
     margin-bottom: 1.5rem;
@@ -94,7 +91,6 @@
     border-color: #6d28d9;
 }
 
-/* Reviews List Styles - CLEAN DESIGN */
 .reviews-list {
     display: flex;
     flex-direction: column;
@@ -168,20 +164,18 @@
 .review-content {
     color: #4b5563;
     line-height: 1.6;
-    margin-left: 52px; /* Aliniază conținutul cu textul utilizatorului */
+    margin-left: 52px;
 }
 
 .review-content p {
     margin: 0;
 }
 
-/* Last review shouldn't have a border */
 .review-card:last-child {
     border-bottom: none;
     padding-bottom: 0;
 }
 
-/* Loading, Error and Empty States */
 .reviews-loading,
 .reviews-error,
 .reviews-empty {
@@ -205,7 +199,6 @@
     font-style: italic;
 }
 
-/* Responsive Styles */
 @media (max-width: 768px) {
     .hall-selector {
         flex-direction: column;
