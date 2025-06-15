@@ -294,53 +294,29 @@ public class BookingPrioritizationRestController {
      * Șterge rezervările existente din săptămâna următoare - OPTIMIZAT
      */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea rezervărilor pentru săptămâna {} - {}",
-                formatDate(startDate), formatDate(endDate));
+        logger.info("Ștergerea rezervărilor existente pentru săptămâna {} - {}", startDate, endDate);
 
-        try {
-            // QUERY DIRECT ȘI SIMPLU
-            int deletedCount = reservationRepository.deleteReservationsByDateRange(startDate, endDate);
+        Iterable<Reservation> existingReservations = reservationRepository.findAll();
+        List<Reservation> reservationsToDelete = new ArrayList<>();
 
-            logger.info("Șterse {} rezervări prin query direct", deletedCount);
+        for (Reservation reservation : existingReservations) {
+            Date reservationDate = reservation.getDate();
 
-        } catch (Exception e) {
-            logger.error("Eroare la ștergerea rezervărilor", e);
-
-            // FALLBACK: Dacă query-ul direct nu merge, folosește metoda clasică
-            logger.info("🔄 Încerc metoda clasică de ștergere...");
-            deleteReservationsClassicWay(startDate, endDate);
-        }
-    }
-
-    /**
-     * FALLBACK: Metodă clasică dacă query-ul direct nu funcționează
-     */
-    private void deleteReservationsClassicWay(Date startDate, Date endDate) {
-        try {
-            // Găsește toate rezervările din intervalul țintă
-            List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
-
-            List<Reservation> toDelete = allReservations.stream()
-                    .filter(r -> r.getDate() != null)
-                    .filter(r -> "reservation".equals(r.getType()))
-                    .filter(r -> !r.getDate().before(startDate) && !r.getDate().after(endDate))
-                    .collect(Collectors.toList());
-
-            logger.info("📋 Găsite {} rezervări de șters (metoda clasică)", toDelete.size());
-
-            if (!toDelete.isEmpty()) {
-                // Șterge toate deodată
-                reservationRepository.deleteAll(toDelete);
-                logger.info("✅ Șterse {} rezervări (metoda clasică)", toDelete.size());
-            } else {
-                logger.info("ℹ️ Nu există rezervări de șters în perioada specificată");
+            if (reservationDate != null
+                    && !reservationDate.before(startDate)
+                    && !reservationDate.after(endDate)
+                    && "reservation".equals(reservation.getType())) {
+                reservationsToDelete.add(reservation);
             }
+        }
 
-        } catch (Exception e) {
-            logger.error("Eroare critică la ștergerea clasică", e);
-            throw new RuntimeException("Nu s-au putut șterge rezervările: " + e.getMessage());
+        if (!reservationsToDelete.isEmpty()) {
+            logger.info("Se șterg {} rezervări existente", reservationsToDelete.size());
+            reservationRepository.deleteAll(reservationsToDelete);
         }
     }
+
+
     /**
      * Verifică dacă o rezervare este în săptămâna specificată
      */
