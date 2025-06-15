@@ -67,12 +67,12 @@ const AppAdminPersonalData = () => {
 
             const userData = await response.json();
 
-            // Separăm numele complet în prenume și nume
+            // Separam numele complet in prenume si nume
             const nameParts = userData.name ? userData.name.split(' ') : ['', ''];
             const firstName = nameParts[0] || '';
             const lastName = nameParts.slice(1).join(' ') || '';
 
-            // Formatăm data nașterii pentru input-ul de tip date
+            // Formatam data nasterii pentru input-ul de tip date
             const formattedBirthDate = userData.birthDate
                 ? new Date(userData.birthDate).toISOString().split('T')[0]
                 : '';
@@ -98,7 +98,7 @@ const AppAdminPersonalData = () => {
         }
     };
 
-    // Funcție pentru a salva datele actualizate în baza de date
+    // Functie pentru a salva datele actualizate in baza de date
     const saveAdminData = async (updatedData) => {
         try {
             setSaving(true);
@@ -112,10 +112,10 @@ const AppAdminPersonalData = () => {
                 throw new Error('Nu sunt disponibile informațiile de autentificare');
             }
 
-            // Combinăm prenumele și numele înapoi
+            // Combinam prenumele si numele inapoi
             const fullName = `${updatedData.firstName} ${updatedData.lastName}`.trim();
 
-            // Formatăm data pentru trimitere la backend
+            // Formatam data pentru trimitere la backend
             const birthDate = updatedData.birthDate ? new Date(updatedData.birthDate) : null;
 
             const dataToSend = {
@@ -150,7 +150,7 @@ const AppAdminPersonalData = () => {
             setSuccessMessage('Datele au fost salvate cu succes!');
             setSaving(false);
 
-            // Ascundem mesajul de succes după 3 secunde
+
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);

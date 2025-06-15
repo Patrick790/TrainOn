@@ -121,7 +121,6 @@ const AppAdminSecuritySettings = () => {
                 throw new Error(errorData.message || 'Eroare la schimbarea parolei');
             }
 
-            // Success
             alert('Parola administratorului aplicației a fost schimbată cu succes!');
             setIsChangingPassword(false);
             setPasswordData({

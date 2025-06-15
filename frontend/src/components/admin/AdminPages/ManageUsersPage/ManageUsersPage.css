@@ -1,6 +1,5 @@
 /* ManageUsersPage.css */
 
-/* Filtre pentru utilizatori */
 .user-filters {
     display: flex;
     justify-content: space-between;
@@ -150,7 +149,6 @@
     font-weight: 500;
 }
 
-/* Stiluri pentru badge-uri în funcție de rol */
 .user-type-admin {
     background-color: #e0f2fe;
     color: #0369a1;
@@ -172,7 +170,7 @@
 }
 
 .user-actions-cell {
-    text-align: right; /* Aliniere la dreapta pentru celulă */
+    text-align: right;
 }
 
 .view-details-btn {
@@ -334,7 +332,6 @@
     font-weight: 500;
 }
 
-/* Stiluri pentru textul rolurilor în detalii */
 .user-type-text-admin {
     color: #0369a1;
     font-weight: 600;
@@ -350,7 +347,6 @@
     font-weight: 600;
 }
 
-/* Formular de editare */
 .user-edit-form {
     display: flex;
     flex-direction: column;
@@ -459,7 +455,6 @@
     background-color: #059669;
 }
 
-/* Loading and error messages */
 .loading-message,
 .error-message {
     padding: 30px;
@@ -478,7 +473,6 @@
     color: #b91c1c;
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
     .user-detail-grid {
         grid-template-columns: 1fr;
@@ -532,9 +526,7 @@
     }
 }
 
-/* Adaugă aceste stiluri la ManageUsersPage.css */
 
-/* Layout filtre actualizat */
 .user-filters {
     display: flex;
     justify-content: space-between;
@@ -591,7 +583,6 @@
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
 }
 
-/* Stiluri pentru badge-uri de status */
 .user-status-badge {
     display: inline-block;
     padding: 4px 10px;
@@ -621,7 +612,6 @@
     color: #64748b;
 }
 
-/* Stiluri pentru textul de status în detalii */
 .user-status-text-active,
 .user-status-text-verified {
     color: #166534;
@@ -654,7 +644,6 @@
     background-color: #059669;
 }
 
-/* Ajustări responsive pentru filtre */
 @media (max-width: 768px) {
     .user-filters {
         flex-direction: column;
@@ -683,7 +672,6 @@
     }
 }
 
-/* Stilizare bară de acțiuni admin */
 .admin-actions-bar {
     display: flex;
     gap: 15px;
@@ -739,7 +727,6 @@
     border-color: #fde68a;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
     .admin-actions-bar {
         flex-direction: column;

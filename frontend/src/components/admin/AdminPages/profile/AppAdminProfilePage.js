@@ -15,7 +15,7 @@ const AppAdminProfilePage = () => {
     });
     const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-    // Funcție pentru a obține informațiile de bază ale administratorului aplicației pentru sidebar
+
     const fetchBasicAdminInfo = async () => {
         try {
             const userId = localStorage.getItem('userId');

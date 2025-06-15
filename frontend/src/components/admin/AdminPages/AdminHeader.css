@@ -1,4 +1,3 @@
-/* ======= ADMIN HEADER SPECTACULOS ======= */
 .admin-main-header {
     display: flex;
     justify-content: space-between;
@@ -11,7 +10,6 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Fundal cu gradient animat */
 .admin-main-header::before {
     content: "";
     position: absolute;
@@ -25,7 +23,6 @@
     z-index: -2;
 }
 
-/* Overlay cu pattern și efect de noise pentru profunzime */
 .admin-main-header::after {
     content: "";
     position: absolute;
@@ -39,7 +36,6 @@
     z-index: -1;
 }
 
-/* Linii de lumină animate în fundal */
 .admin-main-header .light-line {
     position: absolute;
     background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.5), transparent);
@@ -72,7 +68,6 @@
     animation-duration: 14s;
 }
 
-/* Container pentru logo - cu efect de glass morphism */
 .admin-main-logo-container {
     display: flex;
     align-items: center;
@@ -165,7 +160,6 @@
     animation-play-state: paused;
 }
 
-/* Enhanced text styling */
 .admin-main-logo-text {
     font-size: 2.2rem;
     font-weight: 800;
@@ -178,7 +172,6 @@
     text-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
 }
 
-/* Text styling with multiple layers for 3D effect */
 .admin-main-logo-text::before {
     content: 'TrainOn';
     position: absolute;
@@ -207,7 +200,6 @@
     filter: blur(3px);
 }
 
-/* Electric effect for the logo text */
 .admin-main-logo-flash {
     position: absolute;
     top: 50%;
@@ -254,14 +246,12 @@
     animation-delay: 1.9s;
 }
 
-/* Partea dreaptă a header-ului */
 .admin-main-header-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-/* Stiluri pentru informațiile utilizatorului */
 .admin-main-header-user {
     display: flex;
     align-items: center;
@@ -302,7 +292,6 @@
     font-size: 0.95rem;
 }
 
-/* Buton de autentificare spectaculos */
 .admin-main-auth-buttons {
     display: flex;
     gap: 1.2rem;

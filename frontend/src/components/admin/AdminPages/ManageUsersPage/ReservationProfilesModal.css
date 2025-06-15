@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1001; /* Peste modalul de utilizator */
+    z-index: 1001;
     padding: 20px;
     backdrop-filter: blur(2px);
 }
@@ -91,7 +91,7 @@
     background-color: #f9fafb;
 }
 
-/* Loading, Error, Empty States */
+
 .rp-loading,
 .rp-error,
 .rp-empty {
@@ -116,7 +116,7 @@
     color: #6b7280;
 }
 
-/* Profiles List */
+
 .rp-profiles-list {
     display: grid;
     gap: 20px;
@@ -180,7 +180,7 @@
     word-break: break-word;
 }
 
-/* Edit Form */
+
 .rp-edit-form {
     background-color: #f9fafb;
     border: 1px solid #e5e7eb;
@@ -372,7 +372,7 @@
     border-color: #4b5563;
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     .rp-modal {
         width: 100%;

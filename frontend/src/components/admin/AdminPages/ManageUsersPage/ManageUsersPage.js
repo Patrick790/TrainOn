@@ -23,11 +23,9 @@ const ManageUsersPage = () => {
         county: '',
         userType: ''
     });
-    // New state for create modals
     const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
     const [isCreateHallAdminModalOpen, setIsCreateHallAdminModalOpen] = useState(false);
 
-    // Nou state pentru modalul de profiluri de rezervare
     const [isReservationProfilesModalOpen, setIsReservationProfilesModalOpen] = useState(false);
 
     const API_URL = process.env.REACT_APP_API_URL || '';
@@ -63,16 +61,13 @@ const ManageUsersPage = () => {
 
                 console.log("Response data:", response.data);
 
-                // Păstrăm toți utilizatorii, filtrarea se face la afișare
                 setUsers(response.data);
 
-                // Filtrăm inițial doar utilizatorii activi (null sau 'verified')
                 const activeUsers = response.data.filter(user =>
                     user.accountStatus === null || user.accountStatus === 'verified'
                 );
                 setFilteredUsers(activeUsers);
 
-                // Extrage lista de orașe disponibile pentru filtrare din toți utilizatorii
                 const cities = [...new Set(response.data.map(user => user.city).filter(city => city))];
                 setAvailableCities(cities.sort());
 
@@ -84,7 +79,6 @@ const ManageUsersPage = () => {
                     console.error('Response data:', err.response.data);
                 }
 
-                // Mesaj de eroare personalizat în funcție de tipul erorii
                 if (err.response?.status === 403) {
                     setError('Acces interzis. Vă rugăm să verificați că aveți drepturi de administrator.');
                 } else if (err.response?.status === 401) {
@@ -100,11 +94,9 @@ const ManageUsersPage = () => {
         fetchUsers();
     }, []);
 
-    // Filter users by status and city
     useEffect(() => {
         let filtered = [...users];
 
-        // Filtrare după status
         if (statusFilter === 'active') {
             filtered = filtered.filter(user =>
                 user.accountStatus === null || user.accountStatus === 'verified'
@@ -112,9 +104,8 @@ const ManageUsersPage = () => {
         } else if (statusFilter === 'suspended') {
             filtered = filtered.filter(user => user.accountStatus === 'suspended');
         }
-        // Dacă statusFilter === 'all', nu filtrăm după status
 
-        // Filtrare după oraș
+        // Filtrare dupa oras
         if (cityFilter) {
             filtered = filtered.filter(user => user.city === cityFilter);
         }
@@ -127,7 +118,7 @@ const ManageUsersPage = () => {
         setIsModalOpen(true);
         setIsEditing(false);
 
-        // Pregătește datele pentru editare (dar nu activează editarea încă)
+        // Pregateste datele pentru editare (dar nu activeaza editarea înca)
         setEditFormData({
             name: user.name || '',
             email: user.email || '',
@@ -150,7 +141,6 @@ const ManageUsersPage = () => {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        // Resetează datele formularului la valorile utilizatorului selectat
         if (selectedUser) {
             setEditFormData({
                 name: selectedUser.name || '',
@@ -191,10 +181,8 @@ const ManageUsersPage = () => {
 
             setUsers(updatedUsers);
 
-            // Actualizează și utilizatorul selectat
             setSelectedUser({ ...selectedUser, ...editFormData });
 
-            // Dezactivează modul de editare
             setIsEditing(false);
 
             alert('Utilizatorul a fost actualizat cu succes!');
@@ -206,19 +194,16 @@ const ManageUsersPage = () => {
 
     const handleSuspendUser = async (userId) => {
         try {
-            // Confirmă că administratorul dorește să suspende utilizatorul
             if (!window.confirm('Sunteți sigur că doriți să suspendați acest utilizator?')) {
                 return;
             }
 
-            // Apelează endpoint-ul corect pentru suspendarea utilizatorului
             await axios.post(
                 `${API_URL}/users/${userId}/suspend`,
                 {},
                 getAuthHeader()
             );
 
-            // Actualizează starea utilizatorului în lista locală
             const updatedUsers = users.map(user => {
                 if (user.id === userId) {
                     return { ...user, accountStatus: 'suspended' };
@@ -228,7 +213,7 @@ const ManageUsersPage = () => {
 
             setUsers(updatedUsers);
 
-            // Dacă suntem în filtrul 'active', eliminăm utilizatorul suspendat din vizualizare
+            // Daca suntem in filtrul 'active', eliminam utilizatorul suspendat din vizualizare
             if (statusFilter === 'active') {
                 setFilteredUsers(prevFiltered => prevFiltered.filter(user => user.id !== userId));
             }
@@ -243,19 +228,16 @@ const ManageUsersPage = () => {
 
     const handleActivateUser = async (userId) => {
         try {
-            // Confirmă că administratorul dorește să reactiveze utilizatorul
             if (!window.confirm('Sunteți sigur că doriți să reactivați acest utilizator?')) {
                 return;
             }
 
-            // Actualizăm utilizatorul pentru a-i schimba statusul în 'verified'
             await axios.put(
                 `${API_URL}/users/${userId}`,
                 { accountStatus: 'verified' },
                 getAuthHeader()
             );
 
-            // Actualizează starea utilizatorului în lista locală
             const updatedUsers = users.map(user => {
                 if (user.id === userId) {
                     return { ...user, accountStatus: 'verified' };
@@ -265,7 +247,6 @@ const ManageUsersPage = () => {
 
             setUsers(updatedUsers);
 
-            // Dacă suntem în filtrul 'suspended', eliminăm utilizatorul reactivat din vizualizare
             if (statusFilter === 'suspended') {
                 setFilteredUsers(prevFiltered => prevFiltered.filter(user => user.id !== userId));
             }
@@ -301,17 +282,15 @@ const ManageUsersPage = () => {
         }
     };
 
-    // Funcție pentru a deschide modalul profilurilor de rezervare
+    // Funct pentru a deschide modalul profilurilor de rezervare
     const handleOpenReservationProfiles = () => {
         setIsReservationProfilesModalOpen(true);
     };
 
-    // Funcție pentru a închide modalul profilurilor de rezervare
     const handleCloseReservationProfiles = () => {
         setIsReservationProfilesModalOpen(false);
     };
 
-    // Verifică dacă utilizatorul are teamType (este în echipă)
     const hasTeamType = (user) => {
         return user.teamType && user.teamType.trim() !== '';
     };
@@ -333,7 +312,6 @@ const ManageUsersPage = () => {
         }
     };
 
-    // Determinarea textului pentru roluri de utilizator
     const getUserTypeText = (userType) => {
         switch (userType) {
             case 'admin':
@@ -347,7 +325,6 @@ const ManageUsersPage = () => {
         }
     };
 
-    // Determinarea textului pentru status cont
     const getAccountStatusText = (accountStatus) => {
         switch (accountStatus) {
             case 'verified':

@@ -81,10 +81,9 @@ const CreateUserModal = ({
             address: formData.address,
             county: formData.county,
             city: formData.city,
-            userType: formData.userType // Utilizăm direct valoarea din state
+            userType: formData.userType
         };
 
-        // Adaugă data nașterii
         if (formData.birthDate) {
             userData.birthDate = new Date(formData.birthDate).toISOString();
         }
@@ -99,19 +98,16 @@ const CreateUserModal = ({
             );
 
             if (response.data) {
-                // Anunță componenta părinte că a fost creat un utilizator nou
+                // Anunta componenta parinte ca a fost creat un utilizator nou
                 onUserCreated(response.data);
 
-                // Închide modalul
                 onClose();
 
-                // Notificare de succes
                 alert(`${userType === 'hall_admin' ? 'Administratorul de sală' : 'Utilizatorul'} a fost creat cu succes!`);
             }
         } catch (err) {
             console.error('Error creating user:', err);
 
-            // Mesaj de eroare personalizat în funcție de tipul erorii
             if (err.response?.status === 409) {
                 setErrorMessage('Acest email este deja folosit de un alt utilizator!');
             } else if (err.response?.status === 400) {

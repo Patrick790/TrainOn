@@ -15,7 +15,6 @@ const ReservationProfilesModal = ({ isOpen, onClose, userId, userName, API_URL, 
         city: ''
     });
 
-    // Încarcă profilurile de rezervare ale utilizatorului
     const fetchReservationProfiles = async () => {
         if (!userId) return;
 
@@ -45,14 +44,12 @@ const ReservationProfilesModal = ({ isOpen, onClose, userId, userName, API_URL, 
         }
     };
 
-    // Încarcă profilurile când se deschide modalul
     useEffect(() => {
         if (isOpen && userId) {
             fetchReservationProfiles();
         }
     }, [isOpen, userId]);
 
-    // Resetează starea când se închide modalul
     useEffect(() => {
         if (!isOpen) {
             setProfiles([]);
