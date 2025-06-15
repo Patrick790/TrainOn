@@ -36,9 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        if (path.startsWith("/booking-prioritization")) {
-            return true;
-        }
 
         return path.startsWith("/login") ||
                 path.startsWith("/register") ||
