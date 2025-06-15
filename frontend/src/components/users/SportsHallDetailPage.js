@@ -15,7 +15,6 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(true);
     const API_URL = process.env.REACT_APP_API_URL || '';
 
-
     useEffect(() => {
         if (isOpen) {
             fetchUserInfo();
@@ -32,7 +31,8 @@ const ReservationOptionsModal = ({ isOpen, onClose }) => {
                 return;
             }
 
-            const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/users/${userId}`, {                headers: {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || ''}/users/${userId}`, {
+                headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
@@ -127,6 +127,8 @@ const SportsHallDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [hallRating, setHallRating] = useState({ averageRating: 0, totalReviews: 0 });
+    const [ratingsLoading, setRatingsLoading] = useState(true);
 
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
@@ -140,6 +142,12 @@ const SportsHallDetailPage = () => {
         fetchSportsHall();
     }, [id]);
 
+    useEffect(() => {
+        if (id) {
+            fetchHallRating();
+        }
+    }, [id]);
+
     const fetchSportsHall = async () => {
         try {
             const response = await axios.get(`${API_URL}/sportsHalls/${id}`);
@@ -150,6 +158,43 @@ const SportsHallDetailPage = () => {
             setError('Nu s-a putut încărca sala de sport.');
             setLoading(false);
         }
+    };
+
+    const fetchHallRating = async () => {
+        try {
+            setRatingsLoading(true);
+            const response = await fetch(`${API_URL}/feedbacks?hallId=${id}`);
+            if (response.ok) {
+                const feedbacks = await response.json();
+                const ratingData = calculateRatingFromFeedbacks(feedbacks);
+                setHallRating(ratingData);
+            } else {
+                console.warn(`Nu s-au putut încărca rating-urile pentru sala ${id}`);
+                setHallRating({ averageRating: 0, totalReviews: 0 });
+            }
+        } catch (error) {
+            console.error(`Error fetching ratings for hall ${id}:`, error);
+            setHallRating({ averageRating: 0, totalReviews: 0 });
+        } finally {
+            setRatingsLoading(false);
+        }
+    };
+
+    const calculateRatingFromFeedbacks = (feedbacks) => {
+        if (!feedbacks || feedbacks.length === 0) {
+            return {
+                averageRating: 0,
+                totalReviews: 0
+            };
+        }
+
+        const totalRating = feedbacks.reduce((sum, feedback) => sum + (feedback.rating || 0), 0);
+        const averageRating = totalRating / feedbacks.length;
+
+        return {
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalReviews: feedbacks.length
+        };
     };
 
     const checkLoginStatus = () => {
@@ -191,7 +236,6 @@ const SportsHallDetailPage = () => {
         setIsReservationModalOpen(false);
     };
 
-    // Funcții pentru imagini
     const getImageUrl = (image) => {
         if (!image) return 'https://via.placeholder.com/800x500?text=Imagine+Indisponibilă';
         return `${API_URL}/images/${image.id}`;
@@ -213,35 +257,54 @@ const SportsHallDetailPage = () => {
         setCurrentImageIndex(index);
     };
 
-    const calculateRating = (hall) => {
-        if (!hall || !hall.capacity) return 3.0;
+    const renderStars = (rating, totalReviews) => {
+        if (ratingsLoading) {
+            return (
+                <div className="detail-stars">
+                    <span className="rating-loading">Se încarcă rating-ul...</span>
+                </div>
+            );
+        }
 
-        const capacity = hall.capacity || 0;
-        let baseRating = 3.5;
+        if (rating === 0) {
+            return (
+                <div className="detail-stars" onClick={goToReviews} style={{ cursor: 'pointer' }} title="Vezi recenziile">
+                    <span className="no-rating">Fără recenzii</span>
+                </div>
+            );
+        }
 
-        if (capacity > 100) baseRating += 1.2;
-        else if (capacity > 50) baseRating += 0.8;
-        else if (capacity > 20) baseRating += 0.4;
-
-        const rating = Math.min(5, Math.max(1, baseRating));
-        return rating.toFixed(1);
-    };
-
-    const renderStars = (rating) => {
         const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        const hasHalfStar = rating % 1 >= 0.3 && rating % 1 <= 0.7;
+        const hasAlmostFullStar = rating % 1 > 0.7;
 
         return (
             <div className="detail-stars" onClick={goToReviews} style={{ cursor: 'pointer' }} title="Vezi recenziile">
-                {[...Array(fullStars)].map((_, i) => (
-                    <Star key={`full-${i}`} className="star-full" fill="#FFD700" color="#FFD700" size={18} />
-                ))}
-                {hasHalfStar && <Star className="star-half" fill="#FFD700" color="#FFD700" size={18} />}
-                {[...Array(emptyStars)].map((_, i) => (
-                    <Star key={`empty-${i}`} className="star-empty" color="#FFD700" size={18} />
-                ))}
-                <span className="rating-value">{rating}</span>
+                {[...Array(5)].map((_, index) => {
+                    if (index < fullStars) {
+                        return (
+                            <Star key={`full-${index}`} className="star-full" fill="#FFD700" color="#FFD700" size={18} />
+                        );
+                    }
+                    else if (index === fullStars && hasHalfStar) {
+                        return (
+                            <Star key={`half-${index}`} className="star-half" fill="#FFD700" color="#FFD700" size={18} />
+                        );
+                    }
+                    else if (index === fullStars && hasAlmostFullStar) {
+                        return (
+                            <Star key={`almost-full-${index}`} className="star-full" fill="#FFD700" color="#FFD700" size={18} />
+                        );
+                    }
+                    else {
+                        return (
+                            <Star key={`empty-${index}`} className="star-empty" color="#FFD700" size={18} />
+                        );
+                    }
+                })}
+                <span className="rating-value">
+                    {rating} ({totalReviews} {totalReviews === 1 ? 'recenzie' : 'recenzii'})
+                </span>
             </div>
         );
     };
@@ -283,12 +346,10 @@ const SportsHallDetailPage = () => {
         return <div className="detail-page-error">Nu s-a găsit sala de sport.</div>;
     }
 
-    const rating = calculateRating(sportsHall);
     const facilities = processFacilities(sportsHall.facilities);
 
     return (
         <div className="main-container">
-            {/* Header */}
             <Header
                 isLoggedIn={isLoggedIn}
                 onLoginClick={toggleLoginModal}
@@ -302,7 +363,6 @@ const SportsHallDetailPage = () => {
 
             <div className="detail-page-wrapper">
                 <div className="detail-page-container">
-                    {/* Buton înapoi */}
                     <div className="detail-back-link">
                         <Link to="/" className="back-link">
                             <ArrowLeft size={16} />
@@ -318,7 +378,7 @@ const SportsHallDetailPage = () => {
                                 <span>{sportsHall.address}, {sportsHall.city}</span>
                             </div>
                             <div className="detail-page-rating">
-                                {renderStars(rating)}
+                                {renderStars(hallRating.averageRating, hallRating.totalReviews)}
                                 <Link to={`/sportsHalls/${id}/reviews`} className="view-reviews-link">
                                     Vezi toate recenziile
                                 </Link>
