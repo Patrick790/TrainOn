@@ -750,43 +750,37 @@ public class BookingPrioritizationRestController {
     /**
      * Șterge rezervările existente din săptămâna următoare - OPTIMIZAT
      */
+    /**
+     * Șterge rezervările existente din săptămâna următoare - VERSIUNE OPTIMIZATĂ ȘI SIGURĂ
+     */
     private void deleteExistingReservationsForNextWeek(Date startDate, Date endDate) {
-        logger.info("Ștergerea rezervărilor pentru săptămâna {} - {}", formatDate(startDate), formatDate(endDate));
+        logger.info("Ștergerea COMPLETĂ a rezervărilor pentru săptămâna {} - {}", formatDate(startDate), formatDate(endDate));
 
         try {
-            List<Reservation> allReservations = (List<Reservation>) reservationRepository.findAll();
-            List<Reservation> toDelete = new ArrayList<>();
+            // Folosește metoda din repository care șterge direct în baza de date
+            int deletedCount = reservationRepository.deleteReservationsByDateRange(startDate, endDate);
 
-            for (Reservation reservation : allReservations) {
-                if (reservation.getDate() != null &&
-                        "reservation".equals(reservation.getType()) &&
-                        !reservation.getDate().before(startDate) &&
-                        !reservation.getDate().after(endDate)) {
-                    toDelete.add(reservation);
+            logger.info("Au fost șterse {} rezervări din săptămâna următoare", deletedCount);
+
+            // Verificare suplimentară pentru a confirma ștergerea completă
+            long remaining = reservationRepository.countByDateBetweenAndType(startDate, endDate, "reservation");
+
+            if (remaining > 0) {
+                logger.warn("ATENȚIE: Au rămas {} rezervări după ștergere! Se încearcă ștergerea manuală...", remaining);
+
+                // Încercăm o ștergere manuală ca fallback
+                List<Reservation> remainingReservations = reservationRepository
+                        .findByDateBetweenAndType(startDate, endDate, "reservation");
+
+                if (!remainingReservations.isEmpty()) {
+                    reservationRepository.deleteAll(remainingReservations);
+                    logger.info("Șterse manual {} rezervări rămase", remainingReservations.size());
                 }
-            }
-
-            if (!toDelete.isEmpty()) {
-                logger.info("Se șterg {} rezervări din săptămâna următoare", toDelete.size());
-                reservationRepository.deleteAll(toDelete);
-
-                // Verificare
-                Thread.sleep(200);
-                long remaining = ((List<Reservation>) reservationRepository.findAll()).stream()
-                        .filter(r -> r.getDate() != null &&
-                                "reservation".equals(r.getType()) &&
-                                !r.getDate().before(startDate) &&
-                                !r.getDate().after(endDate))
-                        .count();
-
-                if (remaining > 0) {
-                    logger.warn("Încă există {} rezervări după ștergere!", remaining);
-                } else {
-                    logger.info("✓ Toate rezervările au fost șterse cu succes");
-                }
+            } else {
+                logger.info("✓ Toate rezervările au fost șterse cu succes");
             }
         } catch (Exception e) {
-            logger.error("Eroare la ștergerea rezervărilor: {}", e.getMessage());
+            logger.error("EROARE CRITICĂ la ștergerea rezervărilor: {}", e.getMessage());
             throw new RuntimeException("Eroare la ștergerea rezervărilor: " + e.getMessage());
         }
     }
