@@ -189,7 +189,37 @@ public class BookingPrioritizationRestController {
 
             if (!existingReservations.isEmpty()) {
                 logger.info("Șterg {} rezervări existente pentru regenerare", existingReservations.size());
+
+                // Pentru fiecare rezervare, șterge mai întâi legăturile cu plățile
+                for (Reservation reservation : existingReservations) {
+                    try {
+                        // Găsește plățile asociate acestei rezervări
+                        List<Payment> associatedPayments = StreamSupport
+                                .stream(paymentRepository.findAll().spliterator(), false)
+                                .filter(payment -> payment.getPaymentReservations() != null &&
+                                        payment.getPaymentReservations().stream()
+                                                .anyMatch(pr -> pr.getReservation() != null &&
+                                                        pr.getReservation().getId().equals(reservation.getId())))
+                                .collect(Collectors.toList());
+
+                        // Șterge legăturile payment_reservations
+                        for (Payment payment : associatedPayments) {
+                            payment.getPaymentReservations().removeIf(pr ->
+                                    pr.getReservation() != null &&
+                                            pr.getReservation().getId().equals(reservation.getId()));
+                            paymentRepository.save(payment);
+                        }
+
+                        logger.debug("Șterse legăturile pentru rezervarea {}", reservation.getId());
+                    } catch (Exception e) {
+                        logger.warn("Nu s-au putut șterge legăturile pentru rezervarea {}: {}",
+                                reservation.getId(), e.getMessage());
+                    }
+                }
+
+                // Acum șterge rezervările
                 reservationRepository.deleteAll(existingReservations);
+                logger.info("Rezervări șterse cu succes");
             }
         } catch (Exception e) {
             logger.error("Eroare la ștergerea rezervărilor existente", e);

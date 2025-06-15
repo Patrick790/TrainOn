@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="12.06.2025">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/HealthController.java" afterDir="false" />
-    </list>
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="booking security" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -510,7 +506,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749720275637</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="booking security">
+      <option name="closed" value="true" />
+      <created>1749975300744</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1749975300744</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -557,7 +561,8 @@
     <MESSAGE value="almost finished" />
     <MESSAGE value="10.06.2025" />
     <MESSAGE value="12.06.2025" />
-    <option name="LAST_COMMIT_MESSAGE" value="12.06.2025" />
+    <MESSAGE value="booking security" />
+    <option name="LAST_COMMIT_MESSAGE" value="booking security" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
