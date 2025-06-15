@@ -14,12 +14,20 @@ class BookingPrioritization extends Component {
             generationResult: null,
             showDetailedResults: false,
             systemStatus: null,
-            isLoadingStatus: false
+            isLoadingStatus: false,
+            generationProgress: '',
+            timeoutWarning: false
         };
+
+        // Nu mai avem generateTimeout
     }
 
     componentDidMount() {
         this.loadSystemStatus();
+    }
+
+    componentWillUnmount() {
+        // Nu mai avem generateTimeout să curățăm
     }
 
     // Încarcă statusul sistemului
@@ -27,7 +35,9 @@ class BookingPrioritization extends Component {
         try {
             this.setState({ isLoadingStatus: true });
 
-            const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/status`);
+            const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/status`, {
+                timeout: 10000 // 10 secunde timeout
+            });
 
             if (response.ok) {
                 const statusData = await response.json();
@@ -40,28 +50,60 @@ class BookingPrioritization extends Component {
         }
     };
 
-    // Funcția principală pentru generarea rezervărilor
+    // Funcția principală pentru generarea rezervărilor - FĂRĂ TIMEOUT FORȚAT
     handleGenerateBookings = async () => {
         try {
             this.setState({
                 isGenerating: true,
                 generationComplete: false,
-                showDetailedResults: false
+                showDetailedResults: false,
+                generationProgress: 'Se inițializează...',
+                timeoutWarning: false
             });
 
-            // Nu mai este necesar token-ul JWT pentru că endpoint-ul este public
+            // Actualizări progresive ale mesajului (fără abort)
+            const progressUpdates = [
+                { time: 10000, message: 'Se procesează profilurile...' },
+                { time: 30000, message: 'Se generează rezervările...' },
+                { time: 60000, message: 'Procesul continuă... încă se lucrează...' },
+                { time: 90000, message: 'Aproape gata... se finalizează procesul...' }
+            ];
+
+            const progressTimeouts = progressUpdates.map(update =>
+                setTimeout(() => {
+                    if (this.state.isGenerating) {
+                        this.setState({
+                            generationProgress: update.message,
+                            timeoutWarning: update.time >= 30000 // Show warning după 30s
+                        });
+                    }
+                }, update.time)
+            );
+
+            // Request FĂRĂ timeout - lasă să se termine natural
             const response = await fetch(`${this.API_BASE_URL}/booking-prioritization/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
+                // NU mai avem signal: controller.signal - lasă să ruleze cât e nevoie
             });
+
+            // Curăță toate timeout-urile de progress
+            progressTimeouts.forEach(timeout => clearTimeout(timeout));
 
             if (!response.ok) {
                 throw new Error(`Serverul a răspuns cu codul: ${response.status}`);
             }
 
-            const data = await response.json();
+            // Parsează response-ul pas cu pas pentru a evita crash-ul
+            let data;
+            try {
+                const text = await response.text();
+                data = JSON.parse(text);
+            } catch (parseError) {
+                throw new Error('Response-ul serverului nu poate fi procesat');
+            }
 
             if (data.success) {
                 this.setState({
@@ -69,11 +111,15 @@ class BookingPrioritization extends Component {
                     generationComplete: true,
                     generationSuccess: true,
                     resultMessage: this.buildSuccessMessage(data),
-                    generationResult: data
+                    generationResult: data,
+                    generationProgress: '',
+                    timeoutWarning: false
                 });
 
                 // Reîncarcă statusul sistemului după generare
-                this.loadSystemStatus();
+                setTimeout(() => {
+                    this.loadSystemStatus();
+                }, 1000);
 
                 if (this.props.onGenerationComplete) {
                     this.props.onGenerationComplete(true);
@@ -83,24 +129,29 @@ class BookingPrioritization extends Component {
             }
         } catch (error) {
             console.error('Eroare la generarea rezervărilor:', error);
+
+            let errorMessage = error.message;
+            // Nu mai verificăm pentru AbortError pentru că nu mai folosim abort
+
             this.setState({
                 isGenerating: false,
                 generationComplete: true,
                 generationSuccess: false,
-                resultMessage: `Eroare la generarea rezervărilor: ${error.message}`,
-                generationResult: null
+                resultMessage: `Eroare la generarea rezervărilor: ${errorMessage}`,
+                generationResult: null,
+                generationProgress: '',
+                timeoutWarning: false
             });
 
             if (this.props.onGenerationComplete) {
-                this.props.onGenerationComplete(false, error.message);
+                this.props.onGenerationComplete(false, errorMessage);
             }
         }
     };
 
-    // Construiește mesajul de succes simplificat (fără plăți)
+    // Construiește mesajul de succes optimizat
     buildSuccessMessage = (data) => {
-        const { count, profileResults } = data;
-        const successfulProfiles = profileResults ? profileResults.filter(p => p.success).length : 0;
+        const { count, successfulProfiles } = data;
 
         let message = `${data.message} Au fost generate ${count} rezervări`;
 
@@ -125,7 +176,9 @@ class BookingPrioritization extends Component {
             generationComplete: false,
             resultMessage: '',
             generationResult: null,
-            showDetailedResults: false
+            showDetailedResults: false,
+            generationProgress: '',
+            timeoutWarning: false
         });
     };
 
@@ -177,14 +230,40 @@ class BookingPrioritization extends Component {
         );
     };
 
-    // Render pentru rezultatele detaliate
+    // Render pentru progresul generării
+    renderGenerationProgress = () => {
+        const { generationProgress, timeoutWarning } = this.state;
+
+        if (!generationProgress) return null;
+
+        return (
+            <div className={`bp-progress-container ${timeoutWarning ? 'bp-warning' : ''}`}>
+                <div className="bp-progress-content">
+                    {timeoutWarning && <AlertTriangle size={16} />}
+                    <span>{generationProgress}</span>
+                </div>
+                {timeoutWarning && (
+                    <div className="bp-timeout-help">
+                        <p>Procesul durează mai mult pentru că:</p>
+                        <ul>
+                            <li>Se procesează multe profiluri</li>
+                            <li>Se caută disponibilități complexe</li>
+                            <li>Se optimizează distribuția rezervărilor</li>
+                        </ul>
+                        <p><strong>Vă rugăm să așteptați până se termină.</strong></p>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // Render pentru rezultatele detaliate - OPTIMIZAT
     renderDetailedResults = () => {
         const { generationResult } = this.state;
 
         if (!generationResult) return null;
 
-        const { count, profileResults, reservations } = generationResult;
-        const successfulProfiles = profileResults ? profileResults.filter(p => p.success).length : 0;
+        const { count, profileResults, successfulProfiles } = generationResult;
         const failedProfiles = profileResults ? profileResults.filter(p => !p.success).length : 0;
 
         return (
@@ -243,22 +322,12 @@ class BookingPrioritization extends Component {
                     </div>
                 )}
 
-                {/* Lista profilurilor procesate */}
+                {/* Lista profilurilor procesate - OPTIMIZATĂ */}
                 {profileResults && profileResults.length > 0 && (
                     <div className="bp-profiles-list">
                         <h5>Profiluri procesate ({profileResults.length})</h5>
                         <div className="bp-profiles-summary">
-                            {this.renderProfilesSummary(profileResults)}
-                        </div>
-                    </div>
-                )}
-
-                {/* Lista rezervărilor generate */}
-                {reservations && reservations.length > 0 && (
-                    <div className="bp-reservations-list">
-                        <h5>Rezervări generate ({reservations.length})</h5>
-                        <div className="bp-reservations-summary">
-                            {this.renderReservationsSummary(reservations)}
+                            {this.renderProfilesSummaryOptimized(profileResults)}
                         </div>
                     </div>
                 )}
@@ -266,17 +335,17 @@ class BookingPrioritization extends Component {
         );
     };
 
-    // Render pentru rezumatul profilurilor
-    renderProfilesSummary = (profileResults) => {
+    // Render optimizat pentru rezumatul profilurilor
+    renderProfilesSummaryOptimized = (profileResults) => {
         return profileResults.map((result, index) => (
             <div key={index} className={`bp-profile-summary ${result.success ? 'bp-success' : 'bp-error'}`}>
                 <div className="bp-profile-name">
-                    {result.profile?.name || 'Profil necunoscut'}
+                    {result.profileName || 'Profil necunoscut'}
                 </div>
                 <div className="bp-profile-result">
                     {result.success ? (
                         <span className="bp-success-text">
-                            {result.reservations?.length || 0} rezervări
+                            {result.reservationCount || 0} rezervări
                         </span>
                     ) : (
                         <span className="bp-error-text">
@@ -284,25 +353,16 @@ class BookingPrioritization extends Component {
                         </span>
                     )}
                 </div>
-            </div>
-        ));
-    };
-
-    // Render pentru rezumatul rezervărilor
-    renderReservationsSummary = (reservations) => {
-        const groupedByHall = reservations.reduce((acc, reservation) => {
-            const hallName = reservation.hall?.name || 'Sală necunoscută';
-            if (!acc[hallName]) {
-                acc[hallName] = [];
-            }
-            acc[hallName].push(reservation);
-            return acc;
-        }, {});
-
-        return Object.entries(groupedByHall).map(([hallName, hallReservations]) => (
-            <div key={hallName} className="bp-hall-summary">
-                <div className="bp-hall-name">{hallName}</div>
-                <div className="bp-hall-count">{hallReservations.length} rezervări</div>
+                {/* Afișează sample rezervări dacă există */}
+                {result.sampleReservations && result.sampleReservations.length > 0 && (
+                    <div className="bp-sample-reservations">
+                        {result.sampleReservations.map((res, idx) => (
+                            <div key={idx} className="bp-sample-reservation">
+                                {res.date} - {res.timeSlot} ({res.hallName})
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         ));
     };
@@ -357,6 +417,9 @@ class BookingPrioritization extends Component {
                         )}
                     </button>
                 </div>
+
+                {/* Progress indicator */}
+                {isGenerating && this.renderGenerationProgress()}
 
                 {generationComplete && (
                     <div className="bp-result-container">

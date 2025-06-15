@@ -57,26 +57,68 @@ public class BookingPrioritizationRestController {
 
             GenerationResult result = generateAutomatedBookings();
 
+            // OPTIMIZARE CRITICĂ: Response minimalist pentru a evita crash-ul browser-ului
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Rezervările au fost generate cu succes.");
             response.put("count", result.getTotalReservations());
-            response.put("profileResults", result.getProfileResults());
-            response.put("reservations", result.getReservations());
+            response.put("successfulProfiles", result.getSuccessfulProfiles());
+
+            // NU trimite lista completă de rezervări - prea mare pentru browser
+            // response.put("reservations", result.getReservations()); // COMENTAT
+
+            // Trimite doar un sumar compact
+            List<Map<String, Object>> profileSummary = result.getProfileResults().stream()
+                    .map(this::createProfileSummary)
+                    .collect(Collectors.toList());
+
+            response.put("profileResults", profileSummary);
 
             logger.info("=== GENERARE COMPLETĂ: {} rezervări pentru {} profiluri ===",
                     result.getTotalReservations(), result.getSuccessfulProfiles());
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             logger.error("EROARE CRITICĂ la generarea rezervărilor", e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
             errorResponse.put("message", "Eroare la generarea rezervărilor: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    private Map<String, Object> createProfileSummary(ProfileResult profileResult) {
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("profileName", profileResult.getProfile().getName());
+        summary.put("reservationCount", profileResult.getReservations().size());
+        summary.put("success", profileResult.isSuccess());
+
+        if (!profileResult.isSuccess() && profileResult.getError() != null) {
+            summary.put("error", profileResult.getError());
+        }
+
+        // Doar primele 3 rezervări pentru sumar
+        if (!profileResult.getReservations().isEmpty()) {
+            List<Map<String, Object>> reservationSummary = profileResult.getReservations().stream()
+                    .limit(3) // Doar primele 3 pentru sumar
+                    .map(this::createReservationSummary)
+                    .collect(Collectors.toList());
+            summary.put("sampleReservations", reservationSummary);
+        }
+
+        return summary;
+    }
+
+    private Map<String, Object> createReservationSummary(Reservation reservation) {
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("date", formatDate(reservation.getDate()));
+        summary.put("timeSlot", reservation.getTimeSlot());
+        summary.put("hallName", reservation.getHall().getName());
+        summary.put("price", reservation.getPrice());
+        return summary;
+    }
+
 
     /**
      * Endpoint pentru verificarea statusului sistemului

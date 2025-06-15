@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="booking js update 2">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="booking optimization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/AdminHeader.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/AdminHeader.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/CreateUserModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/CreateUserModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ManageUsersPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/ManageUsersPage/ReservationProfilesModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminPersonalData.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminPersonalData.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminProfilePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminSecuritySettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/profile/AppAdminSecuritySettings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminPages/BookingPrioritization.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -583,7 +573,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749981740875</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="booking optimization">
+      <option name="closed" value="true" />
+      <created>1749983796590</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1749983796590</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -635,7 +633,8 @@
     <MESSAGE value="booking update" />
     <MESSAGE value="booking js update" />
     <MESSAGE value="booking js update 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="booking js update 2" />
+    <MESSAGE value="booking optimization" />
+    <option name="LAST_COMMIT_MESSAGE" value="booking optimization" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
