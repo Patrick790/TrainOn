@@ -51,77 +51,55 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // PRIMUL - Booking prioritization COMPLET PUBLIC
+                        .requestMatchers("/booking-prioritization/**").permitAll()
+
+                        // Restul endpoint-urilor
                         .requestMatchers("/", "/user-home", "/static/**", "/*.js", "/*.css", "/*.ico", "/*.png", "/*.jpg", "/*.gif",
                                 "/login", "/register", "/search", "/profile-creation", "/profile", "/reservations",
                                 "/fcfs-reservation", "/reset-password", "/payment", "/payment-success", "/payment-cancel",
                                 "/privacy", "/terms", "/hall-admin-dashboard/**", "/admin-dashboard/**", "/edit-hall/**",
                                 "/admin-profile", "/app-admin-profile", "/sportsHalls/*/reviews").permitAll()
                         .requestMatchers("/login", "/login/**", "/register/**").permitAll()
-                        // ADĂUGAT: Endpoint-uri pentru resetarea parolei
                         .requestMatchers("/forgot-password").permitAll()
                         .requestMatchers("/reset-password/**").permitAll()
                         .requestMatchers("/reset-password").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll() // Endpoint public pentru listarea tuturor sălilor
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls").permitAll()
                         .requestMatchers(HttpMethod.GET, "/sportsHalls/cities").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll() // Alte endpoint-uri GET pentru săli sunt publice
-                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll() // Permite accesul la imagini
-                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll() // Permite accesul public la endpoint-ul de recenzii
-                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll() // Permite accesul public la detalii specifice de recenzii
-                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza săli
-                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot crea săli
-                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge săli
-                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge imagini
+                        .requestMatchers(HttpMethod.GET, "/sportsHalls/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/feedbacks").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/feedbacks/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.POST, "/sportsHalls", "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/sportsHalls/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/images/**").hasAnyAuthority("hall_admin", "admin")
 
-                        // Configurare pentru rezervări - ACTUALIZAT
-                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll() // Listarea generală publică
-                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll() // Mentenanța publică
-                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin") // Toate celelalte operații necesită autentificare
+                        .requestMatchers(HttpMethod.GET, "/reservations").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/reservations/maintenance/**").permitAll()
+                        .requestMatchers("/reservations/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // Configurare pentru hall-schedules - programul sălilor
                         .requestMatchers(HttpMethod.GET, "/schedules/hall/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
-                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot actualiza programul
-                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin") // Doar hall_admin și admin pot șterge programul
+                        .requestMatchers(HttpMethod.POST, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.PUT, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
+                        .requestMatchers(HttpMethod.DELETE, "/schedules/**").hasAnyAuthority("hall_admin", "admin")
 
-                        // Adaugare pentru profilurile de rezervare - doar utilizatorii autentificați pot accesa
-                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin") // Toți utilizatorii autentificați pot accesa profilurile
-
-                        // ADĂUGAT: Configurare pentru gestionarea cardurilor
-                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin") // Cardurile necesită autentificare
-
-                        // Adaugare pentru gestionarea înregistrărilor de echipe
-                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin") // Doar adminii pot accesa acest endpoint
+                        .requestMatchers("/reservationProfiles/**").hasAnyAuthority("user", "admin", "hall_admin")
+                        .requestMatchers("/card-payment-methods/**").hasAnyAuthority("user", "admin", "hall_admin")
+                        .requestMatchers("/admin/team-registrations/**").hasAuthority("admin")
                         .requestMatchers("/users").hasAnyAuthority("user", "admin", "hall_admin")
                         .requestMatchers("/users/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // Endpoint-uri pentru plăți - permit accesul public pentru webhook-uri BT Pay
-                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll() // Noul webhook Stripe
+                        .requestMatchers(HttpMethod.POST, "/payment/stripe/webhook").permitAll()
                         .requestMatchers(HttpMethod.GET, "/payment/bt/status/**").permitAll()
                         .requestMatchers("/payment/**").hasAnyAuthority("user", "admin", "hall_admin")
 
-                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări
-                        // ADĂUGAT: Endpoint pentru generarea automată de rezervări - TEMPORAR PUBLIC
-                        .requestMatchers("/booking-prioritization/**").permitAll()
-                        .requestMatchers("/booking-prioritization/test").permitAll()
-                        .requestMatchers("/booking-prioritization/diagnostic").hasAuthority("admin")
-                        .requestMatchers("/booking-prioritization/test-generation").hasAuthority("admin")
-
-                        // TEMPORAR PENTRU DEBUG: Endpoint public pentru testare
-                        .requestMatchers("/booking-prioritization/public-debug").permitAll()
-
-                        // ADĂUGAT: Endpoints pentru vizualizarea log-urilor (doar pentru admini)
                         .requestMatchers("/admin/logs/**").hasAuthority("admin")
-
-                        // ADĂUGAT: Endpoint pentru scheduler (doar pentru admini)
                         .requestMatchers("/admin/scheduler/**").hasAuthority("admin")
-
-                        // Endpoint pentru FCFS status
                         .requestMatchers("/fcfs/**").permitAll()
-
-                        // Endpoint pentru health check
-                        .requestMatchers("/health", "/", "/api", "/ping", "/booking-prioritization/test").permitAll()
+                        .requestMatchers("/health", "/", "/api", "/ping").permitAll()
 
                         .anyRequest().authenticated()
                 )

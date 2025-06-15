@@ -733,4 +733,9 @@ public class BookingPrioritizationRestController {
             this.endMinutes = endMinutes;
         }
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Controller works! Current time: " + new Date());
+    }
 }
