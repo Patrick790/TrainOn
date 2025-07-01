@@ -306,47 +306,8 @@ class BookingPrioritization extends Component {
                         </span>
                     </div>
                 )}
-
-                {profileResults && profileResults.length > 0 && (
-                    <div className="bp-profiles-list">
-                        <h5>Profiluri procesate ({profileResults.length})</h5>
-                        <div className="bp-profiles-summary">
-                            {this.renderProfilesSummaryOptimized(profileResults)}
-                        </div>
-                    </div>
-                )}
             </div>
         );
-    };
-
-    renderProfilesSummaryOptimized = (profileResults) => {
-        return profileResults.map((result, index) => (
-            <div key={index} className={`bp-profile-summary ${result.success ? 'bp-success' : 'bp-error'}`}>
-                <div className="bp-profile-name">
-                    {result.profileName || 'Profil necunoscut'}
-                </div>
-                <div className="bp-profile-result">
-                    {result.success ? (
-                        <span className="bp-success-text">
-                            {result.reservationCount || 0} rezervări
-                        </span>
-                    ) : (
-                        <span className="bp-error-text">
-                            {result.error || 'Eroare necunoscută'}
-                        </span>
-                    )}
-                </div>
-                {result.sampleReservations && result.sampleReservations.length > 0 && (
-                    <div className="bp-sample-reservations">
-                        {result.sampleReservations.map((res, idx) => (
-                            <div key={idx} className="bp-sample-reservation">
-                                {res.date} - {res.timeSlot} ({res.hallName})
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        ));
     };
 
     render() {
