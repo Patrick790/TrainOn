@@ -1506,7 +1506,7 @@ public class BookingPrioritizationRestController {
     // Clase pentru gestionarea programului si rezultatelor
 
     public static class WeeklySchedule {
-        private Map<String, DaySchedule> daySchedules = new HashMap<>();
+        private final Map<String, DaySchedule> daySchedules = new HashMap<>();
 
         public void addDaySchedule(String date, DaySchedule daySchedule) {
             daySchedules.put(date, daySchedule);
@@ -1522,7 +1522,7 @@ public class BookingPrioritizationRestController {
     }
 
     public static class DaySchedule {
-        private Map<Long, HallDaySchedule> hallSchedules = new HashMap<>();
+        private final Map<Long, HallDaySchedule> hallSchedules = new HashMap<>();
 
         public void addHallSchedule(Long hallId, HallDaySchedule schedule) {
             hallSchedules.put(hallId, schedule);
@@ -1534,7 +1534,7 @@ public class BookingPrioritizationRestController {
     }
 
     public static class HallDaySchedule {
-        private Map<String, TimeSlot> slots = new HashMap<>();
+        private final Map<String, TimeSlot> slots = new HashMap<>();
 
         public void addSlot(String timeSlot, TimeSlot slot) {
             slots.put(timeSlot, slot);
@@ -1656,7 +1656,12 @@ public class BookingPrioritizationRestController {
 
         public List<Reservation> getReservations() { return reservations; }
         public List<ProfileResult> getProfileResults() { return profileResults; }
-        public int getTotalReservations() { return reservations.size(); }
+        public int getTotalReservations() {
+            return profileResults.stream()
+                    .filter(ProfileResult::isSuccess)
+                    .mapToInt(pr -> pr.getReservations() != null ? pr.getReservations().size() : 0)
+                    .sum();
+        }
         public int getSuccessfulProfiles() {
             return (int) profileResults.stream()
                     .filter(ProfileResult::isSuccess)

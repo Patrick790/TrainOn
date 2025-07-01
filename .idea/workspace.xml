@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="almost ready">
+    <list default="true" id="0215a7d3-86b3-4d4f-9456-c99198fd9aa1" name="Changes" comment="almost ready 2">
+      <change afterPath="$PROJECT_DIR$/src/test/java/licenta/service/BookingPrioritizationRestControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/933f4340-f5d2-4429-bfb2-2b414d79612a.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/licenta/service/BookingPrioritizationRestController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +120,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.LicenseApplication">
-    <configuration name="FcfsStatusControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="BookingPrioritizationRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -129,7 +133,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.service.FcfsStatusControllerTest&quot;" />
+            <option value="&quot;licenta.service.BookingPrioritizationRestControllerTest&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -140,7 +144,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="ScheduleRestControllerTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="BudgetCalculationTests.shouldCalculateRemainingBudgetCorrectly" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -153,7 +157,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;licenta.service.ScheduleRestControllerTest&quot;" />
+            <option value="&quot;licenta.service.BookingPrioritizationRestControllerTest$BudgetCalculationTests.shouldCalculateRemainingBudgetCorrectly&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -257,8 +261,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Gradle.FcfsStatusControllerTest" />
-      <item itemvalue="Gradle.ScheduleRestControllerTest" />
+      <item itemvalue="Gradle.BookingPrioritizationRestControllerTest" />
+      <item itemvalue="Gradle.BudgetCalculationTests.shouldCalculateRemainingBudgetCorrectly" />
       <item itemvalue="Gradle.SportsHallImageRestControllerTest" />
       <item itemvalue="Gradle.SportsHallRestControllerTest" />
       <item itemvalue="Gradle.UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed" />
@@ -268,11 +272,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.BookingPrioritizationRestControllerTest" />
+        <item itemvalue="Gradle.BudgetCalculationTests.shouldCalculateRemainingBudgetCorrectly" />
         <item itemvalue="Gradle.UpdateSportsHallTests.updateSportsHall_WhenHallExists_ShouldSucceed" />
         <item itemvalue="Gradle.SportsHallRestControllerTest" />
         <item itemvalue="Gradle.SportsHallImageRestControllerTest" />
-        <item itemvalue="Gradle.ScheduleRestControllerTest" />
-        <item itemvalue="Gradle.FcfsStatusControllerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -371,6 +375,8 @@
       <workItem from="1749546361621" duration="16472000" />
       <workItem from="1749642207151" duration="5977000" />
       <workItem from="1749719443674" duration="7061000" />
+      <workItem from="1751305269611" duration="613000" />
+      <workItem from="1751366911523" duration="5284000" />
     </task>
     <task id="LOCAL-00001" summary="first commit">
       <option name="closed" value="true" />
@@ -556,7 +562,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750002425683</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="almost ready 2">
+      <option name="closed" value="true" />
+      <created>1750003188867</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1750003188867</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -607,7 +621,8 @@
     <MESSAGE value="optimized prioritization" />
     <MESSAGE value="optimized prioritization 2" />
     <MESSAGE value="almost ready" />
-    <option name="LAST_COMMIT_MESSAGE" value="almost ready" />
+    <MESSAGE value="almost ready 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="almost ready 2" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
