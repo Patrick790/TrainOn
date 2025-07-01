@@ -352,38 +352,59 @@ public class BookingPrioritizationRestController {
                 int maxBookings = getMaxBookingsForProfile(profile);
                 int currentBookings = profileResult.getReservations().size();
 
+                logger.debug("Profil '{}': {}/{} rezervări, categorie {}",
+                        profile.getName(), currentBookings, maxBookings, profile.getAgeCategory());
+
                 if (currentBookings < maxBookings) {
                     BigDecimal remainingBudget = calculateRemainingBudget(profile, profileResult.getReservations());
 
                     if (remainingBudget.compareTo(BigDecimal.ZERO) > 0) {
+                        // Căutăm slot-uri pentru diferența până la maxim
+                        int slotsNeeded = maxBookings - currentBookings;
+
                         List<AvailableSlot> additionalSlots = findAdditionalSlotsForProfile(
-                                profile, schedule, startDate, maxBookings - currentBookings);
+                                profile, schedule, startDate, slotsNeeded);
 
                         // FILTREAZĂ slot-urile care sunt în zile cu rezervări existente
                         Set<String> existingDates = profileResult.getReservations().stream()
                                 .map(r -> formatDate(r.getDate()))
                                 .collect(Collectors.toSet());
 
+                        logger.debug("Profil '{}' are deja rezervări în zilele: {}",
+                                profile.getName(), existingDates);
+
                         additionalSlots = additionalSlots.stream()
                                 .filter(slot -> !existingDates.contains(formatDate(slot.getDate())))
                                 .collect(Collectors.toList());
 
-                        List<SelectedReservation> selectedAdditional = selectReservationsWithinBudgetLimited(
-                                additionalSlots, maxBookings - currentBookings, remainingBudget);
+                        logger.debug("Slot-uri disponibile pentru '{}': {} din care {} în zile noi",
+                                profile.getName(), additionalSlots.size(), additionalSlots.size());
 
-                        if (!selectedAdditional.isEmpty()) {
-                            List<Reservation> additionalReservations = createReservationsFromSelected(
-                                    selectedAdditional, profile.getUser());
+                        if (!additionalSlots.isEmpty()) {
+                            List<SelectedReservation> selectedAdditional = selectReservationsWithinBudgetLimited(
+                                    additionalSlots, slotsNeeded, remainingBudget);
 
-                            List<Reservation> allReservations = new ArrayList<>(profileResult.getReservations());
-                            allReservations.addAll(additionalReservations);
-                            profileResult.setReservations(allReservations);
+                            if (!selectedAdditional.isEmpty()) {
+                                List<Reservation> additionalReservations = createReservationsFromSelected(
+                                        selectedAdditional, profile.getUser());
 
-                            updateScheduleWithReservations(schedule, additionalReservations);
+                                List<Reservation> allReservations = new ArrayList<>(profileResult.getReservations());
+                                allReservations.addAll(additionalReservations);
+                                profileResult.setReservations(allReservations);
 
-                            additionalCount += additionalReservations.size();
-                            logger.debug("Echipa '{}' a primit {} rezervări suplimentare în zile diferite",
-                                    profile.getName(), additionalReservations.size());
+                                updateScheduleWithReservations(schedule, additionalReservations);
+
+                                additionalCount += additionalReservations.size();
+                                logger.info("Echipa '{}' ({}) a primit {} rezervări suplimentare (total: {}/{})",
+                                        profile.getName(), profile.getAgeCategory(), additionalReservations.size(),
+                                        allReservations.size(), maxBookings);
+                            } else {
+                                logger.warn("Nu s-au putut selecta rezervări pentru '{}' - posibil buget insuficient",
+                                        profile.getName());
+                            }
+                        } else {
+                            logger.warn("Nu există slot-uri disponibile în zile noi pentru '{}'",
+                                    profile.getName());
                         }
                     }
                 }
@@ -584,9 +605,7 @@ public class BookingPrioritizationRestController {
 
         List<AvailableSlot> availableSlots = new ArrayList<>();
 
-        // GĂSEȘTE zilele care au deja rezervări pentru acest profil
-        // (Aceasta va fi folosită în contextul în care metoda este apelată cu ProfileResult)
-
+        // CĂUTĂM în TOATE zilele săptămânii pentru a avea suficiente opțiuni
         int slotsFound = 0;
         for (Map.Entry<String, DaySchedule> dayEntry : schedule.getDaySchedules().entrySet()) {
             Date currentDate = parseDate(dayEntry.getKey());
@@ -607,17 +626,21 @@ public class BookingPrioritizationRestController {
                         availableSlots.add(availableSlot);
 
                         slotsFound++;
-                        if (slotsFound >= maxAdditional * 8) break;
+                        // MĂRESC limita pentru a avea mai multe opțiuni
+                        if (slotsFound >= maxAdditional * 20) break; // Înainte era * 8
                     }
                 }
-                if (slotsFound >= maxAdditional * 8) break;
+                if (slotsFound >= maxAdditional * 20) break;
             }
-            if (slotsFound >= maxAdditional * 8) break;
+            if (slotsFound >= maxAdditional * 20) break;
         }
 
-        Collections.shuffle(availableSlots, new Random());
+        // Sortează după prioritate și păstrează mai multe slot-uri
+        availableSlots.sort((a, b) -> Integer.compare(b.getPriority(), a.getPriority()));
+
+        // Returnează mai multe slot-uri pentru a avea opțiuni în zile diferite
         return availableSlots.stream()
-                .limit(maxAdditional * 3)
+                .limit(maxAdditional * 10) // Înainte era * 3, acum * 10
                 .collect(Collectors.toList());
     }
 
@@ -687,35 +710,41 @@ public class BookingPrioritizationRestController {
         List<SelectedReservation> selected = new ArrayList<>();
         BigDecimal remainingBudget = budget;
 
-        // ADAUGĂ aceasta constrangere pentru zile folosite
-        Set<String> usedDates = new HashSet<>(); // Prevenește multiple rezervări în aceeași zi
+        // Prevenește multiple rezervări în aceeași zi
+        Set<String> usedDates = new HashSet<>();
 
-        List<AvailableSlot> limitedSlots = availableSlots.stream()
-                .limit(maxBookings * 5)
-                .collect(Collectors.toList());
+        // SORTEAZĂ slot-urile după zi pentru a distribui uniform
+        Map<String, List<AvailableSlot>> slotsByDay = availableSlots.stream()
+                .collect(Collectors.groupingBy(slot -> formatDate(slot.getDate())));
 
-        Collections.shuffle(limitedSlots, new Random());
+        // Încearcă să aloce câte unul pe zi până ajunge la maxBookings
+        List<String> availableDays = new ArrayList<>(slotsByDay.keySet());
+        Collections.shuffle(availableDays, new Random());
 
-        for (AvailableSlot slot : limitedSlots) {
+        // Prima tură: încearcă să pună câte o rezervare pe zi
+        for (String day : availableDays) {
             if (selected.size() >= maxBookings) break;
+            if (usedDates.contains(day)) continue;
 
-            String dateKey = formatDate(slot.getDate());
+            List<AvailableSlot> daySlots = slotsByDay.get(day);
+            Collections.shuffle(daySlots, new Random());
 
-            // VERIFICĂ dacă data este deja folosită
-            if (usedDates.contains(dateKey)) {
-                continue; // Sari peste - profilul are deja rezervare în această zi
-            }
+            // Găsește primul slot din această zi care încape în buget
+            for (AvailableSlot slot : daySlots) {
+                if (remainingBudget.compareTo(slot.getPrice()) >= 0) {
+                    SelectedReservation reservation = new SelectedReservation(
+                            slot.getHall(), slot.getDate(), slot.getTimeSlot(), slot.getPrice());
+                    selected.add(reservation);
+                    remainingBudget = remainingBudget.subtract(slot.getPrice());
+                    usedDates.add(day);
 
-            if (remainingBudget.compareTo(slot.getPrice()) >= 0) {
-                SelectedReservation reservation = new SelectedReservation(
-                        slot.getHall(), slot.getDate(), slot.getTimeSlot(), slot.getPrice());
-                selected.add(reservation);
-                remainingBudget = remainingBudget.subtract(slot.getPrice());
-
-                // MARCHEAZĂ data ca folosită
-                usedDates.add(dateKey);
+                    logger.debug("Alocat slot în ziua {} pentru rezervarea #{}", day, selected.size());
+                    break; // Treci la următoarea zi
+                }
             }
         }
+
+        logger.debug("După distribuția pe zile: {} rezervări din {} maxim", selected.size(), maxBookings);
 
         return selected;
     }
